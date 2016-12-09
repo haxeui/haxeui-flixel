@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<module id="haxeui-flixel">
+    <themes>
+        <global>
+            <style resource="styles/main.css" />
+        </global>
+        <default>
+            <style resource="styles/default/main.css" />
+        </default>
+    </themes>
+</module>
