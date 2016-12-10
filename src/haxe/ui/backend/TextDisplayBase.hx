@@ -29,6 +29,18 @@ class TextDisplayBase extends FlxText {
         return value;
     }
 
+    public var textWidth(get, null):Float;
+    private function get_textWidth():Float {
+        var v = this.textField.textWidth;
+        return v;
+    }
+
+    public var textHeight(get, null):Float;
+    private function get_textHeight():Float {
+        var v = this.textField.textHeight;
+        return v;
+    }
+    
     public var fontName(get, set):String;
     private function get_fontName():String {
 		return textField.getTextFormat().font;
