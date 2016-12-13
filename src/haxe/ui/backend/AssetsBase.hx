@@ -4,7 +4,7 @@ import haxe.ui.assets.FontInfo;
 import haxe.ui.assets.ImageInfo;
 
 class AssetsBase {
-	
+
     public function new() {
 
     }

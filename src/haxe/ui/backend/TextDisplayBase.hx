@@ -8,7 +8,7 @@ class TextDisplayBase extends FlxText {
 
     public function new() {
         super();
-		
+
     }
 
     public var left(get, set):Float;
@@ -40,10 +40,10 @@ class TextDisplayBase extends FlxText {
         var v = this.textField.textHeight;
         return v;
     }
-    
+
     public var fontName(get, set):String;
     private function get_fontName():String {
-		return textField.getTextFormat().font;
+        return textField.getTextFormat().font;
     }
     private function set_fontName(value:String):String {
         textField.embedFonts = isEmbeddedFont(value);

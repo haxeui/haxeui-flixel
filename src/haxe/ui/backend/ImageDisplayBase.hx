@@ -10,7 +10,7 @@ import openfl.display.Sprite;
 class ImageDisplayBase extends FlxSpriteGroup { // maybe it should just extend sprite
     public var parentComponent:Component;
     public var aspectRatio:Float = 1; // width x height
-	private var _sprite:FlxSprite;
+    private var _sprite:FlxSprite;
 
     public function new() {
         super();
