@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 
+import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import haxe.ui.core.Component;
 import haxe.ui.core.IComponentBase;
@@ -12,12 +13,19 @@ import haxe.ui.util.Rectangle;
 
 class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
+	var surface:FlxSprite;
+	
     public function new() {
         super();
+		surface = new FlxSprite();
+		add(surface);
     }
     
     private function applyStyle(style:Style) {
-		trace(style.backgroundColor);
+		
+		if (style.backgroundColor != null) {
+			surface.makeGraphic(Std.int(width), Std.int(height), Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor, true);
+		}
     }
 
     public function getTextDisplay():TextDisplay {
@@ -73,7 +81,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     private function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
-
+		
     }
 
     private function handleClipRect(value:Rectangle):Void {
@@ -103,4 +111,15 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     private function unmapEvent(type:String, listener:UIEvent->Void) {
 
     }
+	
+	private var __ready:Bool = false;
+	override public function draw():Void {
+		
+		if (!__ready) {
+			__ready = true;
+			cast(this, Component).ready();
+		}
+		
+		super.draw();
+	}
 }

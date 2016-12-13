@@ -3,7 +3,6 @@ package;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
 import haxe.ui.Toolkit;
-import haxe.ui.containers.VBox;
 import haxe.ui.macros.ComponentMacros;
 
 

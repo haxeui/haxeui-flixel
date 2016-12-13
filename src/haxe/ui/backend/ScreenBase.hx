@@ -35,7 +35,7 @@ class ScreenBase {
     public function addComponent(component:Component) {
         _topLevelComponents.push(component);
         container.add(component);
-        // onContainerResize(null);
+        component.ready();
     }
 
     public function removeComponent(component:Component) {
