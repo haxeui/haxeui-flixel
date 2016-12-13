@@ -20,11 +20,11 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		surface = new FlxSprite();
 		add(surface);
     }
-    
+	
     private function applyStyle(style:Style) {
 		
 		if (style.backgroundColor != null) {
-			surface.makeGraphic(Std.int(width), Std.int(height), Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor, true);
+			// surface.pixels.fillRect(surface.pixels.rect, Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor);
 		}
     }
 
@@ -82,6 +82,13 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
     private function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
 		
+		this.width = width;
+		this.height = height;
+		
+		var color = 0x0;
+		if (style.backgroundColor != null) color = Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor;
+		
+		surface.makeGraphic(Std.int(width), Std.int(height), color, true);
     }
 
     private function handleClipRect(value:Rectangle):Void {
@@ -89,7 +96,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     private function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
-
+		surface.x = left;
+		surface.y = top;
     }
 
     private function handlePreReposition() {
@@ -101,7 +109,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     private function handleReady() {
-
+		
     }
 
     private function mapEvent(type:String, listener:UIEvent->Void) {
