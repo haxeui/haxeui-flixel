@@ -15,9 +15,9 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     public function new() {
         super();
     }
-
+    
     private function applyStyle(style:Style) {
-
+		trace(style.backgroundColor);
     }
 
     public function getTextDisplay():TextDisplay {
