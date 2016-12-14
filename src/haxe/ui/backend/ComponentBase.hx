@@ -96,8 +96,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     private function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
-		surface.x = left;
-		surface.y = top;
+		x = left;
+		y = top;
     }
 
     private function handlePreReposition() {
