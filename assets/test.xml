@@ -1,16 +1,2 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<vbox width="300" height="300" style="background-color:red;padding:15px;">
-    <hbox width="100%" height="40">
-        <button width="33%" height="100%" />
-        <button width="34%" height="100%" />
-        <button width="33%" height="100%" />
-    </hbox>
-    <button width="100%" height="33%" />
-    <button width="100%" height="34%" />
-    <button width="100%" height="33%" />
-    <hbox width="100%" height="40">
-        <button width="33%" height="100%" />
-        <button width="34%" height="100%" />
-        <button width="33%" height="100%" />
-    </hbox>
-</vbox>
+<button width="100" height="50" />

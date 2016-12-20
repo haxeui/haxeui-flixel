@@ -1,10 +1,13 @@
 package haxe.ui.backend;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.input.mouse.FlxMouseEventManager;
 import haxe.ui.core.Component;
 import haxe.ui.core.IComponentBase;
 import haxe.ui.core.ImageDisplay;
+import haxe.ui.core.MouseEvent;
 import haxe.ui.core.TextDisplay;
 import haxe.ui.core.TextInput;
 import haxe.ui.core.UIEvent;
@@ -111,14 +114,43 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     private function handleReady() {
 		
     }
-
+	
+	private var __mouseRegistered:Bool = false;
     private function mapEvent(type:String, listener:UIEvent->Void) {
-
+		
+		if (!__mouseRegistered) {
+			FlxMouseEventManager.add(this);
+			__mouseRegistered = true;
+		}
+		
+		switch (type) {
+			case MouseEvent.MOUSE_OVER:
+				FlxMouseEventManager.setMouseOverCallback(this, __onMouseEvent.bind(type, listener));
+			case MouseEvent.MOUSE_OUT:
+				FlxMouseEventManager.setMouseOutCallback(this, __onMouseEvent.bind(type, listener));
+			case MouseEvent.MOUSE_DOWN:
+				FlxMouseEventManager.setMouseDownCallback(this, __onMouseEvent.bind(type, listener));
+			case MouseEvent.MOUSE_UP:
+				FlxMouseEventManager.setMouseUpCallback(this, __onMouseEvent.bind(type, listener));
+			// case MouseEvent.CLICK:
+				// 
+		}
     }
 
     private function unmapEvent(type:String, listener:UIEvent->Void) {
 
     }
+	
+	private function __onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentBase):Void {
+		
+		var me = new MouseEvent(type);
+		me.target = cast target;
+		me.screenX = FlxG.mouse.x;
+		me.screenY = FlxG.mouse.y;
+		me.buttonDown = FlxG.mouse.pressed;
+		// me.delta = ?
+		listener(me);
+	}
 	
 	private var __ready:Bool = false;
 	override public function draw():Void {
