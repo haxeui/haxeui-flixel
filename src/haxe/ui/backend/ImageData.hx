@@ -1,3 +1,4 @@
 package haxe.ui.backend;
 
-typedef ImageData = openfl.display.BitmapData;
+import flixel.graphics.FlxGraphic;
+typedef ImageData = FlxGraphic;

@@ -31,6 +31,7 @@
     <set name="no-custom-backend" />
     <set name="BUILD_DIR" value="export" />
     <classpath name="src" />
+	<assets path="assets" />
 
     <!--------------------------------LIBRARIES------------------------------------->
 

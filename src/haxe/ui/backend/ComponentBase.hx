@@ -16,11 +16,11 @@ import haxe.ui.util.Rectangle;
 
 class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
-	var surface:FlxSprite;
+	var surface:ImageDisplay;
 	
     public function new() {
         super();
-		surface = new FlxSprite();
+		surface = new ImageDisplay();
 		add(surface);
     }
 	
@@ -138,7 +138,23 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     private function unmapEvent(type:String, listener:UIEvent->Void) {
-
+		
+		if (!__mouseRegistered) {
+			return;
+		}
+		
+		switch (type) {
+			case MouseEvent.MOUSE_OVER:
+				FlxMouseEventManager.setMouseOverCallback(this, null);
+			case MouseEvent.MOUSE_OUT:
+				FlxMouseEventManager.setMouseOutCallback(this, null);
+			case MouseEvent.MOUSE_DOWN:
+				FlxMouseEventManager.setMouseDownCallback(this, null);
+			case MouseEvent.MOUSE_UP:
+				FlxMouseEventManager.setMouseUpCallback(this, null);
+			// case MouseEvent.CLICK:
+				// 
+		}
     }
 	
 	private function __onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentBase):Void {

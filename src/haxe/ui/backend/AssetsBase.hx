@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 
+import flixel.graphics.FlxGraphic;
 import haxe.ui.assets.FontInfo;
 import haxe.ui.assets.ImageInfo;
 
@@ -14,7 +15,11 @@ class AssetsBase {
     }
 
     private function getImageInternal(resourceId:String, callback:ImageInfo->Void):Void {
-        callback(null);
+		
+		var graphic = FlxGraphic.fromAssetKey(Std.string(resourceId));
+		
+		if (graphic != null) callback( { data : graphic, width : graphic.width, height : graphic.height } );
+		else callback(null);
     }
 
     private function getFontFromHaxeResource(resourceId:String, callback:String->FontInfo->Void) {
