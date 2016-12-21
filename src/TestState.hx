@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
 import haxe.ui.Toolkit;
@@ -21,10 +23,16 @@ class TestState extends FlxState {
 		var comp = ComponentMacros.buildComponent("assets/test.xml");
 		fsg.add(comp);
 		
-		Toolkit.assets.getImage("assets/test.png", test);
+		// test(fsg);
 	}
 	
-	function test(ii:ImageInfo):Void {
-		trace(ii.width, ii.height);
+	function test(sprite:FlxSprite):Void {
+		
+		trace(sprite.x, sprite.y, sprite.frameWidth, sprite.frameHeight, sprite.offset);
+		
+		if (Std.is(sprite, FlxSpriteGroup)) {
+			var fsg:FlxSpriteGroup = cast sprite;
+			for (member in fsg.members) test(member);
+		}
 	}
 }

@@ -16,11 +16,12 @@ import haxe.ui.util.Rectangle;
 
 class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
-	var surface:ImageDisplay;
+	var surface:FlxSprite; // drawing surface
+	var image:ImageDisplay; // where images are displayed
 	
     public function new() {
         super();
-		surface = new ImageDisplay();
+		surface = new FlxSprite();
 		add(surface);
     }
 	
@@ -48,15 +49,21 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     public function getImageDisplay():ImageDisplay {
-        return null;
+        
+		if (image != null) return image;
+		
+		image = new ImageDisplay();
+		add(image);
+		
+		return image;
     }
 
     public function hasImageDisplay():Bool {
-        return false;
+        return image != null;
     }
 
     public function removeImageDisplay():Void {
-
+		if (image != null) remove(image, true);
     }
 
     private function handleAddComponent(child:Component):Component {

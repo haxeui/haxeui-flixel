@@ -31,7 +31,7 @@ class ImageDisplayBase extends FlxSprite {
 
     public var imageWidth(get, set):Float;
     private function set_imageWidth(value:Float):Float {
-        frameWidth = Std.int(value);
+        //frameWidth = Std.int(value);
         return value;
     }
 
@@ -41,7 +41,7 @@ class ImageDisplayBase extends FlxSprite {
 
     public var imageHeight(get, set):Float;
     private function set_imageHeight(value:Float):Float {
-        frameHeight = Std.int(value);
+        //frameHeight = Std.int(value);
         return value;
     }
 
