@@ -1,11 +1,13 @@
 package haxe.ui.backend;
 
 import flixel.text.FlxText;
+import haxe.ui.core.Component;
 import openfl.Assets;
 import openfl.text.TextFormat;
 
 class TextDisplayBase extends FlxText {
-
+    public var parent:Component;
+    
     public function new() {
         super();
 
@@ -16,7 +18,7 @@ class TextDisplayBase extends FlxText {
         return this.x;
     }
     private function set_left(value:Float):Float {
-        this.x = value;
+        this.x = parent.screenLeft + value;
         return value;
     }
 
@@ -25,19 +27,19 @@ class TextDisplayBase extends FlxText {
         return this.y;
     }
     private function set_top(value:Float):Float {
-        this.y = value;
+        this.y = parent.screenTop + value;
         return value;
     }
 
     public var textWidth(get, null):Float;
     private function get_textWidth():Float {
-        var v = this.textField.textWidth;
+        var v = this.textField.textWidth + 4;
         return v;
     }
 
     public var textHeight(get, null):Float;
     private function get_textHeight():Float {
-        var v = this.textField.textHeight;
+        var v = this.textField.textHeight + 2;
         return v;
     }
 
@@ -72,5 +74,15 @@ class TextDisplayBase extends FlxText {
 
     private static inline function isEmbeddedFont(name:String):Bool {
         return (name != "_sans" && name != "_serif" && name != "_typewriter");
+    }
+    
+    private var _textAlign:String;
+    public var textAlign(get, set):String;
+    private function get_textAlign():String {
+        return _textAlign;
+    }
+    private function set_textAlign(value:String):String {
+        _textAlign = value;
+        return value;
     }
 }

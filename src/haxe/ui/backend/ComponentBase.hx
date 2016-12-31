@@ -18,6 +18,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
 	var surface:FlxSprite; // drawing surface
 	var image:ImageDisplay; // where images are displayed
+    var tf:TextDisplay;
 	
     public function new() {
         super();
@@ -33,11 +34,17 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     public function getTextDisplay():TextDisplay {
-        return null;
+        if (tf != null) return tf;
+        
+        
+        tf = new TextDisplay();
+        tf.parent = cast this;
+        add(tf);
+        return tf;
     }
 
     public function hasTextDisplay():Bool {
-        return false;
+        return tf != null;
     }
 
     public function getTextInput():TextInput {
@@ -52,6 +59,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
         
 		if (image != null) return image;
 		
+        
+        
 		image = new ImageDisplay();
 		add(image);
 		

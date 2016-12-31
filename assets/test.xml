@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<button width="400" height="400" icon="assets/test.png" style="background-color:red;" />
+<!--
+<label text="Button 1" style="background-color:red;" />
+-->
+<vbox>
+    <button text="Button 1" />
+    <label text="Label 1" />
+    <button text="Button 2" height="100" width="100" />
+    <label text="Label 2" />
+    <button text="Button 3" />
+</vbox>
