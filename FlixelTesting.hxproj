@@ -16,13 +16,13 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="C:\Servers\Haxe\haxe\lib\flixel\4,2,0" />
-    <class path="C:\Servers\Haxe\haxe\lib\lime\2,9,1" />
-    <class path="C:\Servers\Haxe\haxe\lib\openfl\3,6,1" />
-    <class path="C:\Servers\Haxe\haxe\lib\hscript\2,0,7" />
-    <class path="Z:\HaxeUI2\haxeui-core" />
+    <class path="C:\HaxeToolkit\haxe\lib\flixel\git" />
+    <class path="C:\HaxeToolkit\haxe\lib\lime\2,9,1" />
+    <class path="C:\HaxeToolkit\haxe\lib\openfl\3,6,1" />
+    <class path="C:\HaxeToolkit\haxe\lib\hscript\2,0,7" />
+    <class path="C:\HaxeToolkit\haxe\lib\haxeui-core\git" />
     <class path="src" />
-    <class path="C:\Servers\Haxe\haxe\lib\openfl\3,6,1\extern" />
+    <class path="C:\HaxeToolkit\haxe\lib\openfl\3,6,1\extern" />
     <class path="export\flash\haxe" />
   </classpaths>
   <!-- Build options -->
@@ -32,7 +32,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="#--macro keep('IntIterator')&#xA;--macro flixel.system.macros.FlxDefines.run()&#xA;-swf-version 11.8&#xA;-debug " />
+    <option additional="--macro flixel.system.macros.FlxDefines.run()&#xA;-swf-version 11.8&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

@@ -16,14 +16,13 @@ import haxe.ui.util.Rectangle;
 
 class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
+	// need to maintain this order, even if these get created out of order
 	var surface:FlxSprite; // drawing surface
 	var image:ImageDisplay; // where images are displayed
     var tf:TextDisplay;
 	
     public function new() {
         super();
-		surface = new FlxSprite();
-		add(surface);
     }
 	
     private function applyStyle(style:Style) {
@@ -34,12 +33,13 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     public function getTextDisplay():TextDisplay {
-        if (tf != null) return tf;
-        
+		
+        if (tf != null) return tf; 
         
         tf = new TextDisplay();
         tf.parent = cast this;
         add(tf);
+		
         return tf;
     }
 
@@ -59,9 +59,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
         
 		if (image != null) return image;
 		
-        
-        
 		image = new ImageDisplay();
+		// maybe add parent to image as well
 		add(image);
 		
 		return image;
@@ -92,7 +91,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     private function handleVisibility(show:Bool):Void {
-        this.visible = show;
+        visible = show;
     }
 
     private function handleCreate(native:Bool):Void {
@@ -106,6 +105,11 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		var color = 0x0;
 		if (style.backgroundColor != null) color = Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor;
+		
+		if (surface == null) {
+			surface = new FlxSprite();
+			add(surface);
+		}
 		
 		surface.makeGraphic(Std.int(width), Std.int(height), color, true);
     }

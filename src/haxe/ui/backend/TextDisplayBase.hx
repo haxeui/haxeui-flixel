@@ -2,74 +2,67 @@ package haxe.ui.backend;
 
 import flixel.text.FlxText;
 import haxe.ui.core.Component;
-import openfl.Assets;
-import openfl.text.TextFormat;
 
 class TextDisplayBase extends FlxText {
     public var parent:Component;
     
     public function new() {
         super();
-
     }
 
     public var left(get, set):Float;
     private function get_left():Float {
-        return this.x;
+        return x;
     }
     private function set_left(value:Float):Float {
-        this.x = parent.screenLeft + value;
+        x = parent.screenLeft + value;
         return value;
     }
 
     public var top(get, set):Float;
     private function get_top():Float {
-        return this.y;
+        return y;
     }
     private function set_top(value:Float):Float {
-        this.y = parent.screenTop + value;
+        y = parent.screenTop + value;
         return value;
     }
 
     public var textWidth(get, null):Float;
     private function get_textWidth():Float {
-        var v = this.textField.textWidth + 4;
+        var v = textField.textWidth + 4;
         return v;
     }
 
     public var textHeight(get, null):Float;
     private function get_textHeight():Float {
-        var v = this.textField.textHeight + 2;
+        var v = textField.textHeight + 4;
         return v;
     }
 
     public var fontName(get, set):String;
     private function get_fontName():String {
-        return textField.getTextFormat().font;
+        return embedded ? font : systemFont;
     }
     private function set_fontName(value:String):String {
-        textField.embedFonts = isEmbeddedFont(value);
-        var format:TextFormat = textField.getTextFormat();
-        if (isEmbeddedFont(value)) {
-            format.font = Assets.getFont(value).fontName;
+		
+        var emb = isEmbeddedFont(value);
+		
+        if (emb) {
+            font = value;
         } else {
-            format.font = value;
+            systemFont = value;
         }
-        textField.defaultTextFormat = format;
-        textField.setTextFormat(format);
+		
         return value;
     }
 
     public var fontSize(get, set):Null<Float>;
     private function get_fontSize():Null<Float> {
-        return textField.getTextFormat().size;
+        return size;
     }
     private function set_fontSize(value:Null<Float>):Null<Float> {
-        var format:TextFormat = textField.getTextFormat();
-        format.size = Std.int(value);
-        textField.defaultTextFormat = format;
-        textField.setTextFormat(format);
-        return value;
+        return size = Std.int(value);
     }
 
     private static inline function isEmbeddedFont(name:String):Bool {
