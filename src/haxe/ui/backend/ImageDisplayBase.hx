@@ -2,8 +2,11 @@ package haxe.ui.backend;
 
 import flixel.FlxSprite;
 import haxe.ui.assets.ImageInfo;
+import haxe.ui.core.Component;
 
 class ImageDisplayBase extends FlxSprite {
+	
+    public var parent:Component;
 	
     public var aspectRatio:Float = 1; // width x height
 
@@ -13,19 +16,19 @@ class ImageDisplayBase extends FlxSprite {
 
     public var left(get, set):Float;
     private function get_left():Float {
-        return this.x;
+        return x;
     }
     private function set_left(value:Float):Float {
-        this.x = value;
+        x = parent.screenLeft + value;
         return value;
     }
 
     public var top(get, set):Float;
     private function get_top():Float {
-        return this.y;
+        return y;
     }
     private function set_top(value:Float):Float {
-        this.y = value;
+        y = parent.screenTop + value;
         return value;
     }
 

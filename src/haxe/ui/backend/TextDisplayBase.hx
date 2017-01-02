@@ -4,6 +4,7 @@ import flixel.text.FlxText;
 import haxe.ui.core.Component;
 
 class TextDisplayBase extends FlxText {
+	
     public var parent:Component;
     
     public function new() {

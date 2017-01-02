@@ -16,20 +16,45 @@ import haxe.ui.util.Rectangle;
 
 class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
-	// need to maintain this order, even if these get created out of order
 	var surface:FlxSprite; // drawing surface
 	var image:ImageDisplay; // where images are displayed
-    var tf:TextDisplay;
+    var tf:TextDisplay; // text
 	
     public function new() {
-        super();
+		super();
+		
+		surface = new FlxSprite();
+		add(surface);
     }
 	
     private function applyStyle(style:Style) {
 		
+		if (surface.pixels == null) return; // nothing to draw onto yet
+		
 		if (style.backgroundColor != null) {
-			// surface.pixels.fillRect(surface.pixels.rect, Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor);
+			var color = Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor;
+			var bmd = surface.pixels;
+			bmd.fillRect(bmd.rect, color);
 		}
+    }
+
+    public function getImageDisplay():ImageDisplay {
+        
+		if (image != null) return image;
+		
+		image = new ImageDisplay();
+		image.parent = cast this;
+		add(image);
+		
+		return image;
+    }
+
+    public function hasImageDisplay():Bool {
+        return image != null;
+    }
+
+    public function removeImageDisplay():Void {
+		if (image != null) remove(image, true);
     }
 
     public function getTextDisplay():TextDisplay {
@@ -38,7 +63,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
         
         tf = new TextDisplay();
         tf.parent = cast this;
-        add(tf);
+		add(tf);
 		
         return tf;
     }
@@ -55,38 +80,21 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
         return false;
     }
 
-    public function getImageDisplay():ImageDisplay {
-        
-		if (image != null) return image;
-		
-		image = new ImageDisplay();
-		// maybe add parent to image as well
-		add(image);
-		
-		return image;
-    }
-
-    public function hasImageDisplay():Bool {
-        return image != null;
-    }
-
-    public function removeImageDisplay():Void {
-		if (image != null) remove(image, true);
-    }
-
     private function handleAddComponent(child:Component):Component {
         add(child);
         return child;
     }
 
     private function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
+		
         if (members.indexOf(child) > -1) {
             remove(child, true);
         }
+		
         return child;
     }
 
-    private function handleSetComponentIndex(child:Component, index:Int) {
+    private function handleSetComponentIndex(child:Component, index:Int):Void {
         group.insert(index, child);
     }
 
@@ -103,15 +111,9 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		this.width = width;
 		this.height = height;
 		
-		var color = 0x0;
-		if (style.backgroundColor != null) color = Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor;
+		surface.makeGraphic(Std.int(width), Std.int(height), 0x0, true);
 		
-		if (surface == null) {
-			surface = new FlxSprite();
-			add(surface);
-		}
-		
-		surface.makeGraphic(Std.int(width), Std.int(height), color, true);
+		applyStyle(style);
     }
 
     private function handleClipRect(value:Rectangle):Void {
