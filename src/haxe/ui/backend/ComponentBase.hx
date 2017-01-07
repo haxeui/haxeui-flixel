@@ -33,13 +33,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		if (style.backgroundColor != null) {
 			var color = Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor;
-			var bmd = surface.pixels;
-			bmd.fillRect(bmd.rect, color);
+			surface.pixels.fillRect(surface.pixels.rect, color);
 		}
     }
 
     public function getImageDisplay():ImageDisplay {
-        
+		
 		if (image != null) return image;
 		
 		image = new ImageDisplay();

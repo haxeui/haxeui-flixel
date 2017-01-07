@@ -16,7 +16,7 @@ class AssetsBase {
 
     private function getImageInternal(resourceId:String, callback:ImageInfo->Void):Void {
 		
-		var graphic = FlxGraphic.fromAssetKey(Std.string(resourceId));
+		var graphic = FlxGraphic.fromAssetKey(resourceId);
 		
 		if (graphic != null) callback( { data : graphic, width : graphic.width, height : graphic.height } );
 		else callback(null);
