@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<vbox>
-	<button text="Button Button Buttons" style="color:black" />
-	<button text="Button Button Buttons" width="400" height="400" icon="assets/test.png" style="background-color:red;color:black" />
-</vbox>
