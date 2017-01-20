@@ -1,9 +1,12 @@
 package haxe.ui.backend;
 
+import flash.geom.Point;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEventManager;
+import flixel.math.FlxRect;
+import haxe.ui.assets.ImageInfo;
 import haxe.ui.core.Component;
 import haxe.ui.core.IComponentBase;
 import haxe.ui.core.ImageDisplay;
@@ -27,13 +30,20 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		add(surface);
     }
 	
-    private function applyStyle(style:Style) {
+    function applyStyle(style:Style) {
 		
 		if (surface.pixels == null) return; // nothing to draw onto yet
 		
+		// move to helper
 		if (style.backgroundColor != null) {
 			var color = Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor;
 			surface.pixels.fillRect(surface.pixels.rect, color);
+		}
+		
+		if (style.backgroundImage != null) {
+			Toolkit.assets.getImage(style.backgroundImage, function(ii:ImageInfo) {
+				surface.pixels.copyPixels(ii.data.bitmap, ii.data.bitmap.rect, new Point()); // mergeAlpha?
+			});
 		}
     }
 
@@ -79,12 +89,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
         return false;
     }
 
-    private function handleAddComponent(child:Component):Component {
+    function handleAddComponent(child:Component):Component {
         add(child);
         return child;
     }
 
-    private function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
+    function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
 		
         if (members.indexOf(child) > -1) {
             remove(child, true);
@@ -93,19 +103,19 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
         return child;
     }
 
-    private function handleSetComponentIndex(child:Component, index:Int):Void {
+    function handleSetComponentIndex(child:Component, index:Int):Void {
         group.insert(index, child);
     }
 
-    private function handleVisibility(show:Bool):Void {
+    function handleVisibility(show:Bool):Void {
         visible = show;
     }
 
-    private function handleCreate(native:Bool):Void {
-
+    function handleCreate(native:Bool):Void {
+		
     }
 
-    private function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
+    function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
 		
 		this.width = width;
 		this.height = height;
@@ -115,29 +125,33 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		applyStyle(style);
     }
 
-    private function handleClipRect(value:Rectangle):Void {
-
+    function handleClipRect(value:Rectangle):Void {
+		if (value == null) clipRect = null;
+		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
     }
 
-    private function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
+    function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
+		
 		x = left;
 		y = top;
+		
+		// applyStyle(style);
     }
 
-    private function handlePreReposition() {
-
+    function handlePreReposition() {
+		
     }
 
-    private function handlePostReposition() {
-
+    function handlePostReposition() {
+		
     }
 
-    private function handleReady() {
+    function handleReady() {
 		
     }
 	
-	private var __mouseRegistered:Bool = false;
-    private function mapEvent(type:String, listener:UIEvent->Void) {
+	var __mouseRegistered:Bool = false;
+    function mapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!__mouseRegistered) {
 			FlxMouseEventManager.add(this);
@@ -158,7 +172,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		}
     }
 
-    private function unmapEvent(type:String, listener:UIEvent->Void) {
+    function unmapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!__mouseRegistered) {
 			return;
@@ -178,7 +192,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		}
     }
 	
-	private function __onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentBase):Void {
+	function __onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentBase):Void {
 		
 		var me = new MouseEvent(type);
 		me.target = cast target;
@@ -189,7 +203,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		listener(me);
 	}
 	
-	private var __ready:Bool = false;
+	var __ready:Bool = false;
 	override public function draw():Void {
 		
 		if (!__ready) {
