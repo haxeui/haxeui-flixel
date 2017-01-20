@@ -1,4 +1,3 @@
 package haxe.ui.backend;
 
-import flixel.graphics.FlxGraphic;
-typedef ImageData = FlxGraphic;
+typedef ImageData = flixel.graphics.FlxGraphic;

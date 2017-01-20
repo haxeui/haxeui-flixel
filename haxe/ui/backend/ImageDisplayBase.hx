@@ -1,8 +1,10 @@
 package haxe.ui.backend;
 
 import flixel.FlxSprite;
+import flixel.math.FlxRect;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.core.Component;
+import haxe.ui.util.Rectangle;
 
 class ImageDisplayBase extends FlxSprite {
 	
@@ -15,57 +17,55 @@ class ImageDisplayBase extends FlxSprite {
     }
 
     public var left(get, set):Float;
-    private function get_left():Float {
-        return x;
-    }
-    private function set_left(value:Float):Float {
+    inline function get_left():Float { return x; }
+    inline function set_left(value:Float):Float {
         x = parent.screenLeft + value;
         return value;
     }
 
     public var top(get, set):Float;
-    private function get_top():Float {
-        return y;
-    }
-    private function set_top(value:Float):Float {
-        y = parent.screenTop + value;
+    inline function get_top():Float { return y; }
+    inline function set_top(value:Float):Float {
+		y = parent.screenTop + value;
         return value;
     }
 
     public var imageWidth(get, set):Float;
-    private function set_imageWidth(value:Float):Float {
+    inline function get_imageWidth():Float { return frameWidth; }
+    inline function set_imageWidth(value:Float):Float {
         //frameWidth = Std.int(value);
         return value;
     }
 
-    private function get_imageWidth():Float {
-        return frameWidth;
-    }
 
     public var imageHeight(get, set):Float;
-    private function set_imageHeight(value:Float):Float {
+    inline function get_imageHeight():Float { return frameHeight; }
+    inline function set_imageHeight(value:Float):Float {
         //frameHeight = Std.int(value);
         return value;
     }
-
-    private function get_imageHeight():Float {
-        return frameHeight;
-    }
-
-    private var _imageInfo:ImageInfo;
-    public var imageInfo(get, set):ImageInfo;
-    private function get_imageInfo():ImageInfo {
-        return _imageInfo;
-    }
-    private function set_imageInfo(value:ImageInfo):ImageInfo {
+	
+    public var imageInfo(default, set):ImageInfo;
+    function set_imageInfo(value:ImageInfo):ImageInfo {
         
-		_imageInfo = value;
+		imageInfo = value;
         aspectRatio = value.width / value.height;
 		
 		loadGraphic(value.data);
 		
         return value;
     }
+	
+	public var imageClipRect(default, set):Rectangle;
+	function set_imageClipRect(value:Rectangle):Rectangle {
+		
+		imageClipRect = value;
+		
+		if (value == null) clipRect = null;
+		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
+		
+		return value;
+	}
 
     public function dispose():Void {
         // destroy();

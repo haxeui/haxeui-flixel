@@ -7,9 +7,9 @@ import haxe.ui.core.Component;
 import haxe.ui.core.UIEvent;
 
 class ScreenBase {
-
+	
     public function new() {
-
+		
     }
 
     public var options:Dynamic;
@@ -31,7 +31,7 @@ class ScreenBase {
         return 72.0;
     }
 
-    private var _topLevelComponents:Array<Component> = new Array<Component>();
+    var _topLevelComponents:Array<Component> = new Array<Component>();
     public function addComponent(component:Component) {
         _topLevelComponents.push(component);
         container.add(component);
@@ -43,23 +43,23 @@ class ScreenBase {
         container.remove(component, true);
     }
 
-    private function handleSetComponentIndex(child:Component, index:Int) {
+    function handleSetComponentIndex(child:Component, index:Int) {
         container.group.insert(index, child);
     }
 
-    private var container(default, null):FlxSpriteGroup;
+    var container(default, null):FlxSpriteGroup;
 
-    private function mapEvent(type:String, listener:UIEvent->Void) {
-
+    function mapEvent(type:String, listener:UIEvent->Void) {
+		
     }
-
-    private function unmapEvent(type:String, listener:UIEvent->Void) {
-
+	
+    function unmapEvent(type:String, listener:UIEvent->Void) {
+		
     }
-
-    private function supportsEvent(type:String):Bool {
+	
+    function supportsEvent(type:String):Bool {
         return false;
-    }
+	}
 
     public function messageDialog(message:String, title:String = null, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
         return null;
