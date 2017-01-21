@@ -1,6 +1,7 @@
 package haxe.ui.backend.flixel;
-import flash.display.BitmapData;
+import flash.geom.Matrix;
 import flash.geom.Point;
+import flash.geom.Rectangle;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
@@ -32,21 +33,62 @@ class FlxStyleHelper{
 			else FlxSpriteUtil.drawRoundRect(sprite, 0, 0, sprite.frameWidth, sprite.frameHeight, radius, radius, color);
 		}
 		
-		// border
-		
 		if (style.backgroundImage != null) {
 			Toolkit.assets.getImage(style.backgroundImage, function(ii:ImageInfo) {
 				if (ii != null && ii.data != null) drawBG(sprite, ii.data, style);
 			});
 		}
+		
+		// border
 	}
 	
 	static function drawBG(sprite:FlxSprite, data:ImageData, style:Style):Void {
 		
-		// clip
+		var bmd = data.bitmap;
+		var rect = bmd.rect;
 		
 		// 9slice
 		
-		// else
+		if (style.backgroundImageClipTop != null && style.backgroundImageClipBottom != null && style.backgroundImageClipLeft != null && style.backgroundImageClipRight != null) {
+			rect = new Rectangle(style.backgroundImageClipLeft, style.backgroundImageClipTop, style.backgroundImageClipRight - style.backgroundImageClipLeft, style.backgroundImageClipBottom - style.backgroundImageClipTop);
+		}
+		
+		var matrix:Matrix = null;
+		
+		if (style.backgroundImageRepeat == "stretch") {
+			matrix = new Matrix();
+			matrix.scale(sprite.frameWidth / rect.width, sprite.frameHeight / rect.height);
+		}
+		
+		if (matrix == null) {
+			
+			var blitPt = new Point();
+			
+			if (style.backgroundImageRepeat == null) {
+				sprite.pixels.copyPixels(bmd, rect, blitPt);
+			}
+			
+			else if (style.backgroundImageRepeat == "repeat") {
+				
+				var repX = Math.ceil(sprite.frameWidth / rect.width);
+				var repY = Math.ceil(sprite.frameHeight / rect.height);
+				
+				for (i in 0...repX) {
+					
+					blitPt.x = i * rect.width;
+					
+					for (j in 0...repY) {
+						
+						blitPt.y = j * rect.height;
+						
+						sprite.pixels.copyPixels(bmd, rect, blitPt);
+					}
+				}
+			}
+		}
+		
+		else {
+			sprite.pixels.draw(bmd, matrix, null, null, rect == bmd.rect ? null : rect);
+		}
 	}
 }
