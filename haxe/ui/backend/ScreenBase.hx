@@ -5,6 +5,7 @@ import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.DialogButton;
 import haxe.ui.core.Component;
 import haxe.ui.core.UIEvent;
+import lime.system.System;
 
 class ScreenBase {
 	
@@ -28,7 +29,7 @@ class ScreenBase {
 
     public var dpi(get, null):Float;
     public function get_dpi():Float {
-        return 72.0;
+        return System.getDisplay(0).dpi;
     }
 
     var _topLevelComponents:Array<Component> = new Array<Component>();
