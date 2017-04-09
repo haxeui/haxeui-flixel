@@ -7,6 +7,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxRect;
 import haxe.ui.assets.ImageInfo;
+import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.core.Component;
 import haxe.ui.core.IComponentBase;
 import haxe.ui.core.ImageDisplay;
@@ -33,20 +34,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 	
     function applyStyle(style:Style) {
-		
-		if (surface.pixels == null) return; // nothing to draw onto yet
-		
-		// move to helper
-		if (style.backgroundColor != null) {
-			var color = Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor;
-			surface.pixels.fillRect(surface.pixels.rect, color);
-		}
-		
-		if (style.backgroundImage != null) {
-			Toolkit.assets.getImage(style.backgroundImage, function(ii:ImageInfo) {
-				surface.pixels.copyPixels(ii.data.bitmap, ii.data.bitmap.rect, new Point()); // mergeAlpha?
-			});
-		}
+		FlxStyleHelper.applyStyle(surface, style);
     }
 
     public function getImageDisplay():ImageDisplay {
