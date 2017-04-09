@@ -7,6 +7,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxRect;
 import haxe.ui.assets.ImageInfo;
+import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.core.Component;
 import haxe.ui.core.IComponentBase;
 import haxe.ui.core.ImageDisplay;
@@ -23,6 +24,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	var image:ImageDisplay; // where images are displayed
     var tf:TextDisplay; // text
 	
+	var asComponent:Component = cast this;
+	
     public function new() {
 		super();
 		
@@ -31,20 +34,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 	
     function applyStyle(style:Style) {
-		
-		if (surface.pixels == null) return; // nothing to draw onto yet
-		
-		// move to helper
-		if (style.backgroundColor != null) {
-			var color = Std.int((style.backgroundOpacity == null ? 1 : style.backgroundOpacity) * 0xFF) << 24 | style.backgroundColor;
-			surface.pixels.fillRect(surface.pixels.rect, color);
-		}
-		
-		if (style.backgroundImage != null) {
-			Toolkit.assets.getImage(style.backgroundImage, function(ii:ImageInfo) {
-				surface.pixels.copyPixels(ii.data.bitmap, ii.data.bitmap.rect, new Point()); // mergeAlpha?
-			});
-		}
+		FlxStyleHelper.applyStyle(surface, style);
     }
 
     public function getImageDisplay():ImageDisplay {
@@ -52,7 +42,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		if (image != null) return image;
 		
 		image = new ImageDisplay();
-		image.parent = cast this;
+		image.parent = asComponent;
 		add(image);
 		
 		return image;
@@ -71,7 +61,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
         if (tf != null) return tf; 
         
         tf = new TextDisplay();
-        tf.parent = cast this;
+        tf.parent = asComponent;
 		add(tf);
 		
         return tf;
@@ -104,7 +94,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     function handleSetComponentIndex(child:Component, index:Int):Void {
-        group.insert(index, child);
+        insert(index, child);
     }
 
     function handleVisibility(show:Bool):Void {
@@ -117,23 +107,17 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
     function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
 		
-		this.width = width;
-		this.height = height;
-		
 		surface.makeGraphic(Std.int(width), Std.int(height), 0x0, true);
 		
 		applyStyle(style);
     }
 
     function handleClipRect(value:Rectangle):Void {
-		if (value == null) clipRect = null;
-		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
+		//if (value == null) clipRect = null;
+		//else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
     }
 
     function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
-		
-		x = left;
-		y = top;
 		
 		// applyStyle(style);
     }
@@ -208,7 +192,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		if (!__ready) {
 			__ready = true;
-			cast(this, Component).ready();
+			asComponent.ready();
+		}
+		
+		if (dirty) {
+			x = asComponent.screenLeft;
+			y = asComponent.screenTop;
 		}
 		
 		super.draw();

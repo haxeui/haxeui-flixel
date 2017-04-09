@@ -2,6 +2,7 @@ package haxe.ui.backend;
 
 class TextInputBase extends TextDisplayBase {
 	
+	public var hscrollPos:Float;
     public var vscrollPos:Float;
     public var multiline:Bool;
 	
