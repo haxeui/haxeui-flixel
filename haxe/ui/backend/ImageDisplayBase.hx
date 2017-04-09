@@ -16,19 +16,8 @@ class ImageDisplayBase extends FlxSprite {
         super();
     }
 
-    public var left(get, set):Float;
-    inline function get_left():Float { return x; }
-    inline function set_left(value:Float):Float {
-        x = parent.screenLeft + value;
-        return value;
-    }
-
-    public var top(get, set):Float;
-    inline function get_top():Float { return y; }
-    inline function set_top(value:Float):Float {
-		y = parent.screenTop + value;
-        return value;
-    }
+    public var left:Float;
+    public var top:Float;
 
     public var imageWidth(get, set):Float;
     inline function get_imageWidth():Float { return frameWidth; }
@@ -70,4 +59,14 @@ class ImageDisplayBase extends FlxSprite {
     public function dispose():Void {
         // destroy();
     }
+	
+	override public function draw():Void {
+		
+		if (dirty) {
+			x = left = parent.screenLeft;
+			y = top = parent.screenTop;
+		}
+		
+		super.draw();
+	}
 }

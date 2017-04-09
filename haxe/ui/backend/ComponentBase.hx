@@ -23,6 +23,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	var image:ImageDisplay; // where images are displayed
     var tf:TextDisplay; // text
 	
+	var asComponent:Component = cast this;
+	
     public function new() {
 		super();
 		
@@ -52,7 +54,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		if (image != null) return image;
 		
 		image = new ImageDisplay();
-		image.parent = cast this;
+		image.parent = asComponent;
 		add(image);
 		
 		return image;
@@ -71,7 +73,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
         if (tf != null) return tf; 
         
         tf = new TextDisplay();
-        tf.parent = cast this;
+        tf.parent = asComponent;
 		add(tf);
 		
         return tf;
@@ -104,7 +106,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     }
 
     function handleSetComponentIndex(child:Component, index:Int):Void {
-        group.insert(index, child);
+        insert(index, child);
     }
 
     function handleVisibility(show:Bool):Void {
@@ -117,23 +119,17 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
     function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
 		
-		this.width = width;
-		this.height = height;
-		
 		surface.makeGraphic(Std.int(width), Std.int(height), 0x0, true);
 		
 		applyStyle(style);
     }
 
     function handleClipRect(value:Rectangle):Void {
-		if (value == null) clipRect = null;
-		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
+		//if (value == null) clipRect = null;
+		//else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
     }
 
     function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
-		
-		x = left;
-		y = top;
 		
 		// applyStyle(style);
     }
@@ -208,7 +204,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		if (!__ready) {
 			__ready = true;
-			cast(this, Component).ready();
+			asComponent.ready();
+		}
+		
+		if (dirty) {
+			x = asComponent.screenLeft;
+			y = asComponent.screenTop;
 		}
 		
 		super.draw();
