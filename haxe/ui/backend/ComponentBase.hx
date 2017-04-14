@@ -109,12 +109,23 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		surface.makeGraphic(Std.int(width), Std.int(height), 0x0, true);
 		
+		if (clipRect != null) surface.clipRect = clipRect;
+		
 		applyStyle(style);
     }
 
     function handleClipRect(value:Rectangle):Void {
-		//if (value == null) clipRect = null;
-		//else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
+		if (value == null) clipRect = null;
+		
+		else {
+			
+			if (dirty) {
+				x = asComponent.screenLeft;
+				y = asComponent.screenTop;
+			}
+			
+			clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
+		}
     }
 
     function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {

@@ -41,8 +41,23 @@ class TextDisplayBase extends FlxText {
 	
     public var textAlign:String;
 	
-	override function set_clipRect(value:FlxRect):FlxRect {
-		return super.set_clipRect(value);
+	override function set_text(Text:String):String {
+		
+		var tempRect = clipRect;
+		
+		super.set_text(Text);
+		
+		clipRect = tempRect;
+		
+		return Text;
+	}
+	
+	override function set_clipRect(rect:FlxRect):FlxRect {
+		
+		if (rect != null) 
+			regenGraphic();
+		
+		return super.set_clipRect(rect);
 	}
 	
 	override public function draw():Void {
