@@ -1,12 +1,10 @@
 package haxe.ui.backend;
 
-import flash.geom.Point;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxRect;
-import haxe.ui.assets.ImageInfo;
 import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.core.Component;
 import haxe.ui.core.IComponentBase;
@@ -116,16 +114,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
     function handleClipRect(value:Rectangle):Void {
 		if (value == null) clipRect = null;
-		
-		else {
-			
-			if (dirty) {
-				x = asComponent.screenLeft;
-				y = asComponent.screenTop;
-			}
-			
-			clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
-		}
+		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
     }
 
     function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
