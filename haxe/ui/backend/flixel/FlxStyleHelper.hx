@@ -44,7 +44,7 @@ class FlxStyleHelper{
 	
 	static function drawBG(sprite:FlxSprite, data:ImageData, style:Style):Void {
 		
-		var bmd = data.bitmap;
+		var bmd = data.parent.bitmap;
 		var rect = bmd.rect;
 		
 		// 9slice

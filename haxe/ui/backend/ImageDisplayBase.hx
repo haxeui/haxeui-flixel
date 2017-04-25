@@ -40,7 +40,7 @@ class ImageDisplayBase extends FlxSprite {
 		imageInfo = value;
         aspectRatio = value.width / value.height;
 		
-		loadGraphic(value.data);
+		frame = value.data;
 		
         return value;
     }
