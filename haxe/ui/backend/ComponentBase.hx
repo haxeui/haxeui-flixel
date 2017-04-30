@@ -138,7 +138,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     function mapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!__mouseRegistered) {
-			FlxMouseEventManager.add(this);
+			FlxMouseEventManager.add(this, null, null, null, null, true);
 			__mouseRegistered = true;
 		}
 		
