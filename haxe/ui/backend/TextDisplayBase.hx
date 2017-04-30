@@ -3,6 +3,7 @@ package haxe.ui.backend;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import haxe.ui.core.Component;
+import haxe.ui.styles.Style;
 
 class TextDisplayBase extends FlxText {
 	
@@ -21,6 +22,7 @@ class TextDisplayBase extends FlxText {
     public var textHeight(get, null):Float;
     inline function get_textHeight():Float { return textField.textHeight + 4; }
 
+	/*
     public var fontName(get, set):String;
     inline function get_fontName():String { return embedded ? font : systemFont; }
     inline function set_fontName(value:String):String {
@@ -40,6 +42,11 @@ class TextDisplayBase extends FlxText {
     inline function set_fontSize(value:Null<Float>):Null<Float> { return size = Std.int(value); }
 	
     public var textAlign:String;
+	*/
+	
+	public function applyStyle(style:Style):Void {
+		
+	}
 	
 	override function set_text(Text:String):String {
 		
