@@ -33,9 +33,7 @@ class TextDisplayBase extends FlxText {
         return value;
     }
 	
-	inline function isEmbeddedFont(name:String):Bool {
-        return (name != "_sans" && name != "_serif" && name != "_typewriter");
-    }
+	
 
     public var fontSize(get, set):Null<Float>;
     inline function get_fontSize():Null<Float> { return size; }
@@ -46,6 +44,25 @@ class TextDisplayBase extends FlxText {
 	
 	public function applyStyle(style:Style):Void {
 		
+		// color, bold, italics, underline, etc
+		
+		if (style.width != null) {
+			autoSize = false;
+			fieldWidth = style.width;
+		}
+		
+		if (style.fontName != null) {
+			if (isEmbeddedFont(style.fontName)) font = style.fontName;
+			else systemFont = style.fontName;
+		}
+		
+		if (style.fontSize != null) {
+			size = Std.int(style.fontSize);
+		}
+		
+		if (style.textAlign != null) {
+			alignment = style.textAlign;
+		}
 	}
 	
 	override function set_text(Text:String):String {
@@ -76,4 +93,8 @@ class TextDisplayBase extends FlxText {
 		
 		super.draw();
 	}
+	
+	inline function isEmbeddedFont(name:String):Bool {
+        return name != "_sans" && name != "_serif" && name != "_typewriter";
+    }
 }
