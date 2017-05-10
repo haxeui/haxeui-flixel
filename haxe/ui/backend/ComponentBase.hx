@@ -28,6 +28,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		super();
 		
 		surface = new FlxSprite();
+		surface.makeGraphic(1, 1, 0x0, true);
 		add(surface);
     }
 	
