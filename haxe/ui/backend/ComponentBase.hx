@@ -1,12 +1,10 @@
 package haxe.ui.backend;
 
-import flash.geom.Point;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxRect;
-import haxe.ui.assets.ImageInfo;
 import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.core.Component;
 import haxe.ui.core.IComponentBase;
@@ -30,6 +28,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		super();
 		
 		surface = new FlxSprite();
+		surface.makeGraphic(1, 1, 0x0, true);
 		add(surface);
     }
 	
@@ -109,17 +108,19 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		surface.makeGraphic(Std.int(width), Std.int(height), 0x0, true);
 		
+		if (clipRect != null) surface.clipRect = clipRect;
+		
 		applyStyle(style);
     }
 
     function handleClipRect(value:Rectangle):Void {
-		//if (value == null) clipRect = null;
-		//else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
+		if (value == null) clipRect = null;
+		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
     }
 
     function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
-		
-		// applyStyle(style);
+		asComponent.left = left;
+		asComponent.top = top;
     }
 
     function handlePreReposition() {
@@ -138,7 +139,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
     function mapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!__mouseRegistered) {
-			FlxMouseEventManager.add(this);
+			FlxMouseEventManager.add(this, null, null, null, null, true);
 			__mouseRegistered = true;
 		}
 		

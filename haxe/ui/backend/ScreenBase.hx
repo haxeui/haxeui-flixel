@@ -48,7 +48,16 @@ class ScreenBase {
         container.group.insert(index, child);
     }
 
-    var container(default, null):FlxSpriteGroup;
+    var container(get, null):FlxSpriteGroup;
+	
+	function get_container():FlxSpriteGroup {
+		
+		if (options != null && options.container != null) {
+			return options.container;
+		}
+		
+		throw "Please set a FlxSpriteGroup as the container when initializing the Toolkit: Toolkit.init( { container : fsg } );";
+	}
 
     function mapEvent(type:String, listener:UIEvent->Void) {
 		

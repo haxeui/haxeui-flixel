@@ -3,6 +3,7 @@ package haxe.ui.backend;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import haxe.ui.core.Component;
+import haxe.ui.styles.Style;
 
 class TextDisplayBase extends FlxText {
 	
@@ -21,6 +22,7 @@ class TextDisplayBase extends FlxText {
     public var textHeight(get, null):Float;
     inline function get_textHeight():Float { return textField.textHeight + 4; }
 
+	/*
     public var fontName(get, set):String;
     inline function get_fontName():String { return embedded ? font : systemFont; }
     inline function set_fontName(value:String):String {
@@ -31,18 +33,55 @@ class TextDisplayBase extends FlxText {
         return value;
     }
 	
-	inline function isEmbeddedFont(name:String):Bool {
-        return (name != "_sans" && name != "_serif" && name != "_typewriter");
-    }
+	
 
     public var fontSize(get, set):Null<Float>;
     inline function get_fontSize():Null<Float> { return size; }
     inline function set_fontSize(value:Null<Float>):Null<Float> { return size = Std.int(value); }
 	
     public var textAlign:String;
+	*/
 	
-	override function set_clipRect(value:FlxRect):FlxRect {
-		return super.set_clipRect(value);
+	public function applyStyle(style:Style):Void {
+		
+		// color, bold, italics, underline, etc
+		
+		if (style.width != null) {
+			autoSize = false;
+			fieldWidth = style.width;
+		}
+		
+		if (style.fontName != null) {
+			if (isEmbeddedFont(style.fontName)) font = style.fontName;
+			else systemFont = style.fontName;
+		}
+		
+		if (style.fontSize != null) {
+			size = Std.int(style.fontSize);
+		}
+		
+		if (style.textAlign != null) {
+			alignment = style.textAlign;
+		}
+	}
+	
+	override function set_text(Text:String):String {
+		
+		var tempRect = clipRect;
+		
+		super.set_text(Text);
+		
+		clipRect = tempRect;
+		
+		return Text;
+	}
+	
+	override function set_clipRect(rect:FlxRect):FlxRect {
+		
+		if (rect != null) 
+			regenGraphic();
+		
+		return super.set_clipRect(rect);
 	}
 	
 	override public function draw():Void {
@@ -54,4 +93,8 @@ class TextDisplayBase extends FlxText {
 		
 		super.draw();
 	}
+	
+	inline function isEmbeddedFont(name:String):Bool {
+        return name != "_sans" && name != "_serif" && name != "_typewriter";
+    }
 }
