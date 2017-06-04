@@ -20,23 +20,23 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
 	var surface:FlxSprite; // drawing surface
 	var image:ImageDisplay; // where images are displayed
-    var tf:TextDisplay; // text
+	var tf:TextDisplay; // text
 	
 	var asComponent:Component = cast this;
 	
-    public function new() {
+	public function new() {
 		super();
 		
 		surface = new FlxSprite();
 		surface.makeGraphic(1, 1, 0x0, true);
 		add(surface);
-    }
+	}
 	
-    function applyStyle(style:Style) {
+	function applyStyle(style:Style) {
 		FlxStyleHelper.applyStyle(surface, style);
-    }
+	}
 
-    public function getImageDisplay():ImageDisplay {
+	public function getImageDisplay():ImageDisplay {
 		
 		if (image != null) return image;
 		
@@ -45,98 +45,98 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		add(image);
 		
 		return image;
-    }
+	}
 
-    public function hasImageDisplay():Bool {
-        return image != null;
-    }
+	public function hasImageDisplay():Bool {
+		return image != null;
+	}
 
-    public function removeImageDisplay():Void {
+	public function removeImageDisplay():Void {
 		if (image != null) remove(image, true);
-    }
+	}
 
-    public function getTextDisplay():TextDisplay {
+	public function getTextDisplay():TextDisplay {
 		
-        if (tf != null) return tf; 
-        
-        tf = new TextDisplay();
-        tf.parent = asComponent;
+		if (tf != null) return tf; 
+			
+		tf = new TextDisplay();
+		tf.parent = asComponent;
 		add(tf);
 		
-        return tf;
-    }
+		return tf;
+	}
 
-    public function hasTextDisplay():Bool {
-        return tf != null;
-    }
+	public function hasTextDisplay():Bool {
+		return tf != null;
+	}
 
-    public function getTextInput():TextInput {
-        return null;
-    }
+	public function getTextInput():TextInput {
+		return null;
+	}
 
-    public function hasTextInput():Bool {
-        return false;
-    }
+	public function hasTextInput():Bool {
+		return false;
+	}
 
-    function handleAddComponent(child:Component):Component {
-        add(child);
-        return child;
-    }
+	function handleAddComponent(child:Component):Component {
+		add(child);
+		return child;
+	}
 
-    function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
+	function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
 		
-        if (members.indexOf(child) > -1) {
-            remove(child, true);
-        }
+		if (members.indexOf(child) > -1) {
+			remove(child, true);
+		}
 		
-        return child;
-    }
+		return child;
+	}
 
-    function handleSetComponentIndex(child:Component, index:Int):Void {
-        insert(index, child);
-    }
+	function handleSetComponentIndex(child:Component, index:Int):Void {
+		insert(index, child);
+	}
 
-    function handleVisibility(show:Bool):Void {
-        visible = show;
-    }
+	function handleVisibility(show:Bool):Void {
+		visible = show;
+	}
 
-    function handleCreate(native:Bool):Void {
+	function handleCreate(native:Bool):Void {
 		
-    }
+	}
 
-    function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
+	function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
 		
 		surface.makeGraphic(Std.int(width), Std.int(height), 0x0, true);
 		
 		if (clipRect != null) surface.clipRect = clipRect;
 		
 		applyStyle(style);
-    }
+	}
 
-    function handleClipRect(value:Rectangle):Void {
+	function handleClipRect(value:Rectangle):Void {
 		if (value == null) clipRect = null;
 		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
-    }
+	}
 
-    function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
+	function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
 		asComponent.left = left;
 		asComponent.top = top;
-    }
+	}
 
-    function handlePreReposition() {
+	function handlePreReposition() {
 		
-    }
+	}
 
-    function handlePostReposition() {
+	function handlePostReposition() {
 		
-    }
+	}
 
-    function handleReady() {
+	function handleReady() {
 		
-    }
+	}
 	
 	var __mouseRegistered:Bool = false;
-    function mapEvent(type:String, listener:UIEvent->Void) {
+	function mapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!__mouseRegistered) {
 			FlxMouseEventManager.add(this, null, null, null, null, true);
@@ -155,9 +155,9 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 			// case MouseEvent.CLICK:
 				// 
 		}
-    }
+	}
 
-    function unmapEvent(type:String, listener:UIEvent->Void) {
+	function unmapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!__mouseRegistered) {
 			return;
@@ -175,7 +175,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 			// case MouseEvent.CLICK:
 				// 
 		}
-    }
+	}
 	
 	function __onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentBase):Void {
 		

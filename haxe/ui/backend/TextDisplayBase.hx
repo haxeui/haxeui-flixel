@@ -7,39 +7,39 @@ import haxe.ui.styles.Style;
 
 class TextDisplayBase extends FlxText {
 	
-    public var parent:Component;
-    
-    public function new() {
-        super();
-    }
+	public var parent:Component;
+	
+	public function new() {
+		super();
+	}
 
-    public var left:Float;
-    public var top:Float;
+	public var left:Float;
+	public var top:Float;
 
-    public var textWidth(get, null):Float;
-    inline function get_textWidth():Float { return textField.textWidth + 4; }
+	public var textWidth(get, null):Float;
+	inline function get_textWidth():Float { return textField.textWidth + 4; }
 
-    public var textHeight(get, null):Float;
-    inline function get_textHeight():Float { return textField.textHeight + 4; }
+	public var textHeight(get, null):Float;
+	inline function get_textHeight():Float { return textField.textHeight + 4; }
 
 	/*
-    public var fontName(get, set):String;
-    inline function get_fontName():String { return embedded ? font : systemFont; }
-    inline function set_fontName(value:String):String {
+	public var fontName(get, set):String;
+	inline function get_fontName():String { return embedded ? font : systemFont; }
+	inline function set_fontName(value:String):String {
 		
-        if (isEmbeddedFont(value)) font = value;
+		if (isEmbeddedFont(value)) font = value;
 		else systemFont = value;
 		
-        return value;
-    }
+		return value;
+	}
 	
 	
 
-    public var fontSize(get, set):Null<Float>;
-    inline function get_fontSize():Null<Float> { return size; }
-    inline function set_fontSize(value:Null<Float>):Null<Float> { return size = Std.int(value); }
+	public var fontSize(get, set):Null<Float>;
+	inline function get_fontSize():Null<Float> { return size; }
+	inline function set_fontSize(value:Null<Float>):Null<Float> { return size = Std.int(value); }
 	
-    public var textAlign:String;
+	public var textAlign:String;
 	*/
 	
 	public function applyStyle(style:Style):Void {
@@ -95,6 +95,6 @@ class TextDisplayBase extends FlxText {
 	}
 	
 	inline function isEmbeddedFont(name:String):Bool {
-        return name != "_sans" && name != "_serif" && name != "_typewriter";
-    }
+		return name != "_sans" && name != "_serif" && name != "_typewriter";
+	}
 }

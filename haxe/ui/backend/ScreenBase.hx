@@ -9,46 +9,46 @@ import lime.system.System;
 
 class ScreenBase {
 	
-    public function new() {
+	public function new() {
 		
-    }
+	}
 
-    public var options:Dynamic;
+	public var options:Dynamic;
 
-    public var width(get, null):Float;
-    public function get_width():Float {
-        return container.width;
-    }
+	public var width(get, null):Float;
+	public function get_width():Float {
+		return container.width;
+	}
 
-    public var height(get, null):Float;
-    public function get_height() {
-        return container.width;
-    }
+	public var height(get, null):Float;
+	public function get_height() {
+		return container.width;
+	}
 
-    public var focus:Component;
+	public var focus:Component;
 
-    public var dpi(get, null):Float;
-    public function get_dpi():Float {
-        return System.getDisplay(0).dpi;
-    }
+	public var dpi(get, null):Float;
+	public function get_dpi():Float {
+		return System.getDisplay(0).dpi;
+	}
 
-    var _topLevelComponents:Array<Component> = new Array<Component>();
-    public function addComponent(component:Component) {
-        _topLevelComponents.push(component);
-        container.add(component);
-        component.ready();
-    }
+	var _topLevelComponents:Array<Component> = new Array<Component>();
+	public function addComponent(component:Component) {
+		_topLevelComponents.push(component);
+		container.add(component);
+		component.ready();
+	}
 
-    public function removeComponent(component:Component) {
-        _topLevelComponents.remove(component);
-        container.remove(component, true);
-    }
+	public function removeComponent(component:Component) {
+		_topLevelComponents.remove(component);
+		container.remove(component, true);
+	}
 
-    function handleSetComponentIndex(child:Component, index:Int) {
-        container.group.insert(index, child);
-    }
+	function handleSetComponentIndex(child:Component, index:Int) {
+		container.group.insert(index, child);
+	}
 
-    var container(get, null):FlxSpriteGroup;
+	var container(get, null):FlxSpriteGroup;
 	
 	function get_container():FlxSpriteGroup {
 		
@@ -59,27 +59,27 @@ class ScreenBase {
 		throw "Please set a FlxSpriteGroup as the container when initializing the Toolkit: Toolkit.init( { container : fsg } );";
 	}
 
-    function mapEvent(type:String, listener:UIEvent->Void) {
+	function mapEvent(type:String, listener:UIEvent->Void) {
 		
-    }
+	}
 	
-    function unmapEvent(type:String, listener:UIEvent->Void) {
+	function unmapEvent(type:String, listener:UIEvent->Void) {
 		
-    }
+	}
 	
-    function supportsEvent(type:String):Bool {
-        return false;
+	function supportsEvent(type:String):Bool {
+		return false;
 	}
 
-    public function messageDialog(message:String, title:String = null, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
-        return null;
-    }
+	public function messageDialog(message:String, title:String = null, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
+		return null;
+	}
 
-    public function showDialog(content:Component, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
-        return null;
-    }
+	public function showDialog(content:Component, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
+		return null;
+	}
 
-    public function hideDialog(dialog:Dialog):Bool {
-        return false;
-    }
+	public function hideDialog(dialog:Dialog):Bool {
+		return false;
+	}
 }
