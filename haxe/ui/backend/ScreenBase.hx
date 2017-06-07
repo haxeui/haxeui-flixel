@@ -5,12 +5,13 @@ import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.DialogButton;
 import haxe.ui.core.Component;
 import haxe.ui.core.UIEvent;
+import openfl.Lib;
 import lime.system.System;
 
 class ScreenBase {
-	
+
     public function new() {
-		
+
     }
 
     public var options:Dynamic;
@@ -32,6 +33,15 @@ class ScreenBase {
         return System.getDisplay(0).dpi;
     }
 
+    public var title(get,set):String;
+    private inline function set_title(s:String):String {
+        Lib.current.stage.window.title = s;
+        return s;
+    }
+    private inline function get_title():String {
+        return Lib.current.stage.window.title;
+    }
+
     var _topLevelComponents:Array<Component> = new Array<Component>();
     public function addComponent(component:Component) {
         _topLevelComponents.push(component);
@@ -49,24 +59,24 @@ class ScreenBase {
     }
 
     var container(get, null):FlxSpriteGroup;
-	
+
 	function get_container():FlxSpriteGroup {
-		
+
 		if (options != null && options.container != null) {
 			return options.container;
 		}
-		
+
 		throw "Please set a FlxSpriteGroup as the container when initializing the Toolkit: Toolkit.init( { container : fsg } );";
 	}
 
     function mapEvent(type:String, listener:UIEvent->Void) {
-		
+
     }
-	
+
     function unmapEvent(type:String, listener:UIEvent->Void) {
-		
+
     }
-	
+
     function supportsEvent(type:String):Bool {
         return false;
 	}
