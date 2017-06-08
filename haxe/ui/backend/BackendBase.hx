@@ -6,9 +6,9 @@ package haxe.ui.backend;
  */
 class BackendBase{
 	
-    public static var id:String = "flixel";
+	public static var id:String = "flixel";
 	
-    public function new() {
+	public function new() {
 		
-    }
+	}
 }

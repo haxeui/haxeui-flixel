@@ -22,11 +22,11 @@ class AssetsBase {
 		return null;
 	}
 	
-    public function new() {
+	public function new() {
 		
-    }
+	}
 	
-    function getImageInternal(resourceId:String, callback:ImageInfo->Void):Void {
+	function getImageInternal(resourceId:String, callback:ImageInfo->Void):Void {
 		
 		var graphic:FlxGraphic = null;
 		var frame:FlxFrame = null;
@@ -46,40 +46,40 @@ class AssetsBase {
 		
 		if (frame != null) callback( { data : frame, width : Std.int(frame.sourceSize.x), height : Std.int(frame.sourceSize.y) } );
 		else callback(null);
-    }
+	}
 
-    function getImageFromHaxeResource(resourceId:String, callback:String->ImageInfo->Void):Void {
-        
-		var bytes = Resource.getBytes(resourceId);
-        var ba:ByteArray = ByteConverter.fromHaxeBytes(bytes);
-		
-        var loader:Loader = new Loader();
-		
-        loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e) {
+	function getImageFromHaxeResource(resourceId:String, callback:String->ImageInfo->Void):Void {
 			
-            if (loader.content != null) {
-                var frame = FlxImageFrame.fromGraphic(FlxGraphic.fromBitmapData(cast(loader.content, Bitmap).bitmapData)).frame;
-                callback(resourceId, { data : frame, width : Std.int(frame.sourceSize.x), height : Std.int(frame.sourceSize.y) } );
-            }
-        });
+		var bytes = Resource.getBytes(resourceId);
+		var ba:ByteArray = ByteConverter.fromHaxeBytes(bytes);
 		
-        loader.loadBytes(ba);
-    }
+		var loader:Loader = new Loader();
+		
+		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e) {
+			
+			if (loader.content != null) {
+				var frame = FlxImageFrame.fromGraphic(FlxGraphic.fromBitmapData(cast(loader.content, Bitmap).bitmapData)).frame;
+				callback(resourceId, { data : frame, width : Std.int(frame.sourceSize.x), height : Std.int(frame.sourceSize.y) } );
+			}
+		});
+		
+		loader.loadBytes(ba);
+	}
 
-    function getFontInternal(resourceId:String, callback:FontInfo->Void):Void {
-        callback(null);
-    }
+	function getFontInternal(resourceId:String, callback:FontInfo->Void):Void {
+		callback(null);
+	}
 
-    function getFontFromHaxeResource(resourceId:String, callback:String->FontInfo->Void):Void {
-        callback(resourceId, null);
-    }
+	function getFontFromHaxeResource(resourceId:String, callback:String->FontInfo->Void):Void {
+		callback(resourceId, null);
+	}
 
-    function getTextDelegate(resourceId:String):String {
+	function getTextDelegate(resourceId:String):String {
 		
 		if (Assets.exists(resourceId)) {
 			return Assets.getText(resourceId);
 		}
 		
 		return null;
-    }
+	}
 }
