@@ -106,7 +106,13 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 
 	function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
 		
-		surface.makeGraphic(Std.int(width), Std.int(height), 0x0, true);
+		var intWidth = Std.int(width);
+		var intHeight = Std.int(height);
+
+		if (intWidth < 1) intWidth = 1;
+		if (intHeight < 1) intHeight = 1;
+
+		surface.makeGraphic(intWidth, intHeight, 0x0, true);
 		
 		if (clipRect != null) surface.clipRect = clipRect;
 		
@@ -139,7 +145,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	function mapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!__mouseRegistered) {
-			FlxMouseEventManager.add(this, null, null, null, null, true);
+			FlxMouseEventManager.add(this, null, null, null, null, true, true, false);
 			__mouseRegistered = true;
 		}
 		
