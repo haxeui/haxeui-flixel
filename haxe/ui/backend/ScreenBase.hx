@@ -5,6 +5,7 @@ import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.DialogButton;
 import haxe.ui.core.Component;
 import haxe.ui.core.UIEvent;
+import openfl.Lib;
 import lime.system.System;
 
 class ScreenBase {
@@ -38,6 +39,12 @@ class ScreenBase {
 		container.add(component);
 		component.ready();
 	}
+  public var title(get, set):String;
+  inline function get_title():String { return Lib.current.stage.window.title; }
+  inline function set_title(s:String):String {
+        Lib.current.stage.window.title = s;
+        return s;
+    }
 
 	public function removeComponent(component:Component) {
 		_topLevelComponents.remove(component);
@@ -51,11 +58,11 @@ class ScreenBase {
 	var container(get, null):FlxSpriteGroup;
 	
 	function get_container():FlxSpriteGroup {
-		
+
 		if (options != null && options.container != null) {
 			return options.container;
 		}
-		
+
 		throw "Please set a FlxSpriteGroup as the container when initializing the Toolkit: Toolkit.init( { container : fsg } );";
 	}
 
