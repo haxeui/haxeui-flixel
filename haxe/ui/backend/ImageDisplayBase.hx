@@ -36,11 +36,14 @@ class ImageDisplayBase extends FlxSprite {
 	
 	public var imageInfo(default, set):ImageInfo;
 	function set_imageInfo(value:ImageInfo):ImageInfo {
-			
-		imageInfo = value;
-		aspectRatio = value.width / value.height;
 		
-		frame = value.data;
+		if (imageInfo != value) {
+			
+			imageInfo = value;
+			aspectRatio = value.width / value.height;
+			
+			frame = value.data;
+		}
 		
 		return value;
 	}

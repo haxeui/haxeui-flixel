@@ -52,7 +52,11 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	}
 
 	public function removeImageDisplay():Void {
-		if (image != null) remove(image, true);
+		
+		if (image != null) {
+			remove(image, true);
+			image = null;
+		}
 	}
 
 	public function getTextDisplay():TextDisplay {
