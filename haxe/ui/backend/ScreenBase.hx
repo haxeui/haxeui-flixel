@@ -23,7 +23,7 @@ class ScreenBase {
 
 	public var height(get, null):Float;
 	public function get_height() {
-		return container.width;
+		return container.height;
 	}
 
 	public var focus:Component;

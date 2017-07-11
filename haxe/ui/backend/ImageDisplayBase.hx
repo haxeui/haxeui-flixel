@@ -39,10 +39,14 @@ class ImageDisplayBase extends FlxSprite {
 		
 		if (imageInfo != value) {
 			
-			imageInfo = value;
-			aspectRatio = value.width / value.height;
+			// if (imageInfo != null) imageInfo.data.destroy();
 			
-			frame = value.data;
+			imageInfo = value;
+			
+			if (value != null) {
+				aspectRatio = value.width / value.height;
+				frame = value.data;
+			}
 		}
 		
 		return value;
@@ -58,9 +62,13 @@ class ImageDisplayBase extends FlxSprite {
 		
 		return value;
 	}
-
-	public function dispose():Void {
-		// destroy();
+	
+	override public function destroy():Void {
+		super.destroy();
+		
+		parent = null;
+		imageInfo = null; // destroy?
+		imageClipRect = null;
 	}
 	
 	override public function draw():Void {

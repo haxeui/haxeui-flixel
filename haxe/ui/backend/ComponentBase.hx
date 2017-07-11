@@ -32,6 +32,20 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		add(surface);
 	}
 	
+	override public function destroy():Void {
+		super.destroy();
+		
+		if (__mouseRegistered) {
+			FlxMouseEventManager.remove(this);
+			__mouseRegistered = false;
+		}
+		
+		surface = null;
+		image = null;
+		tf = null;
+		asComponent = null;
+	}
+	
 	function applyStyle(style:Style) {
 		FlxStyleHelper.applyStyle(surface, style);
 	}
@@ -55,6 +69,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		if (image != null) {
 			remove(image, true);
+			image.destroy();
 			image = null;
 		}
 	}
