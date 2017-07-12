@@ -3,6 +3,7 @@ import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flixel.FlxSprite;
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import haxe.ui.assets.ImageInfo;
@@ -47,6 +48,12 @@ class FlxStyleHelper{
 		
 		var bmd = data.parent.bitmap;
 		var rect = data.frame.copyToFlash();
+		
+		// if it's a spritesheet and the frame is rotated or flipped, paint the "original" sprite
+		if (!bmd.rect.equals(rect) && (data.angle != FlxFrameAngle.ANGLE_0 || data.flipX || data.flipY)) {
+			bmd = data.paintRotatedAndFlipped();
+			rect.setTo(0, 0, data.sourceSize.x, data.sourceSize.y);
+		}
 		
 		if (style.backgroundImageClipTop != null && style.backgroundImageClipBottom != null && style.backgroundImageClipLeft != null && style.backgroundImageClipRight != null) {
 			rect.x += style.backgroundImageClipLeft;
