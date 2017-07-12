@@ -175,16 +175,20 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 				FlxMouseEventManager.setMouseOutCallback(this, __onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_DOWN:
 				FlxMouseEventManager.setMouseDownCallback(this, __onMouseEvent.bind(type, listener));
-			case MouseEvent.MOUSE_UP, MouseEvent.CLICK:
+			case MouseEvent.MOUSE_UP:
 				FlxMouseEventManager.setMouseUpCallback(this, __onMouseEvent.bind(type, listener));
+			case MouseEvent.CLICK:
+				FlxMouseEventManager.setMouseClickCallback(this, __onMouseEvent.bind(type, listener));
+			case MouseEvent.MOUSE_MOVE:
+				FlxMouseEventManager.setMouseMoveCallback(this, __onMouseEvent.bind(type, listener));
+			case MouseEvent.MOUSE_WHEEL:
+				FlxMouseEventManager.setMouseWheelCallback(this, __onMouseEvent.bind(type, listener));
 		}
 	}
 
 	function unmapEvent(type:String, listener:UIEvent->Void) {
 		
-		if (!__mouseRegistered) {
-			return;
-		}
+		if (!__mouseRegistered) return;
 		
 		switch (type) {
 			case MouseEvent.MOUSE_OVER:
@@ -193,8 +197,14 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 				FlxMouseEventManager.setMouseOutCallback(this, null);
 			case MouseEvent.MOUSE_DOWN:
 				FlxMouseEventManager.setMouseDownCallback(this, null);
-			case MouseEvent.MOUSE_UP, MouseEvent.CLICK:
+			case MouseEvent.MOUSE_UP:
 				FlxMouseEventManager.setMouseUpCallback(this, null);
+			case MouseEvent.CLICK:
+				FlxMouseEventManager.setMouseClickCallback(this, null);
+			case MouseEvent.MOUSE_MOVE:
+				FlxMouseEventManager.setMouseMoveCallback(this, null);
+			case MouseEvent.MOUSE_WHEEL:
+				FlxMouseEventManager.setMouseWheelCallback(this, null);
 		}
 	}
 	
@@ -205,7 +215,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		me.screenX = FlxG.mouse.screenX;
 		me.screenY = FlxG.mouse.screenY;
 		me.buttonDown = FlxG.mouse.pressed;
-		// me.delta = ?
+		if (type == MouseEvent.MOUSE_WHEEL) me.delta = FlxG.mouse.wheel;
 		listener(me);
 	}
 	
