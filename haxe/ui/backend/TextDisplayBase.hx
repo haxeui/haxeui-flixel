@@ -21,7 +21,12 @@ class TextDisplayBase extends FlxText {
 
 	public var textHeight(get, null):Float;
 	inline function get_textHeight():Float { return textField.textHeight + 4; }
-
+	
+	override public function destroy():Void {
+		super.destroy();
+		
+		parent = null;
+	}
 	/*
 	public var fontName(get, set):String;
 	inline function get_fontName():String { return embedded ? font : systemFont; }

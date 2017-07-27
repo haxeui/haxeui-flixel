@@ -32,6 +32,20 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		add(surface);
 	}
 	
+	override public function destroy():Void {
+		super.destroy();
+		
+		if (__mouseRegistered) {
+			FlxMouseEventManager.remove(this);
+			__mouseRegistered = false;
+		}
+		
+		surface = null;
+		image = null;
+		tf = null;
+		asComponent = null;
+	}
+	
 	function applyStyle(style:Style) {
 		FlxStyleHelper.applyStyle(surface, style);
 	}
@@ -52,13 +66,18 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	}
 
 	public function removeImageDisplay():Void {
-		if (image != null) remove(image, true);
+		
+		if (image != null) {
+			remove(image, true);
+			image.destroy();
+			image = null;
+		}
 	}
 
 	public function getTextDisplay():TextDisplay {
 		
 		if (tf != null) return tf; 
-			
+		
 		tf = new TextDisplay();
 		tf.parent = asComponent;
 		add(tf);
@@ -108,10 +127,10 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		var intWidth = Std.int(width);
 		var intHeight = Std.int(height);
-
+		
 		if (intWidth < 1) intWidth = 1;
 		if (intHeight < 1) intHeight = 1;
-
+		
 		surface.makeGraphic(intWidth, intHeight, 0x0, true);
 		
 		if (clipRect != null) surface.clipRect = clipRect;
@@ -156,10 +175,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 				FlxMouseEventManager.setMouseOutCallback(this, __onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_DOWN:
 				FlxMouseEventManager.setMouseDownCallback(this, __onMouseEvent.bind(type, listener));
-			case MouseEvent.MOUSE_UP:
+			case MouseEvent.MOUSE_UP, MouseEvent.CLICK:
 				FlxMouseEventManager.setMouseUpCallback(this, __onMouseEvent.bind(type, listener));
-			// case MouseEvent.CLICK:
-				// 
 		}
 	}
 
@@ -176,10 +193,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 				FlxMouseEventManager.setMouseOutCallback(this, null);
 			case MouseEvent.MOUSE_DOWN:
 				FlxMouseEventManager.setMouseDownCallback(this, null);
-			case MouseEvent.MOUSE_UP:
+			case MouseEvent.MOUSE_UP, MouseEvent.CLICK:
 				FlxMouseEventManager.setMouseUpCallback(this, null);
-			// case MouseEvent.CLICK:
-				// 
 		}
 	}
 	
@@ -187,8 +202,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		var me = new MouseEvent(type);
 		me.target = cast target;
-		me.screenX = FlxG.mouse.x;
-		me.screenY = FlxG.mouse.y;
+		me.screenX = FlxG.mouse.screenX;
+		me.screenY = FlxG.mouse.screenY;
 		me.buttonDown = FlxG.mouse.pressed;
 		// me.delta = ?
 		listener(me);
