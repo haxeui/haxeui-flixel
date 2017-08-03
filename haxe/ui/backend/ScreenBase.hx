@@ -88,14 +88,12 @@ class ScreenBase {
 				FlxMouseEventManager.setMouseDownCallback(container, __onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_UP:
 				FlxMouseEventManager.setMouseUpCallback(container, __onMouseEvent.bind(type, listener));
-			/*
 			case MouseEvent.CLICK:
 				FlxMouseEventManager.setMouseClickCallback(container, __onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_MOVE:
 				FlxMouseEventManager.setMouseMoveCallback(container, __onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_WHEEL:
 				FlxMouseEventManager.setMouseWheelCallback(container, __onMouseEvent.bind(type, listener));
-			*/
 		}
 	}
 	
@@ -112,14 +110,12 @@ class ScreenBase {
 				FlxMouseEventManager.setMouseDownCallback(container, null);
 			case MouseEvent.MOUSE_UP:
 				FlxMouseEventManager.setMouseUpCallback(container, null);
-			/*
 			case MouseEvent.CLICK:
 				FlxMouseEventManager.setMouseClickCallback(container, null);
 			case MouseEvent.MOUSE_MOVE:
 				FlxMouseEventManager.setMouseMoveCallback(container, null);
 			case MouseEvent.MOUSE_WHEEL:
 				FlxMouseEventManager.setMouseWheelCallback(container, null);
-			*/
 		}
 	}
 	

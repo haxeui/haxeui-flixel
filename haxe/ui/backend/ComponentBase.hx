@@ -177,14 +177,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 				FlxMouseEventManager.setMouseDownCallback(this, __onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_UP:
 				FlxMouseEventManager.setMouseUpCallback(this, __onMouseEvent.bind(type, listener));
-			/*
 			case MouseEvent.CLICK:
 				FlxMouseEventManager.setMouseClickCallback(this, __onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_MOVE:
 				FlxMouseEventManager.setMouseMoveCallback(this, __onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_WHEEL:
 				FlxMouseEventManager.setMouseWheelCallback(this, __onMouseEvent.bind(type, listener));
-			*/
 		}
 	}
 
@@ -201,14 +199,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 				FlxMouseEventManager.setMouseDownCallback(this, null);
 			case MouseEvent.MOUSE_UP:
 				FlxMouseEventManager.setMouseUpCallback(this, null);
-			/*
 			case MouseEvent.CLICK:
 				FlxMouseEventManager.setMouseClickCallback(this, null);
 			case MouseEvent.MOUSE_MOVE:
 				FlxMouseEventManager.setMouseMoveCallback(this, null);
 			case MouseEvent.MOUSE_WHEEL:
 				FlxMouseEventManager.setMouseWheelCallback(this, null);
-			*/
 		}
 	}
 	
