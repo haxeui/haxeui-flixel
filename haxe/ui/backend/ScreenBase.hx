@@ -122,7 +122,7 @@ class ScreenBase {
 	function __onMouseEvent(type:String, listener:UIEvent->Void, target:FlxObject):Void {
 		
 		var me = new MouseEvent(type);
-		me.target = cast target;
+		// me.target = cast target;
 		me.screenX = FlxG.mouse.screenX;
 		me.screenY = FlxG.mouse.screenY;
 		me.buttonDown = FlxG.mouse.pressed;
