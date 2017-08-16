@@ -9,18 +9,20 @@ class TextDisplayBase extends FlxText {
 	
 	public var parent:Component;
 	
-	public function new() {
-		super();
-	}
-
 	public var left:Float;
 	public var top:Float;
-
+	
 	public var textWidth(get, null):Float;
 	inline function get_textWidth():Float { return textField.textWidth + 4; }
-
+	
 	public var textHeight(get, null):Float;
 	inline function get_textHeight():Float { return textField.textHeight + 4; }
+	
+	public function new() {
+		super();
+		
+		left = top = 0;
+	}
 	
 	override public function destroy():Void {
 		super.destroy();
@@ -92,8 +94,8 @@ class TextDisplayBase extends FlxText {
 	override public function draw():Void {
 		
 		if (dirty) {
-			x = left = parent.screenLeft;
-			y = top = parent.screenTop;
+			x = left + parent.screenLeft;
+			y = top + parent.screenTop;
 		}
 		
 		super.draw();
