@@ -70,6 +70,10 @@ class TextDisplayBase extends FlxText {
 		if (style.textAlign != null) {
 			alignment = style.textAlign;
 		}
+		
+		if (style.color != null) {
+			textField.textColor = style.color;
+		}
 	}
 	
 	override function set_text(Text:String):String {

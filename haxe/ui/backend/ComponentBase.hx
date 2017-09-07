@@ -43,6 +43,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		surface = null;
 		image = null;
 		tf = null;
+		
 		asComponent = null;
 	}
 	
@@ -223,8 +224,11 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	override public function draw():Void {
 		
 		if (!__ready) {
+			
 			__ready = true;
 			asComponent.ready();
+			
+			dirty = true;
 		}
 		
 		if (dirty) {

@@ -74,8 +74,8 @@ class ImageDisplayBase extends FlxSprite {
 	override public function draw():Void {
 		
 		if (dirty) {
-			x = left = parent.screenLeft;
-			y = top = parent.screenTop;
+			x = left + parent.screenLeft;
+			y = top + parent.screenTop;
 		}
 		
 		super.draw();

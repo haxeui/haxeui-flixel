@@ -36,11 +36,8 @@ class ScreenBase {
 	public function get_dpi():Float {
 		return System.getDisplay(0).dpi;
 	}
-
-	var _topLevelComponents:Array<Component> = new Array<Component>();
 	
 	public function addComponent(component:Component) {
-		_topLevelComponents.push(component);
 		container.add(component);
 		component.ready();
 	}
@@ -48,12 +45,11 @@ class ScreenBase {
 	public var title(get, set):String;
 	inline function get_title():String { return Lib.current.stage.window.title; }
 	inline function set_title(s:String):String {
-        Lib.current.stage.window.title = s;
-        return s;
+		Lib.current.stage.window.title = s;
+		return s;
     }
 
 	public function removeComponent(component:Component) {
-		_topLevelComponents.remove(component);
 		container.remove(component, true);
 	}
 
