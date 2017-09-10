@@ -220,16 +220,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		listener(me);
 	}
 	
-	var __ready:Bool = false;
 	override public function draw():Void {
-		
-		if (!__ready) {
-			
-			__ready = true;
-			asComponent.ready();
-			
-			dirty = true;
-		}
 		
 		if (dirty) {
 			x = asComponent.screenLeft;
