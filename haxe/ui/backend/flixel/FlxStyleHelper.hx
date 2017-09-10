@@ -1,4 +1,5 @@
 package haxe.ui.backend.flixel;
+
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
@@ -15,7 +16,7 @@ import haxe.ui.util.Slice9;
  * ...
  * @author MSGhero
  */
-class FlxStyleHelper{
+class FlxStyleHelper {
 	
 	public static function applyStyle(sprite:FlxSprite, style:Style):Void {
 		
