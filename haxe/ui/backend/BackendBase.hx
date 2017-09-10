@@ -4,7 +4,7 @@ package haxe.ui.backend;
  * ...
  * @author MSGhero
  */
-class BackendBase{
+class BackendBase {
 	
 	public static var id:String = "flixel";
 	

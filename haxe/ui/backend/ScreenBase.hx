@@ -21,33 +21,35 @@ class ScreenBase {
 	public var options:Dynamic;
 
 	public var width(get, null):Float;
-	public function get_width():Float {
-		return container.width;
+	inline function get_width():Float {
+		return FlxG.width;
 	}
 
 	public var height(get, null):Float;
-	public function get_height() {
-		return container.height;
+	inline function get_height() {
+		return FlxG.height;
 	}
 
 	public var focus:Component;
 
 	public var dpi(get, null):Float;
-	public function get_dpi():Float {
+	inline function get_dpi():Float {
 		return System.getDisplay(0).dpi;
 	}
 	
-	public function addComponent(component:Component) {
-		container.add(component);
-		component.ready();
-	}
-	
 	public var title(get, set):String;
-	inline function get_title():String { return Lib.current.stage.window.title; }
+	inline function get_title():String {
+		return Lib.current.stage.window.title;
+	}
 	inline function set_title(s:String):String {
 		Lib.current.stage.window.title = s;
 		return s;
     }
+	
+	public function addComponent(component:Component) {
+		container.add(component);
+		component.ready(); // the component will already be ready from the add signal, but in case the user is only using Screen...
+	}
 
 	public function removeComponent(component:Component) {
 		container.remove(component, true);
