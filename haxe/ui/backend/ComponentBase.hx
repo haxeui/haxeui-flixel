@@ -40,8 +40,11 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 			__mouseRegistered = false;
 		}
 		
+		if (surface != null) surface.destroy();
 		surface = null;
+		if (image != null) image.destroy();
 		image = null;
+		if (tf != null) tf.tf.destroy();
 		tf = null;
 		
 		asComponent = null;
@@ -80,8 +83,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		if (tf != null) return tf; 
 		
 		tf = new TextDisplay();
-		tf.parent = asComponent;
-		add(tf);
+		tf.parentComponent = asComponent;
+		add(tf.tf);
 		
 		return tf;
 	}
@@ -145,8 +148,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	}
 
 	function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
+		
 		asComponent.left = left;
 		asComponent.top = top;
+		
+		if (left != null && asComponent.parentComponent != null) x = left + asComponent.parentComponent.x;
+		if (top != null && asComponent.parentComponent != null) y = top + asComponent.parentComponent.y;
 	}
 
 	function handlePreReposition() {
@@ -220,20 +227,36 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		listener(me);
 	}
 	
-	var __ready:Bool = false;
 	override public function draw():Void {
 		
-		if (!__ready) {
-			
-			__ready = true;
-			asComponent.ready();
-			
-			dirty = true;
-		}
+		var screenLeft = Math.NaN;
+		var screenTop = Math.NaN;
 		
 		if (dirty) {
-			x = asComponent.screenLeft;
-			y = asComponent.screenTop;
+			x = screenLeft = asComponent.screenLeft;
+			y = screenTop = asComponent.screenTop;
+		}
+		
+		if (tf != null && tf.tf.dirty) {
+			
+			if (Math.isNaN(screenLeft)) {
+				screenLeft = asComponent.screenLeft;
+				screenTop = asComponent.screenTop;
+			}
+			
+			tf.tf.x = tf.left + screenLeft;
+			tf.tf.y = tf.top + screenTop;
+		}
+		
+		if (image != null && image.dirty) {
+			
+			if (Math.isNaN(screenLeft)) {
+				screenLeft = asComponent.screenLeft;
+				screenTop = asComponent.screenTop;
+			}
+			
+			image.x = image.left + screenLeft;
+			image.y = image.top + screenTop;
 		}
 		
 		super.draw();

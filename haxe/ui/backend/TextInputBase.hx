@@ -2,15 +2,14 @@ package haxe.ui.backend;
 
 class TextInputBase extends TextDisplayBase {
 	
-	public var hscrollPos:Float;
-	public var vscrollPos:Float;
-	public var multiline:Bool;
-	
-	public var password(get, set):Bool;
-	inline function get_password():Bool { return textField.displayAsPassword; }
-	inline function set_password(value:Bool):Bool { return textField.displayAsPassword = value; }
+	var _password:Bool;
+	var _hscrollPos:Float;
+	var _vscrollPos:Float;
 	
 	public function new() {
 		super();
+		
+		_password = false;
+		_hscrollPos = _vscrollPos = 0;
 	}
 }

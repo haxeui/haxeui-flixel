@@ -16,68 +16,42 @@ class ImageDisplayBase extends FlxSprite {
 		super();
 	}
 
-	public var left:Float;
-	public var top:Float;
+	var _left:Float;
+	var _top:Float;
 
-	public var imageWidth(get, set):Float;
-	inline function get_imageWidth():Float { return frameWidth; }
-	inline function set_imageWidth(value:Float):Float {
-		//frameWidth = Std.int(value);
-		return value;
-	}
-
-
-	public var imageHeight(get, set):Float;
-	inline function get_imageHeight():Float { return frameHeight; }
-	inline function set_imageHeight(value:Float):Float {
-		//frameHeight = Std.int(value);
-		return value;
-	}
+	var _imageWidth:Float;
+	var _imageHeight:Float;
 	
-	public var imageInfo(default, set):ImageInfo;
-	function set_imageInfo(value:ImageInfo):ImageInfo {
-		
-		if (imageInfo != value) {
-			
-			// if (imageInfo != null) imageInfo.data.destroy();
-			
-			imageInfo = value;
-			
-			if (value != null) {
-				aspectRatio = value.width / value.height;
-				frame = value.data;
-			}
-		}
-		
-		return value;
-	}
-	
-	public var imageClipRect(default, set):Rectangle;
-	function set_imageClipRect(value:Rectangle):Rectangle {
-		
-		imageClipRect = value;
-		
-		if (value == null) clipRect = null;
-		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
-		
-		return value;
-	}
+	var _imageInfo:ImageInfo;
+	var _imageClipRect:Rectangle;
 	
 	override public function destroy():Void {
 		super.destroy();
 		
 		parent = null;
-		imageInfo = null; // destroy?
-		imageClipRect = null;
+		_imageInfo = null; // destroy?
+		_imageClipRect = null;
 	}
 	
-	override public function draw():Void {
+	function validateData():Void {
 		
-		if (dirty) {
-			x = left + parent.screenLeft;
-			y = top + parent.screenTop;
+		if (_imageInfo != null) {
+			
+			frame = _imageInfo.data;
+			aspectRatio = _imageInfo.width / _imageInfo.height;
+			
+			_imageWidth = frameWidth;
+			_imageHeight = frameHeight;
 		}
+	}
+	
+	function validatePosition():Void { }
+	
+	function validateDisplay():Void {
 		
-		super.draw();
+		// scale?
+		
+		if (_imageClipRect == null) clipRect = null;
+		else FlxRect.get(_imageClipRect.left, _imageClipRect.top, _imageClipRect.width, _imageClipRect.height);
 	}
 }

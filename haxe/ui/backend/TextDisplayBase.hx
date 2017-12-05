@@ -2,110 +2,78 @@ package haxe.ui.backend;
 
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
+import flixel.text.FlxText.FlxTextFormat;
+import haxe.ui.assets.FontInfo;
 import haxe.ui.core.Component;
 import haxe.ui.styles.Style;
 
-class TextDisplayBase extends FlxText {
+class TextDisplayBase {
 	
-	public var parent:Component;
+	public var parentComponent:Component;
+	public var tf:FlxText;
 	
-	public var left:Float;
-	public var top:Float;
+	var _left:Float = 0;
+	var _top:Float = 0;
+	var _width:Float = 100;
+	var _height:Float = 0;
 	
-	public var textWidth(get, null):Float;
-	inline function get_textWidth():Float { return textField.textWidth + 4; }
+	var _text:String = "";
+	var _textWidth:Float = 0;
+	var _textHeight:Float = 0;
 	
-	public var textHeight(get, null):Float;
-	inline function get_textHeight():Float { return textField.textHeight + 4; }
+	var _textStyle:Style;
+	var _multiline:Bool = true;
+	var _wordWrap:Bool = true;
+	var _fontInfo:FontInfo;
+	
+	var format:FlxTextFormat;
 	
 	public function new() {
-		super();
 		
-		left = top = 0;
+		tf = new FlxText();
+		format = new FlxTextFormat();
+		
+		tf.addFormat(format);
 	}
 	
-	override public function destroy():Void {
-		super.destroy();
-		
-		parent = null;
-	}
-	/*
-	public var fontName(get, set):String;
-	inline function get_fontName():String { return embedded ? font : systemFont; }
-	inline function set_fontName(value:String):String {
-		
-		if (isEmbeddedFont(value)) font = value;
-		else systemFont = value;
-		
-		return value;
+	function validateData():Void {
+		tf.text = _text;
 	}
 	
-	
-
-	public var fontSize(get, set):Null<Float>;
-	inline function get_fontSize():Null<Float> { return size; }
-	inline function set_fontSize(value:Null<Float>):Null<Float> { return size = Std.int(value); }
-	
-	public var textAlign:String;
-	*/
-	
-	public function applyStyle(style:Style):Void {
+	function validateStyle():Bool {
 		
-		// color, bold, italics, underline, etc
-		
-		if (style.width != null) {
-			autoSize = false;
-			fieldWidth = style.width;
+		if (_textStyle != null) {
+			
+			if (_textStyle.textAlign != null) tf.alignment = _textStyle.textAlign;
+			
+			if (_textStyle.fontSize != null) tf.size = Std.int(_textStyle.fontSize);
+			
+			if (_fontInfo != null) tf.font = _fontInfo.data;
+			
+			if (_textStyle.fontBold != null) tf.bold = _textStyle.fontBold;
+			if (_textStyle.fontItalic != null) tf.bold = _textStyle.fontItalic;
+			if (_textStyle.fontUnderline != null) tf.bold = _textStyle.fontUnderline;
+			
+			if (_textStyle.color != null) tf.color = _textStyle.color;
+			
+			tf.wordWrap = _wordWrap;
+			
+			if (tf.textField.multiline != _multiline) tf.textField.multiline = _multiline;
 		}
 		
-		if (style.fontName != null) {
-			if (isEmbeddedFont(style.fontName)) font = style.fontName;
-			else systemFont = style.fontName;
-		}
-		
-		if (style.fontSize != null) {
-			size = Std.int(style.fontSize);
-		}
-		
-		if (style.textAlign != null) {
-			alignment = style.textAlign;
-		}
-		
-		if (style.color != null) {
-			textField.textColor = style.color;
-		}
+		return true;
 	}
 	
-	override function set_text(Text:String):String {
+	public function validatePosition():Void { }
+	
+	function validateDisplay():Void {
 		
-		var tempRect = clipRect;
-		
-		super.set_text(Text);
-		
-		clipRect = tempRect;
-		
-		return Text;
+		if (tf.fieldWidth != _width) tf.fieldWidth = _width;
+		if (tf.textField.height != _height) tf.textField.height = _height;
 	}
 	
-	override function set_clipRect(rect:FlxRect):FlxRect {
-		
-		if (rect != null) 
-			regenGraphic();
-		
-		return super.set_clipRect(rect);
-	}
-	
-	override public function draw():Void {
-		
-		if (dirty) {
-			x = left + parent.screenLeft;
-			y = top + parent.screenTop;
-		}
-		
-		super.draw();
-	}
-	
-	inline function isEmbeddedFont(name:String):Bool {
-		return name != "_sans" && name != "_serif" && name != "_typewriter";
+	function measureText():Void {
+		_textWidth = tf.textField.textWidth;
+		_textHeight = tf.textField.textHeight;
 	}
 }
