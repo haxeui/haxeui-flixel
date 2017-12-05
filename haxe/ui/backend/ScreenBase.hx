@@ -1,8 +1,9 @@
 package haxe.ui.backend;
 
+import flash.events.MouseEvent;
 import flixel.FlxG;
 import flixel.FlxObject;
-import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.DialogButton;
@@ -44,7 +45,7 @@ class ScreenBase {
 	inline function set_title(s:String):String {
 		Lib.current.stage.window.title = s;
 		return s;
-    }
+	}
 	
 	public function addComponent(component:Component) {
 		container.add(component);
@@ -56,71 +57,76 @@ class ScreenBase {
 	}
 
 	function handleSetComponentIndex(child:Component, index:Int) {
-		container.group.insert(index, child);
+		container.insert(index, child);
 	}
 
-	var container(get, null):FlxSpriteGroup;
-	function get_container():FlxSpriteGroup {
+	var container(get, null):FlxGroup;
+	function get_container():FlxGroup {
 		
 		if (options != null && options.container != null) {
 			return options.container;
 		}
 		
-		throw "Please set a FlxSpriteGroup as the container when initializing the Toolkit: Toolkit.init( { container : fsg } );";
+		throw "To use Screen, you must initialize a FlxGroup to be the container: Toolkit.init( { container : myFlxGroup } );";
 	}
 	
-	var __mouseRegistered:Bool = false;
+	var __eventMap:Map<String, flash.events.MouseEvent->Void> = new Map<String, flash.events.MouseEvent->Void>();
 	function mapEvent(type:String, listener:UIEvent->Void) {
 		
-		if (!__mouseRegistered) {
-			FlxMouseEventManager.add(container, null, null, null, null, true, true, false);
-			__mouseRegistered = true;
-		}
+		// utilizing the stage to capture "global" mouse events
+		
+		if (__eventMap.exists(type)) return; // assuming only one global mouse event of a certain type can occur at a time
+		
+		var cb = __onMouseEvent.bind(type, listener);
+		__eventMap.set(type, cb);
 		
 		switch (type) {
 			case MouseEvent.MOUSE_OVER:
-				FlxMouseEventManager.setMouseOverCallback(container, __onMouseEvent.bind(type, listener));
+				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_OVER, cb);
 			case MouseEvent.MOUSE_OUT:
-				FlxMouseEventManager.setMouseOutCallback(container, __onMouseEvent.bind(type, listener));
+				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_OUT, cb);
 			case MouseEvent.MOUSE_DOWN:
-				FlxMouseEventManager.setMouseDownCallback(container, __onMouseEvent.bind(type, listener));
+				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_DOWN, cb);
 			case MouseEvent.MOUSE_UP:
-				FlxMouseEventManager.setMouseUpCallback(container, __onMouseEvent.bind(type, listener));
+				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_UP, cb);
 			case MouseEvent.CLICK:
-				FlxMouseEventManager.setMouseClickCallback(container, __onMouseEvent.bind(type, listener));
+				FlxG.stage.addEventListener(flash.events.MouseEvent.CLICK, cb);
 			case MouseEvent.MOUSE_MOVE:
-				FlxMouseEventManager.setMouseMoveCallback(container, __onMouseEvent.bind(type, listener));
+				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_MOVE, cb);
 			case MouseEvent.MOUSE_WHEEL:
-				FlxMouseEventManager.setMouseWheelCallback(container, __onMouseEvent.bind(type, listener));
+				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_WHEEL, cb);
 		}
 	}
 	
 	function unmapEvent(type:String, listener:UIEvent->Void) {
 		
-		if (!__mouseRegistered) return;
+		if (!__eventMap.exists(type)) return;
+		
+		var cb = __eventMap.get(type);
+		__eventMap.remove(type);
 		
 		switch (type) {
 			case MouseEvent.MOUSE_OVER:
-				FlxMouseEventManager.setMouseOverCallback(container, null);
+				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_OVER, cb);
 			case MouseEvent.MOUSE_OUT:
-				FlxMouseEventManager.setMouseOutCallback(container, null);
+				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_OUT, cb);
 			case MouseEvent.MOUSE_DOWN:
-				FlxMouseEventManager.setMouseDownCallback(container, null);
+				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_DOWN, cb);
 			case MouseEvent.MOUSE_UP:
-				FlxMouseEventManager.setMouseUpCallback(container, null);
+				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_UP, cb);
 			case MouseEvent.CLICK:
-				FlxMouseEventManager.setMouseClickCallback(container, null);
+				FlxG.stage.removeEventListener(flash.events.MouseEvent.CLICK, cb);
 			case MouseEvent.MOUSE_MOVE:
-				FlxMouseEventManager.setMouseMoveCallback(container, null);
+				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_MOVE, cb);
 			case MouseEvent.MOUSE_WHEEL:
-				FlxMouseEventManager.setMouseWheelCallback(container, null);
+				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_WHEEL, cb);
 		}
 	}
 	
-	function __onMouseEvent(type:String, listener:UIEvent->Void, target:FlxObject):Void {
+	function __onMouseEvent(type:String, listener:UIEvent->Void, ome:flash.events.MouseEvent):Void {
 		
-		var me = new MouseEvent(type);
-		// me.target = cast target;
+		var me = new haxe.ui.core.MouseEvent(type);
+		// store ome in here?
 		me.screenX = FlxG.mouse.screenX;
 		me.screenY = FlxG.mouse.screenY;
 		me.buttonDown = FlxG.mouse.pressed;
@@ -130,7 +136,7 @@ class ScreenBase {
 	
 	function supportsEvent(type:String):Bool {
 		// not key events...
-		return container != null;
+		return !__eventMap.exists(type);
 	}
 
 	public function messageDialog(message:String, title:String = null, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {

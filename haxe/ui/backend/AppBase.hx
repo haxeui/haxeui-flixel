@@ -1,5 +1,7 @@
 package haxe.ui.backend;
 
+import haxe.ui.Preloader.PreloadItem;
+
 class AppBase {
 	
 	public function new() {
@@ -16,6 +18,10 @@ class AppBase {
 	
 	function getToolkitInit():Dynamic {
 		return { };
+	}
+	
+	function buildPreloadList():Array<PreloadItem> {
+		return [];
 	}
 	
 	public function start() {

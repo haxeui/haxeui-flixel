@@ -1,6 +1,6 @@
 package haxe.ui.backend.flixel;
 
-import flixel.FlxSprite;
+import flixel.FlxBasic;
 import haxe.ui.core.Component;
 
 /**
@@ -9,10 +9,11 @@ import haxe.ui.core.Component;
  */
 class FlxUIHelper {
 	
-	public static function readyUI(child:FlxSprite):Void {
+	public static function readyUI(child:FlxBasic):Void {
 		
+		// lets the child component know it's just been added to a FlxGroup
 		if (Std.is(child, Component)) {
-			cast(child, Component).ready();
+			cast(child, Component).ready(); // tells HaxeUI to finish up on its end
 		}
 	}
 }
