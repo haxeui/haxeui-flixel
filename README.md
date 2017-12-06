@@ -27,18 +27,18 @@ After installing `Lime`, `OpenFL`, `Flixel`, `HaxeUI-core`, and `HaxeUI-flixel`,
 <haxelib name="haxeui-flixel" />
 ```
 
-### Toolkit initialisation and usage
-Before you start using HaxeUI in your project, you must first initialize the `Toolkit`. In this backend, you must also specify a `FlxSpriteGroup` to act as the container for the UI.
+### Toolkit initialization and usage
+Before you start using HaxeUI in your project, you must first initialize the `Toolkit`. In this backend, you must also specify a `FlxGroup` to act as the container for the UI.
 
 ```haxe
-var myContainer = new FlxSpriteGroup();
-Toolkit.init( { container : myContainer } );
+var myContainer = new FlxGroup();
+Toolkit.init( { container : myContainer } ); // you can also pass in "this" FlxState!
 ```
-Once the toolkit is initialised you can add components using the methods specified <a href="https://github.com/haxeui/haxeui-core#adding-components-using-haxe-code">here</a>.
+Once the toolkit is initialized, you can add components using the methods specified <a href="https://github.com/haxeui/haxeui-core#adding-components-using-haxe-code">here</a>.
 
 You can configure HaxeUI to use a spritesheet (`FlxAtlasFrames`) as a source for assets. The initialization becomes:
 ```haxe
-var myContainer = new FlxSpriteGroup();
+var myContainer = new FlxGroup();
 var myAtlas = FlxAtlasFrames.fromTexturePackerSource(...);
 Toolkit.init( { container : myContainer, spriteSheet : myAtlas } );
 ```

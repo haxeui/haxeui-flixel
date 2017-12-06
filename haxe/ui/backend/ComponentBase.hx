@@ -27,6 +27,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	public function new() {
 		super();
 		
+		scrollFactor.set(0, 0); // ui doesn't scroll by default
+		
 		surface = new FlxSprite();
 		surface.makeGraphic(1, 1, 0x0, true);
 		add(surface);

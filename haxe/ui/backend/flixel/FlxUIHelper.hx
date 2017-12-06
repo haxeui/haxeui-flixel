@@ -13,7 +13,10 @@ class FlxUIHelper {
 		
 		// lets the child component know it's just been added to a FlxGroup
 		if (Std.is(child, Component)) {
-			cast(child, Component).ready(); // tells HaxeUI to finish up on its end
+			
+			var comp:Component = cast child;
+			comp.ready(); // tells HaxeUI to finish up on its end
+			comp.syncValidation(); // force UI validation, giving Flixel (and you) immediate access to the laid out components
 		}
 	}
 }
