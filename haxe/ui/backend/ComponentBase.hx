@@ -1,9 +1,11 @@
 package haxe.ui.backend;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEventManager;
+import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.core.Component;
@@ -50,6 +52,66 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		tf = null;
 		
 		asComponent = null;
+	}
+	
+	// Flixel uses width/height for the hitbox, but HaxeUI uses them graphically
+	// This is an issue when it comes to clipRects, so we have to override the overlap functions that mouse events use
+	override public function overlapsPoint(point:FlxPoint, inScreenSpace:Bool = true, ?camera:FlxCamera):Bool {
+		
+		var result:Bool = false;
+		for (sprite in _sprites)
+		{
+			if (sprite != null && sprite.exists && sprite.visible)
+			{
+				if (sprite.flixelType == SPRITEGROUP) result = sprite.overlapsPoint(point, inScreenSpace, camera);
+				else result = overlapsPointHelper(sprite, point, inScreenSpace, camera);
+			}
+			
+			if (result) return true;
+		}
+		
+		return false;
+	}
+	
+	// This is essentially overriding FlxSprite's overlapsPoint for use with clipRects
+	// Not its intended functionality, but hey
+	function overlapsPointHelper(sprite:FlxSprite, point:FlxPoint, inScreenSpace:Bool = true, ?camera:FlxCamera):Bool {
+		
+		// does not account for offset, which isn't used anyway
+		
+		var rect:FlxRect;
+		
+		if (sprite.clipRect == null) rect = FlxRect.get(sprite.x, sprite.y, sprite.width, sprite.height);
+		
+		else {
+			rect = FlxRect.get();
+			rect.copyFrom(sprite._frame.frame);
+			rect.x += sprite.x;	rect.y += sprite.y;
+		}
+		
+		var xx = point.x;
+		var yy = point.y;
+		
+		point.putWeak();
+		
+		if (inScreenSpace) {
+			
+			if (camera == null) camera = FlxG.camera;
+			
+			xx -= camera.scroll.x;
+			yy -= camera.scroll.y;
+			
+			if (sprite.pixelPerfectPosition) rect.floor(); // is flooring wh ok?
+			
+			rect.x -= camera.scroll.x * sprite.scrollFactor.x;
+			rect.y -= camera.scroll.y * sprite.scrollFactor.y;
+		}
+		
+		var ret = xx >= rect.left && xx < rect.right && yy >= rect.top && yy < rect.bottom;
+		
+		rect.put();
+		
+		return ret;
 	}
 	
 	function applyStyle(style:Style) {
@@ -143,29 +205,39 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		applyStyle(style);
 	}
-
+	
 	function handleClipRect(value:Rectangle):Void {
 		if (value == null) clipRect = null;
 		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
 	}
-
+	
 	function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
 		
-		asComponent.left = left;
-		asComponent.top = top;
+		if (left != null) {
+			
+			x = asComponent.left = left;
+			
+			if (asComponent.parentComponent != null) x += asComponent.parentComponent.x;
+			if (asComponent.componentClipRect != null) x -= asComponent.componentClipRect.left;
+		}
 		
-		if (left != null && asComponent.parentComponent != null) x = left + asComponent.parentComponent.x;
-		if (top != null && asComponent.parentComponent != null) y = top + asComponent.parentComponent.y;
+		if (top != null) {
+			
+			y = asComponent.top = top;
+			
+			if (asComponent.parentComponent != null) y += asComponent.parentComponent.y;
+			if (asComponent.componentClipRect != null) y -= asComponent.componentClipRect.top;
+		}
 	}
-
+	
 	function handlePreReposition() {
 		
 	}
-
+	
 	function handlePostReposition() {
 		
 	}
-
+	
 	function handleReady() {
 		
 	}
@@ -235,8 +307,14 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		var screenTop = Math.NaN;
 		
 		if (dirty) {
-			x = screenLeft = asComponent.screenLeft;
-			y = screenTop = asComponent.screenTop;
+			
+			screenLeft = asComponent.screenLeft;
+			screenTop = asComponent.screenTop;
+			
+			if (x != screenLeft || y != screenTop) {
+				x = screenLeft;
+				y = screenTop;
+			}
 		}
 		
 		if (tf != null && tf.tf.dirty) {

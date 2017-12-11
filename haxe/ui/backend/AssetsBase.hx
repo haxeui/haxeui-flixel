@@ -58,7 +58,9 @@ class AssetsBase {
 		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e) {
 			
 			if (loader.content != null) {
-				var frame = FlxImageFrame.fromGraphic(FlxGraphic.fromBitmapData(cast(loader.content, Bitmap).bitmapData)).frame;
+				var frame = FlxImageFrame.fromImage(cast(loader.content, Bitmap).bitmapData).frame;
+				frame.parent.persist = true; // these two booleans will screw up the UI unless changed from the default values
+				frame.parent.destroyOnNoUse = false;
 				callback(resourceId, { data : frame, width : Std.int(frame.sourceSize.x), height : Std.int(frame.sourceSize.y) } );
 			}
 		});

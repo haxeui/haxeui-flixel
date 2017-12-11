@@ -1,6 +1,7 @@
 package haxe.ui.backend;
 
 import flixel.FlxSprite;
+import flixel.graphics.frames.FlxImageFrame;
 import flixel.math.FlxRect;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.core.Component;
@@ -37,21 +38,20 @@ class ImageDisplayBase extends FlxSprite {
 		
 		if (_imageInfo != null) {
 			
-			frame = _imageInfo.data;
+			frames = FlxImageFrame.fromFrame(_imageInfo.data); // change frames type
+			
 			aspectRatio = _imageInfo.width / _imageInfo.height;
 			
-			_imageWidth = frameWidth;
-			_imageHeight = frameHeight;
+			_imageWidth = frameWidth = _imageInfo.width;
+			_imageHeight = frameHeight = _imageInfo.height;
 		}
 	}
 	
 	function validatePosition():Void { }
 	
 	function validateDisplay():Void {
-		
-		// scale?
-		
-		if (_imageClipRect == null) clipRect = null;
-		else FlxRect.get(_imageClipRect.left, _imageClipRect.top, _imageClipRect.width, _imageClipRect.height);
+		// imageClipRect
+		// will need a bit of work, merging with parent clip
+		// ugh
 	}
 }

@@ -2,7 +2,6 @@ package haxe.ui.backend;
 
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
-import flixel.text.FlxText.FlxTextFormat;
 import haxe.ui.assets.FontInfo;
 import haxe.ui.core.Component;
 import haxe.ui.styles.Style;
@@ -23,17 +22,13 @@ class TextDisplayBase {
 	
 	var _textStyle:Style;
 	var _multiline:Bool = true;
-	var _wordWrap:Bool = true;
+	var _wordWrap:Bool = false;
 	var _fontInfo:FontInfo;
-	
-	var format:FlxTextFormat;
 	
 	public function new() {
 		
 		tf = new FlxText();
-		format = new FlxTextFormat();
-		
-		tf.addFormat(format);
+		tf.autoSize = true;
 	}
 	
 	function validateData():Void {
@@ -51,14 +46,18 @@ class TextDisplayBase {
 			if (_fontInfo != null) tf.font = _fontInfo.data;
 			
 			if (_textStyle.fontBold != null) tf.bold = _textStyle.fontBold;
-			if (_textStyle.fontItalic != null) tf.bold = _textStyle.fontItalic;
-			if (_textStyle.fontUnderline != null) tf.bold = _textStyle.fontUnderline;
+			if (_textStyle.fontItalic != null) tf.italic = _textStyle.fontItalic;
+			// if (_textStyle.fontUnderline != null) tf.underline = _textStyle.fontUnderline;
 			
 			if (_textStyle.color != null) tf.color = _textStyle.color;
 			
-			tf.wordWrap = _wordWrap;
+			if (_textStyle.width != null) tf.fieldWidth = tf.width = _textStyle.width;
+			if (_textStyle.height != null) tf.textField.height = tf.height = _textStyle.height;
 			
+			if (tf.wordWrap != _wordWrap) tf.wordWrap = _wordWrap;
 			if (tf.textField.multiline != _multiline) tf.textField.multiline = _multiline;
+			
+			tf.drawFrame(true); // see if this needs to be called each time
 		}
 		
 		return true;
@@ -68,8 +67,10 @@ class TextDisplayBase {
 	
 	function validateDisplay():Void {
 		
-		if (tf.fieldWidth != _width) tf.fieldWidth = _width;
-		if (tf.textField.height != _height) tf.textField.height = _height;
+		if (!tf.autoSize) {
+			if (tf.fieldWidth != _width) tf.fieldWidth = _width;
+			if (tf.textField.height != _height) tf.textField.height = _height;
+		}
 	}
 	
 	function measureText():Void {

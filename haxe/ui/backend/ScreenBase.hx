@@ -81,19 +81,19 @@ class ScreenBase {
 		__eventMap.set(type, cb);
 		
 		switch (type) {
-			case MouseEvent.MOUSE_OVER:
+			case haxe.ui.core.MouseEvent.MOUSE_OVER:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_OVER, cb);
-			case MouseEvent.MOUSE_OUT:
+			case haxe.ui.core.MouseEvent.MOUSE_OUT:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_OUT, cb);
-			case MouseEvent.MOUSE_DOWN:
+			case haxe.ui.core.MouseEvent.MOUSE_DOWN:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_DOWN, cb);
-			case MouseEvent.MOUSE_UP:
+			case haxe.ui.core.MouseEvent.MOUSE_UP:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_UP, cb);
-			case MouseEvent.CLICK:
+			case haxe.ui.core.MouseEvent.CLICK:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.CLICK, cb);
-			case MouseEvent.MOUSE_MOVE:
+			case haxe.ui.core.MouseEvent.MOUSE_MOVE:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_MOVE, cb);
-			case MouseEvent.MOUSE_WHEEL:
+			case haxe.ui.core.MouseEvent.MOUSE_WHEEL:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_WHEEL, cb);
 		}
 	}
@@ -106,19 +106,19 @@ class ScreenBase {
 		__eventMap.remove(type);
 		
 		switch (type) {
-			case MouseEvent.MOUSE_OVER:
+			case haxe.ui.core.MouseEvent.MOUSE_OVER:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_OVER, cb);
-			case MouseEvent.MOUSE_OUT:
+			case haxe.ui.core.MouseEvent.MOUSE_OUT:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_OUT, cb);
-			case MouseEvent.MOUSE_DOWN:
+			case haxe.ui.core.MouseEvent.MOUSE_DOWN:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_DOWN, cb);
-			case MouseEvent.MOUSE_UP:
+			case haxe.ui.core.MouseEvent.MOUSE_UP:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_UP, cb);
-			case MouseEvent.CLICK:
+			case haxe.ui.core.MouseEvent.CLICK:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.CLICK, cb);
-			case MouseEvent.MOUSE_MOVE:
+			case haxe.ui.core.MouseEvent.MOUSE_MOVE:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_MOVE, cb);
-			case MouseEvent.MOUSE_WHEEL:
+			case haxe.ui.core.MouseEvent.MOUSE_WHEEL:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_WHEEL, cb);
 		}
 	}
@@ -130,7 +130,7 @@ class ScreenBase {
 		me.screenX = FlxG.mouse.screenX;
 		me.screenY = FlxG.mouse.screenY;
 		me.buttonDown = FlxG.mouse.pressed;
-		if (type == MouseEvent.MOUSE_WHEEL) me.delta = FlxG.mouse.wheel;
+		if (type == haxe.ui.core.MouseEvent.MOUSE_WHEEL) me.delta = FlxG.mouse.wheel;
 		listener(me);
 	}
 	
