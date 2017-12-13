@@ -1,6 +1,8 @@
 package haxe.ui.backend;
 
+import flixel.FlxG;
 import haxe.ui.Preloader.PreloadItem;
+import haxe.ui.backend.flixel.FlxUIHelper;
 
 class AppBase {
 	
@@ -17,7 +19,8 @@ class AppBase {
 	}
 	
 	function getToolkitInit():Dynamic {
-		return { };
+		FlxG.state.memberAdded.add(FlxUIHelper.readyUI);
+		return { container : FlxG.state };
 	}
 	
 	function buildPreloadList():Array<PreloadItem> {

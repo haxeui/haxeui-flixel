@@ -38,20 +38,24 @@ class ImageDisplayBase extends FlxSprite {
 		
 		if (_imageInfo != null) {
 			
-			frames = FlxImageFrame.fromFrame(_imageInfo.data); // change frames type
+			// save the clipRect, or will it be regenerated?
+			
+			frames = FlxImageFrame.fromFrame(_imageInfo.data);
 			
 			aspectRatio = _imageInfo.width / _imageInfo.height;
 			
-			_imageWidth = frameWidth = _imageInfo.width;
-			_imageHeight = frameHeight = _imageInfo.height;
+			width = frameWidth = _imageInfo.width;
+			height = frameHeight = _imageInfo.height;
 		}
 	}
 	
 	function validatePosition():Void { }
 	
 	function validateDisplay():Void {
+		
 		// imageClipRect
 		// will need a bit of work, merging with parent clip
 		// ugh
+		
 	}
 }
