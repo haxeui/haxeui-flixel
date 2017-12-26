@@ -38,9 +38,17 @@ class ImageDisplayBase extends FlxSprite {
 		
 		if (_imageInfo != null) {
 			
-			// save the clipRect, or will it be regenerated?
+			// in case the graphic came from a spritesheet
+			var atlasFrames = _imageInfo.data.parent.getFramesCollections(flixel.graphics.frames.FlxFramesCollection.FlxFrameCollectionType.ATLAS);
 			
-			frames = FlxImageFrame.fromFrame(_imageInfo.data);
+			if (atlasFrames.length > 0) {
+				frames = atlasFrames[0];
+				frame = _imageInfo.data;
+			}
+			
+			else {
+				frames = FlxImageFrame.fromFrame(_imageInfo.data);
+			}
 			
 			aspectRatio = _imageInfo.width / _imageInfo.height;
 			
@@ -54,8 +62,6 @@ class ImageDisplayBase extends FlxSprite {
 	function validateDisplay():Void {
 		
 		// imageClipRect
-		// will need a bit of work, merging with parent clip
-		// ugh
 		
 	}
 }
