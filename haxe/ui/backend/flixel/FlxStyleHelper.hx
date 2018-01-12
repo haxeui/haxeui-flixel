@@ -28,7 +28,7 @@ class FlxStyleHelper {
 			
 			var opacity = style.backgroundOpacity == null ? 1 : style.backgroundOpacity;
 			var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.backgroundColor;
-			var radius:Float = style.borderRadius == null ? 0 : style.borderRadius;
+			var radius:Float = style.borderRadius == null ? 0 : style.borderRadius + 2;
 			
 			// gradient
 			
