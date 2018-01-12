@@ -136,7 +136,7 @@ class ScreenBase {
 	
 	function supportsEvent(type:String):Bool {
 		// not key events...
-		return !__eventMap.exists(type);
+		return true;
 	}
 
 	public function messageDialog(message:String, title:String = null, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
