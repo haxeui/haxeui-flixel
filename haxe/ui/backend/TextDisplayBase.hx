@@ -5,9 +5,11 @@ import flixel.text.FlxText;
 import haxe.ui.assets.FontInfo;
 import haxe.ui.core.Component;
 import haxe.ui.styles.Style;
+import haxe.ui.core.TextDisplay.TextDisplayData;
 
 class TextDisplayBase {
-	
+	private var _displayData:TextDisplayData = new TextDisplayData();
+
 	public var parentComponent:Component;
 	public var tf:FlxText;
 	
@@ -21,8 +23,6 @@ class TextDisplayBase {
 	var _textHeight:Float = 0;
 	
 	var _textStyle:Style;
-	var _multiline:Bool = true;
-	var _wordWrap:Bool = false;
 	var _fontInfo:FontInfo;
 	
 	public function new() {
@@ -54,8 +54,8 @@ class TextDisplayBase {
 			if (_textStyle.width != null) tf.fieldWidth = tf.width = _textStyle.width;
 			if (_textStyle.height != null) tf.textField.height = tf.height = _textStyle.height;
 			
-			if (tf.wordWrap != _wordWrap) tf.wordWrap = _wordWrap;
-			if (tf.textField.multiline != _multiline) tf.textField.multiline = _multiline;
+			if (tf.wordWrap != _displayData.wordWrap) tf.wordWrap = _displayData.wordWrap;
+			if (tf.textField.multiline != _displayData.multiline) tf.textField.multiline = _displayData.multiline;
 			
 			tf.drawFrame(true); // see if this needs to be called each time
 		}
