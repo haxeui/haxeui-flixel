@@ -74,7 +74,7 @@ class TextDisplayBase {
 	}
 	
 	function measureText():Void {
-		_textWidth = tf.textField.textWidth;
-		_textHeight = tf.textField.textHeight;
+		_textWidth = tf.textField.textWidth + 2;
+		_textHeight = tf.textField.textHeight + 2;
 	}
 }
