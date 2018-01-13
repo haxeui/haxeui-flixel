@@ -19,8 +19,7 @@ class AppBase {
 	}
 	
 	function getToolkitInit():Dynamic {
-		FlxG.state.memberAdded.add(FlxUIHelper.readyUI);
-		return { container : FlxG.state };
+		return { };
 	}
 	
 	function buildPreloadList():Array<PreloadItem> {

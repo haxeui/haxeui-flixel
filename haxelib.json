@@ -1,0 +1,10 @@
+{
+	"name": "haxeui-flixel",
+	"url": "https://github.com/haxeui/haxeui-flixel",
+	"license": "MIT",
+	"tags": ["ui", "gui", "flixel"],
+	"description": "The Flixel backend of the HaxeUI framework",
+	"version": "0.0.0",
+	"releasenote": "Initial release",
+	"contributors": ["haxeui", "MSGhero", "ianharrigan"]
+ }

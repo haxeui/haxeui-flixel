@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.input.mouse.FlxMouseEventManager;
+import haxe.ui.backend.flixel.FlxUIHelper;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.DialogButton;
 import haxe.ui.core.Component;
@@ -18,21 +19,40 @@ class ScreenBase {
 	public function new() {
 		
 	}
-
-	public var options:Dynamic;
-
+	
+	public var options(default, set):Dynamic;
+	function set_options(opt:Dynamic):Dynamic {
+		
+		if (options != null && options.container != null) {
+			var fg:FlxGroup = options.container;
+			fg.memberAdded.remove(FlxUIHelper.readyUI);
+		}
+		
+		options = opt;
+		
+		if (options != null) {
+			
+			if (options.container == null) options.container = FlxG.state;
+			
+			var fg:FlxGroup = options.container;
+			fg.memberAdded.add(FlxUIHelper.readyUI);
+		}
+		
+		return opt;
+	}
+	
 	public var width(get, null):Float;
 	inline function get_width():Float {
 		return FlxG.width;
 	}
-
+	
 	public var height(get, null):Float;
 	inline function get_height() {
 		return FlxG.height;
 	}
-
+	
 	public var focus:Component;
-
+	
 	public var dpi(get, null):Float;
 	inline function get_dpi():Float {
 		return System.getDisplay(0).dpi;
@@ -51,15 +71,15 @@ class ScreenBase {
 		container.add(component);
 		component.ready(); // the component will already be ready from the add signal, but in case the user is only using Screen...
 	}
-
+	
 	public function removeComponent(component:Component) {
 		container.remove(component, true);
 	}
-
+	
 	function handleSetComponentIndex(child:Component, index:Int) {
 		container.insert(index, child);
 	}
-
+	
 	var container(get, null):FlxGroup;
 	function get_container():FlxGroup {
 		
@@ -67,7 +87,7 @@ class ScreenBase {
 			return options.container;
 		}
 		
-		throw "To use Screen, you must initialize a FlxGroup to be the container: Toolkit.init( { container : myFlxGroup } );";
+		return null;
 	}
 	
 	var __eventMap:Map<String, flash.events.MouseEvent->Void> = new Map<String, flash.events.MouseEvent->Void>();
@@ -75,7 +95,7 @@ class ScreenBase {
 		
 		// utilizing the stage to capture "global" mouse events
 		
-		if (__eventMap.exists(type)) return; // assuming only one global mouse event of a certain type can occur at a time
+		if (__eventMap.exists(type)) return;
 		
 		var cb = __onMouseEvent.bind(type, listener);
 		__eventMap.set(type, cb);
@@ -138,15 +158,15 @@ class ScreenBase {
 		// not key events...
 		return true;
 	}
-
+	
 	public function messageDialog(message:String, title:String = null, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
 		return null;
 	}
-
+	
 	public function showDialog(content:Component, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
 		return null;
 	}
-
+	
 	public function hideDialog(dialog:Dialog):Bool {
 		return false;
 	}
