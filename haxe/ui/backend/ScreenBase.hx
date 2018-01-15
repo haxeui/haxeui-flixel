@@ -20,15 +20,15 @@ class ScreenBase {
 		
 	}
 	
-	public var options(default, set):Dynamic;
-	function set_options(opt:Dynamic):Dynamic {
+	public var options(default, set):ToolkitOptions;
+	function set_options(tko:ToolkitOptions):ToolkitOptions {
 		
 		if (options != null && options.container != null) {
 			var fg:FlxGroup = options.container;
 			fg.memberAdded.remove(FlxUIHelper.readyUI);
 		}
 		
-		options = opt;
+		options = tko;
 		
 		if (options != null) {
 			
@@ -38,7 +38,7 @@ class ScreenBase {
 			fg.memberAdded.add(FlxUIHelper.readyUI);
 		}
 		
-		return opt;
+		return tko;
 	}
 	
 	public var width(get, null):Float;
