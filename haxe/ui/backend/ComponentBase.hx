@@ -104,9 +104,18 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		return child;
 	}
 	
+	function handleAddComponentAt(child:Component, index:Int):Component {
+		insert(index, child);
+		return child;
+	}
+	
 	function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
 		if (members.indexOf(child) > -1) remove(child, true);
 		return child;
+	}
+	
+	function handleRemoveComponentAt(index:Int, dispose:Bool = true):Component {
+		return handleRemoveComponent(asComponent.childComponents[index], dispose);
 	}
 	
 	function handleSetComponentIndex(child:Component, index:Int):Void {
