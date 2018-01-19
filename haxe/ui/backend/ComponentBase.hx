@@ -23,6 +23,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	var surface:FlxSprite; // drawing surface
 	var image:ImageDisplay; // where images are displayed
 	var tf:TextDisplay; // text
+	var input:TextInput;
 	
 	var asComponent:Component = cast this;
 	
@@ -56,11 +57,18 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	}
 	
 	public function getTextInput():TextInput {
-		return null;
+		
+		if (input != null) return input;
+		
+		input = new TextInput();
+		input.parentComponent = asComponent;
+		add(input.tf);
+		
+		return input;
 	}
 	
 	public function hasTextInput():Bool {
-		return false;
+		return input != null;
 	}
 	
 	//***********************************************************************************************************
@@ -105,7 +113,16 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	}
 	
 	function handleAddComponentAt(child:Component, index:Int):Component {
-		insert(index, child);
+		
+		// index is in terms of haxeui components, not flixel children
+		
+		var indexOffset = 0;
+		
+		while (indexOffset < members.length) {
+			if (!Std.is(members[indexOffset], Component)) indexOffset++;
+		}
+		
+		insert(index + indexOffset, child);
 		return child;
 	}
 	
@@ -119,7 +136,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	}
 	
 	function handleSetComponentIndex(child:Component, index:Int):Void {
-		insert(index, child);
+		handleAddComponentAt(child, index);
 	}
 	
 	function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
@@ -270,6 +287,8 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		image = null;
 		if (tf != null) tf.tf.destroy();
 		tf = null;
+		if (input != null) input.tf.destroy();
+		input = null;
 		
 		asComponent = null;
 	}
@@ -311,6 +330,17 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 			
 			image.x = image.left + screenLeft;
 			image.y = image.top + screenTop;
+		}
+		
+		if (input != null && input.tf.dirty) {
+			
+			if (Math.isNaN(screenLeft)) {
+				screenLeft = asComponent.screenLeft;
+				screenTop = asComponent.screenTop;
+			}
+			
+			input.tf.x = input.left + screenLeft;
+			input.tf.y = input.top + screenTop;
 		}
 		
 		super.draw();

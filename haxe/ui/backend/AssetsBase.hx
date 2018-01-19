@@ -12,6 +12,7 @@ import haxe.ui.assets.FontInfo;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.util.ByteConverter;
 import openfl.Assets;
+import openfl.Assets.AssetType;
 
 class AssetsBase {
 
@@ -69,7 +70,18 @@ class AssetsBase {
 	}
 
 	function getFontInternal(resourceId:String, callback:FontInfo->Void):Void {
-		callback(null);
+		
+		var fontName:String = null;
+		
+		if (isEmbeddedFont(resourceId) && Assets.exists(resourceId, AssetType.FONT)) {
+			fontName = Assets.getFont(resourceId).fontName;
+		}
+		
+		else {
+			fontName = resourceId;
+		}
+		
+		callback( { data : fontName } );
 	}
 
 	function getFontFromHaxeResource(resourceId:String, callback:String->FontInfo->Void):Void {
@@ -83,5 +95,9 @@ class AssetsBase {
 		}
 		
 		return null;
+	}
+	
+	static inline function isEmbeddedFont(fontName:String):Bool {
+		return fontName != "_sans" && fontName != "_serif" && fontName != "_typewriter";
 	}
 }
