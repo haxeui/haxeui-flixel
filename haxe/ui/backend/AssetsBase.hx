@@ -45,7 +45,12 @@ class AssetsBase {
 			frame = FlxImageFrame.fromGraphic(graphic).frame;
 		}
 		
-		if (frame != null) callback( { data : frame, width : Std.int(frame.sourceSize.x), height : Std.int(frame.sourceSize.y) } );
+		if (frame != null) {
+			frame.parent.persist = true;
+			frame.parent.destroyOnNoUse = false;
+			callback( { data : frame, width : Std.int(frame.sourceSize.x), height : Std.int(frame.sourceSize.y) } );
+		}
+		
 		else callback(null);
 	}
 
