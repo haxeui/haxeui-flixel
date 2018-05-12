@@ -25,7 +25,8 @@ class ScreenBase {
 		
 		if (options != null && options.container != null) {
 			var fg:FlxGroup = options.container;
-			fg.memberAdded.remove(FlxUIHelper.readyUI);
+			if (fg.exists) fg.memberAdded.remove(FlxUIHelper.readyUI);
+			else options.container = null; // clean up references to destroyed containers
 		}
 		
 		options = tko;

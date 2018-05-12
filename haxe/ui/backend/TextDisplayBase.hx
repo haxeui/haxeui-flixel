@@ -51,9 +51,6 @@ class TextDisplayBase {
 			
 			if (_textStyle.color != null) tf.color = _textStyle.color;
 			
-			if (_textStyle.width != null) tf.fieldWidth = tf.width = _textStyle.width;
-			if (_textStyle.height != null) tf.textField.height = tf.height = _textStyle.height;
-			
 			if (tf.wordWrap != _displayData.wordWrap) tf.wordWrap = _displayData.wordWrap;
 			if (tf.textField.multiline != _displayData.multiline) tf.textField.multiline = _displayData.multiline;
 			

@@ -120,6 +120,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		while (indexOffset < members.length) {
 			if (!Std.is(members[indexOffset], Component)) indexOffset++;
+			else break;
 		}
 		
 		insert(index + indexOffset, child);

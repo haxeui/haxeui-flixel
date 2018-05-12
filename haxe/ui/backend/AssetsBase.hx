@@ -12,7 +12,7 @@ import haxe.ui.assets.FontInfo;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.util.ByteConverter;
 import openfl.Assets;
-import openfl.Assets.AssetType;
+import openfl.utils.AssetType;
 
 class AssetsBase {
 
