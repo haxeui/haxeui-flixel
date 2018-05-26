@@ -9,7 +9,7 @@ import haxe.ui.util.Rectangle;
 
 class ImageDisplayBase extends FlxSprite {
 	
-	public var parent:Component;
+	public var parentComponent:Component;
 	
 	public var aspectRatio:Float = 1; // width x height
 
@@ -29,7 +29,7 @@ class ImageDisplayBase extends FlxSprite {
 	override public function destroy():Void {
 		super.destroy();
 		
-		parent = null;
+		parentComponent = null;
 		_imageInfo = null; // destroy?
 		_imageClipRect = null;
 	}

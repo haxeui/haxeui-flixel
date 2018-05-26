@@ -21,9 +21,9 @@ import haxe.ui.util.Rectangle;
 class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	
 	var surface:FlxSprite; // drawing surface
-	var image:ImageDisplay; // where images are displayed
-	var tf:TextDisplay; // text
-	var input:TextInput;
+	var _imageDisplay:ImageDisplay; // where images are displayed
+	var _textDisplay:TextDisplay; // text
+	var _textInput:TextInput;
 	
 	var asComponent:Component = cast this;
 	
@@ -42,33 +42,45 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	//***********************************************************************************************************
 	
 	public function getTextDisplay():TextDisplay {
+		return createTextDisplay();
+	}
+	
+	public function createTextDisplay(text:String = null):TextDisplay {
 		
-		if (tf != null) return tf; 
+		if (_textDisplay == null) {
+			_textDisplay = new TextDisplay();
+			_textDisplay.parentComponent = asComponent;
+			add(_textDisplay.tf);
+		}
 		
-		tf = new TextDisplay();
-		tf.parentComponent = asComponent;
-		add(tf.tf);
+		if (text != null) _textDisplay.text = text;
 		
-		return tf;
+		return _textDisplay;
 	}
 	
 	public function hasTextDisplay():Bool {
-		return tf != null;
+		return _textDisplay != null;
 	}
 	
-	public function getTextInput():TextInput {
+	public function getTextInput(text:String = null):TextInput {
+		return createTextInput();
+	}
+	
+	public function createTextInput(text:String = null):TextInput {
 		
-		if (input != null) return input;
+		if (_textInput == null) {
+			_textInput = new TextInput();
+			_textInput.parentComponent = asComponent;
+			add(_textInput.tf);
+		}
 		
-		input = new TextInput();
-		input.parentComponent = asComponent;
-		add(input.tf);
+		if (text != null) _textInput.text = text;
 		
-		return input;
+		return _textInput;
 	}
 	
 	public function hasTextInput():Bool {
-		return input != null;
+		return _textInput != null;
 	}
 	
 	//***********************************************************************************************************
@@ -76,26 +88,30 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	//***********************************************************************************************************
 	
 	public function getImageDisplay():ImageDisplay {
+		return createImageDisplay();
+	}
+	
+	public function createImageDisplay():ImageDisplay {
 		
-		if (image != null) return image;
+		if (_imageDisplay != null) return _imageDisplay;
 		
-		image = new ImageDisplay();
-		image.parent = asComponent;
-		add(image);
+		_imageDisplay = new ImageDisplay();
+		_imageDisplay.parent = asComponent;
+		add(_imageDisplay);
 		
-		return image;
+		return _imageDisplay;
 	}
 	
 	public function hasImageDisplay():Bool {
-		return image != null;
+		return _imageDisplay != null;
 	}
 	
 	public function removeImageDisplay():Void {
 		
-		if (image != null) {
-			remove(image, true);
-			image.destroy();
-			image = null;
+		if (_imageDisplay != null) {
+			remove(_imageDisplay, true);
+			_imageDisplay.destroy();
+			_imageDisplay = null;
 		}
 	}
 	
@@ -284,12 +300,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		if (surface != null) surface.destroy();
 		surface = null;
-		if (image != null) image.destroy();
-		image = null;
-		if (tf != null) tf.tf.destroy();
-		tf = null;
-		if (input != null) input.tf.destroy();
-		input = null;
+		if (_imageDisplay != null) _imageDisplay.destroy();
+		_imageDisplay = null;
+		if (_textDisplay != null) _textDisplay.tf.destroy();
+		_textDisplay = null;
+		if (_textInput != null) _textInput.tf.destroy();
+		_textInput = null;
 		
 		asComponent = null;
 	}
@@ -311,37 +327,37 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 			}
 		}
 		
-		if (tf != null && tf.tf.dirty) {
+		if (_textDisplay != null && _textDisplay.tf.dirty) {
 			
 			if (Math.isNaN(screenLeft)) {
 				screenLeft = asComponent.screenLeft;
 				screenTop = asComponent.screenTop;
 			}
 			
-			tf.tf.x = tf.left + screenLeft;
-			tf.tf.y = tf.top + screenTop;
+			_textDisplay.tf.x = _textDisplay.left + screenLeft;
+			_textDisplay.tf.y = _textDisplay.top + screenTop;
 		}
 		
-		if (image != null && image.dirty) {
+		if (_imageDisplay != null && _imageDisplay.dirty) {
 			
 			if (Math.isNaN(screenLeft)) {
 				screenLeft = asComponent.screenLeft;
 				screenTop = asComponent.screenTop;
 			}
 			
-			image.x = image.left + screenLeft;
-			image.y = image.top + screenTop;
+			_imageDisplay.x = _imageDisplay.left + screenLeft;
+			_imageDisplay.y = _imageDisplay.top + screenTop;
 		}
 		
-		if (input != null && input.tf.dirty) {
+		if (_textInput != null && _textInput.tf.dirty) {
 			
 			if (Math.isNaN(screenLeft)) {
 				screenLeft = asComponent.screenLeft;
 				screenTop = asComponent.screenTop;
 			}
 			
-			input.tf.x = input.left + screenLeft;
-			input.tf.y = input.top + screenTop;
+			_textInput.tf.x = _textInput.left + screenLeft;
+			_textInput.tf.y = _textInput.top + screenTop;
 		}
 		
 		super.draw();
