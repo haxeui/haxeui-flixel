@@ -25,10 +25,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	var tf:TextDisplay; // text
 	var input:TextInput;
 	
-	var asComponent:Component = cast this;
+	var asComponent:Component;
 	
 	public function new() {
 		super();
+		
+		asComponent = cast this;
 		
 		scrollFactor.set(0, 0); // ui doesn't scroll by default
 		
