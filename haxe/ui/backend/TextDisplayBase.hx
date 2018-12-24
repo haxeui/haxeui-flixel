@@ -71,7 +71,12 @@ class TextDisplayBase {
 	}
 	
 	function measureText():Void {
+        #if html5
 		_textWidth = tf.textField.textWidth + 2;
 		_textHeight = tf.textField.textHeight + 2;
+        #else
+		_textWidth = tf.textField.textWidth + 4;
+		_textHeight = tf.textField.textHeight + 4;
+        #end
 	}
 }

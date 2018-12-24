@@ -1,3 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <module id="haxeui-flixel">
+    <resources>
+        <resource path="/haxe/ui/backend/flixel/_module/styles" prefix="haxeui-flixel/styles" />
+    </resources>
+    
+    <themes>
+        <flixel-ui parent="default">
+            <style resource="haxeui-flixel/styles/flixel-ui/main.css" />
+        </flixel-ui>
+    </themes>
 </module>

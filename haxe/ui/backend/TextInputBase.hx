@@ -9,4 +9,12 @@ class TextInputBase extends TextDisplayBase {
 	public function new() {
 		super();
 	}
+    
+    public function focus() {
+        
+    }
+    
+    public function blur() {
+        
+    }
 }

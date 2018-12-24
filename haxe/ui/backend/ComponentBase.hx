@@ -25,11 +25,11 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	var _textDisplay:TextDisplay; // text
 	var _textInput:TextInput;
 	
-	var asComponent:Component = cast this;
+	var asComponent:Component = null;
 	
 	public function new() {
 		super();
-		
+		asComponent = cast(this, Component);
 		scrollFactor.set(0, 0); // ui doesn't scroll by default
 		
 		surface = new FlxSprite();
@@ -96,7 +96,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		if (_imageDisplay != null) return _imageDisplay;
 		
 		_imageDisplay = new ImageDisplay();
-		_imageDisplay.parent = asComponent;
+		_imageDisplay.parentComponent = asComponent;
 		add(_imageDisplay);
 		
 		return _imageDisplay;

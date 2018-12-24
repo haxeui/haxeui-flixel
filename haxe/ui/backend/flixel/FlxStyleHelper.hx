@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
+import flixel.util.FlxSpriteUtil.LineStyle;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.backend.ImageData;
 import haxe.ui.styles.Style;
@@ -24,6 +25,55 @@ class FlxStyleHelper {
 		
 		var pixels = sprite.pixels;
 		
+        
+        
+        
+        
+        var left:Float = 0;
+        var top:Float = 0;
+        var width:Float = sprite.frameWidth;
+        var height:Float = sprite.frameHeight;
+        
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+        
+        var rc:Rectangle = new Rectangle(top, left, width, height);
+        var borderRadius:Float = 0;
+        if (style.borderRadius != null) {
+            borderRadius = style.borderRadius;
+        }
+
+        var lineStyle:LineStyle = { pixelHinting: true };
+        if (style.borderLeftSize != null && style.borderLeftSize != 0
+            && style.borderLeftSize == style.borderRightSize
+            && style.borderLeftSize == style.borderBottomSize
+            && style.borderLeftSize == style.borderTopSize
+
+            && style.borderLeftColor != null
+            && style.borderLeftColor == style.borderRightColor
+            && style.borderLeftColor == style.borderBottomColor
+            && style.borderLeftColor == style.borderTopColor) { // TODO: kinda ugly border issue with pixel anti-aliasing (it seems) - only seems to be html5?
+            lineStyle.thickness = style.borderLeftSize;
+            lineStyle.color = style.borderLeftColor | 0xFF000000;
+            rc.left += style.borderLeftSize / 2;
+            rc.top += style.borderLeftSize / 2;
+            rc.bottom -= style.borderLeftSize / 2;
+            rc.right -= style.borderLeftSize / 2;
+            //rc.inflate( -(style.borderLeftSize / 2), -(style.borderLeftSize / 2));
+        }        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 		if (style.backgroundColor != null) {
 			
 			var opacity = style.backgroundOpacity == null ? 1 : style.backgroundOpacity;
@@ -32,8 +82,12 @@ class FlxStyleHelper {
 			
 			// gradient
 			
-			if (radius == 0) pixels.fillRect(sprite.pixels.rect, color);
-			else FlxSpriteUtil.drawRoundRect(sprite, 0, 0, sprite.frameWidth, sprite.frameHeight, radius, radius, color);
+			if (radius == 0) {
+                pixels.fillRect(rc, color);
+            } else {
+                var drawStyle:DrawStyle = { smoothing: false };
+                FlxSpriteUtil.drawRoundRect(sprite, rc.left, rc.top, rc.width, rc.height, radius, radius, color, lineStyle, drawStyle);
+            }
 		}
 		
 		if (style.backgroundImage != null) {

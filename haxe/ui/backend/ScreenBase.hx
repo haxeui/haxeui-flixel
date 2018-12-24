@@ -6,8 +6,6 @@ import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import haxe.ui.backend.flixel.FlxUIHelper;
-import haxe.ui.containers.dialogs.Dialog;
-import haxe.ui.containers.dialogs.DialogButton;
 import haxe.ui.core.Component;
 import haxe.ui.core.MouseEvent;
 import haxe.ui.core.UIEvent;
@@ -158,17 +156,5 @@ class ScreenBase {
 	function supportsEvent(type:String):Bool {
 		// not key events...
 		return true;
-	}
-	
-	public function messageDialog(message:String, title:String = null, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
-		return null;
-	}
-	
-	public function showDialog(content:Component, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
-		return null;
-	}
-	
-	public function hideDialog(dialog:Dialog):Bool {
-		return false;
 	}
 }
