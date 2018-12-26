@@ -57,7 +57,6 @@ class AssetsBase {
 
 	function getImageFromHaxeResource(resourceId:String, callback:String->ImageInfo->Void):Void {
 		var bytes = Resource.getBytes(resourceId);
-        trace("resourceId: " + resourceId);
 		imageFromBytes(bytes, callback.bind(resourceId));
 	}
 	

@@ -44,7 +44,8 @@ class FlxStyleHelper {
             borderRadius = style.borderRadius;
         }
 
-        var lineStyle:LineStyle = { pixelHinting: true };
+        var lineStyle:LineStyle = FlxSpriteUtil.getDefaultLineStyle();
+        lineStyle.thickness = 0;
         if (style.borderLeftSize != null && style.borderLeftSize != 0
             && style.borderLeftSize == style.borderRightSize
             && style.borderLeftSize == style.borderBottomSize
@@ -85,8 +86,12 @@ class FlxStyleHelper {
 			if (radius == 0) {
                 pixels.fillRect(rc, color);
             } else {
-                var drawStyle:DrawStyle = { smoothing: false };
-                FlxSpriteUtil.drawRoundRect(sprite, rc.left, rc.top, rc.width, rc.height, radius, radius, color, lineStyle, drawStyle);
+                //var drawStyle:DrawStyle = { smoothing: false };
+                if (lineStyle.thickness > 0) {
+                    FlxSpriteUtil.drawRoundRect(sprite, rc.left, rc.top, rc.width, rc.height, radius, radius, color, lineStyle);
+                } else {
+                    FlxSpriteUtil.drawRoundRect(sprite, rc.left, rc.top, rc.width, rc.height, radius, radius, color);
+                }
             }
 		}
 		

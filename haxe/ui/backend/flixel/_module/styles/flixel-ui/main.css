@@ -108,6 +108,7 @@
 .vertical-scroll2 .button {
     width: 12px;
     height: 12px;
+    background-image: none;
 }
 
 .range {
@@ -142,8 +143,68 @@
     vertical-align: center;
 }
 
+.listview2 {
+    background-image: "haxeui-flixel/styles/flixel-ui/box.png";
+    background-image-slice: 2px 2px 14px 14px;
+    filter: none;
+    __padding: 0;
+}
+
+.listview2 .listview-contents {
+    __padding-left: 1px;
+    __padding-top: 1px;
+    __padding-bottom: 1px;
+}
+
+.listview2 .vertical-scroll2 {
+    __padding-top: -1px;
+    __margin-top: -1px;
+    __margin-left: 10px;
+}
+
+.scroll2 {
+    background-color: #E9E9E9;
+}
+
+.scroll2 .button {
+    border-radius: 0;
+    border: none;
+    background-color: #E9E9E9;
+    padding: 0;
+    filter: none;
+}
+
+.scroll2 .button:hover {
+    background-color: #D7D7D7;
+}
+
+.scroll2 .button:down {
+    background-color: #525252;
+    filter: none;
+}
+
+.scroll2 .thumb {
+    background-color: #C6C6C6;
+}
+
+.scroll2 .thumb:hover {
+    background-color: #AAAAAA;
+}
+
+.scroll2 .thumb:down {
+    background-color: #525252;
+}
+
+.tabbar-contents {
+    horizontal-spacing: -1px;
+}
+
 .tabbar2 {
-    horizontal-spacing: 0;
+    background-image: "haxeui-flixel/styles/flixel-ui/tabbar_bg.png";
+    background-image-slice: 2px 2px 14px 14px;
+    filter: none;
+    __padding: 0;
+    padding-left: 0;
 }
 
 .tabbar2 .button {
@@ -152,8 +213,49 @@
     background-image-slice: 5px 5px 13px 13px;
 }
 
-.listview2 {
-    background-image: "haxeui-flixel/styles/flixel-ui/box.png";
-    background-image-slice: 2px 2px 14px 14px;
+.tabbar2 .button {
+    background-image: "haxeui-flixel/styles/flixel-ui/tabs.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar-button-selected {
+    background-image: "haxeui-flixel/styles/flixel-ui/tabs.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabview2 {
+    background-image: "haxeui-flixel/styles/flixel-ui/tabview_bg.png";
+    background-image-slice: 5px 5px 13px 13px;
+    filter: none;
+}
+
+.tabbar-scroll-left {
+    background-image: "haxeui-flixel/styles/flixel-ui/button_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar-scroll-right {
+    background-image: "haxeui-flixel/styles/flixel-ui/button_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.switch-button-sub {
+    border: none;
+    background-color: none;
+    background: none;
+    filter: none;
+    background-image: "haxeui-flixel/styles/flixel-ui/button.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.alt2 .switch-button-sub-extra {
+    border: none;
+    background-color: none;
+    background: none;
     filter: none;
 }
