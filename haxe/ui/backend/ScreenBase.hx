@@ -66,10 +66,24 @@ class ScreenBase {
 		return s;
 	}
 	
+    private var _topLevelComponents:Array<Component> = new Array<Component>();
 	public function addComponent(component:Component) {
 		container.add(component);
 		component.ready(); // the component will already be ready from the add signal, but in case the user is only using Screen...
+        _topLevelComponents.push(component);
+        onContainerResize();
 	}
+
+    private function onContainerResize() {
+        for (c in _topLevelComponents) {
+            if (c.percentWidth > 0) {
+                c.width = (this.width * c.percentWidth) / 100;
+            }
+            if (c.percentHeight > 0) {
+                c.height = (this.height * c.percentHeight) / 100;
+            }
+        }
+    }
 	
 	public function removeComponent(component:Component) {
 		container.remove(component, true);

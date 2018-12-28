@@ -36,36 +36,63 @@ class TextDisplayBase {
 	}
 	
 	function validateStyle():Bool {
+        var measureTextRequired:Bool = false;
 		
 		if (_textStyle != null) {
 			
-			if (_textStyle.textAlign != null) tf.alignment = _textStyle.textAlign;
+			if (_textStyle.textAlign != null) {
+                tf.alignment = _textStyle.textAlign;
+                measureTextRequired = true;
+            }
 			
-			if (_textStyle.fontSize != null) tf.size = Std.int(_textStyle.fontSize);
+			if (_textStyle.fontSize != null) {
+                tf.size = Std.int(_textStyle.fontSize);
+                measureTextRequired = true;
+            }
 			
-			if (_fontInfo != null) tf.font = _fontInfo.data;
+			if (_fontInfo != null) {
+                tf.font = _fontInfo.data;
+                measureTextRequired = true;
+            }
 			
-			if (_textStyle.fontBold != null) tf.bold = _textStyle.fontBold;
-			if (_textStyle.fontItalic != null) tf.italic = _textStyle.fontItalic;
+			if (_textStyle.fontBold != null) {
+                tf.bold = _textStyle.fontBold;
+                measureTextRequired = true;
+            }
+            
+			if (_textStyle.fontItalic != null) {
+                tf.italic = _textStyle.fontItalic;
+                measureTextRequired = true;
+            }
 			// if (_textStyle.fontUnderline != null) tf.underline = _textStyle.fontUnderline;
 			
-			if (_textStyle.color != null) tf.color = _textStyle.color;
+			if (_textStyle.color != null) {
+                tf.color = _textStyle.color;
+            }
 			
-			if (tf.wordWrap != _displayData.wordWrap) tf.wordWrap = _displayData.wordWrap;
-			if (tf.textField.multiline != _displayData.multiline) tf.textField.multiline = _displayData.multiline;
+			if (tf.wordWrap != _displayData.wordWrap) {
+                tf.wordWrap = _displayData.wordWrap;
+                tf.autoSize = !_displayData.wordWrap;
+                measureTextRequired = true;
+            }
+			if (tf.textField.multiline != _displayData.multiline) {
+                tf.textField.multiline = _displayData.multiline;
+                tf.autoSize = !_displayData.multiline;
+                measureTextRequired = true;
+            }
 			
 			tf.drawFrame(true); // see if this needs to be called each time
 		}
 		
-		return true;
+		return measureTextRequired;
 	}
 	
-	public function validatePosition():Void { }
+	public function validatePosition():Void {
+    }
 	
 	function validateDisplay():Void {
-		
 		if (!tf.autoSize) {
-			if (tf.fieldWidth != _width) tf.fieldWidth = _width;
+			if (tf.textField.width != _width) tf.textField.width = _width;
 			if (tf.textField.height != _height) tf.textField.height = _height;
 		}
 	}
