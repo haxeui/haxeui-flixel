@@ -2,13 +2,11 @@ package haxe.ui.backend;
 
 import flash.events.MouseEvent;
 import flixel.FlxG;
-import flixel.FlxObject;
 import flixel.group.FlxGroup;
-import flixel.input.mouse.FlxMouseEventManager;
 import haxe.ui.backend.flixel.FlxUIHelper;
 import haxe.ui.core.Component;
-import haxe.ui.core.MouseEvent;
-import haxe.ui.core.UIEvent;
+import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
 import lime.system.System;
 import openfl.Lib;
 
@@ -114,19 +112,19 @@ class ScreenBase {
 		__eventMap.set(type, cb);
 		
 		switch (type) {
-			case haxe.ui.core.MouseEvent.MOUSE_OVER:
+			case haxe.ui.events.MouseEvent.MOUSE_OVER:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_OVER, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_OUT:
+			case haxe.ui.events.MouseEvent.MOUSE_OUT:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_OUT, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_DOWN:
+			case haxe.ui.events.MouseEvent.MOUSE_DOWN:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_DOWN, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_UP:
+			case haxe.ui.events.MouseEvent.MOUSE_UP:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_UP, cb);
-			case haxe.ui.core.MouseEvent.CLICK:
+			case haxe.ui.events.MouseEvent.CLICK:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.CLICK, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_MOVE:
+			case haxe.ui.events.MouseEvent.MOUSE_MOVE:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_MOVE, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_WHEEL:
+			case haxe.ui.events.MouseEvent.MOUSE_WHEEL:
 				FlxG.stage.addEventListener(flash.events.MouseEvent.MOUSE_WHEEL, cb);
 		}
 	}
@@ -139,31 +137,31 @@ class ScreenBase {
 		__eventMap.remove(type);
 		
 		switch (type) {
-			case haxe.ui.core.MouseEvent.MOUSE_OVER:
+			case haxe.ui.events.MouseEvent.MOUSE_OVER:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_OVER, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_OUT:
+			case haxe.ui.events.MouseEvent.MOUSE_OUT:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_OUT, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_DOWN:
+			case haxe.ui.events.MouseEvent.MOUSE_DOWN:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_DOWN, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_UP:
+			case haxe.ui.events.MouseEvent.MOUSE_UP:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_UP, cb);
-			case haxe.ui.core.MouseEvent.CLICK:
+			case haxe.ui.events.MouseEvent.CLICK:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.CLICK, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_MOVE:
+			case haxe.ui.events.MouseEvent.MOUSE_MOVE:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_MOVE, cb);
-			case haxe.ui.core.MouseEvent.MOUSE_WHEEL:
+			case haxe.ui.events.MouseEvent.MOUSE_WHEEL:
 				FlxG.stage.removeEventListener(flash.events.MouseEvent.MOUSE_WHEEL, cb);
 		}
 	}
 	
 	function __onMouseEvent(type:String, listener:UIEvent->Void, ome:flash.events.MouseEvent):Void {
 		
-		var me = new haxe.ui.core.MouseEvent(type);
+		var me = new haxe.ui.events.MouseEvent(type);
 		// store ome in here?
 		me.screenX = FlxG.mouse.screenX;
 		me.screenY = FlxG.mouse.screenY;
 		me.buttonDown = FlxG.mouse.pressed;
-		if (type == haxe.ui.core.MouseEvent.MOUSE_WHEEL) me.delta = FlxG.mouse.wheel;
+		if (type == haxe.ui.events.MouseEvent.MOUSE_WHEEL) me.delta = FlxG.mouse.wheel;
 		listener(me);
 	}
 	

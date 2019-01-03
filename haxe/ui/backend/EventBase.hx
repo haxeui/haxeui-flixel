@@ -1,6 +1,6 @@
 package haxe.ui.backend;
 
-import haxe.ui.core.UIEvent;
+import haxe.ui.events.UIEvent;
 
 class EventBase {
 	
