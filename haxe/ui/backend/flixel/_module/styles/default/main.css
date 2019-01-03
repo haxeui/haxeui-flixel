@@ -1,3 +1,7 @@
+.label {
+    color: black;
+}
+
 .button {
     background-image: "haxeui-flixel/styles/default/button.png";
     background-image-clip: 0px 0px 18px 18px;
