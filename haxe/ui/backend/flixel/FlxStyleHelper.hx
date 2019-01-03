@@ -11,7 +11,7 @@ import flixel.util.FlxSpriteUtil.LineStyle;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.backend.ImageData;
 import haxe.ui.styles.Style;
-import haxe.ui.util.Slice9;
+import haxe.ui.geom.Slice9;
 
 /**
  * ...
@@ -122,10 +122,10 @@ class FlxStyleHelper {
 			rect.height = Math.min(rect.height, style.backgroundImageClipBottom - style.backgroundImageClipTop);
 		}
 		
-		var slice:haxe.ui.util.Rectangle = null;
+		var slice:haxe.ui.geom.Rectangle = null;
 		
 		if (style.backgroundImageSliceTop != null && style.backgroundImageSliceBottom != null && style.backgroundImageSliceLeft != null && style.backgroundImageSliceRight != null) {
-			slice = new haxe.ui.util.Rectangle(style.backgroundImageSliceLeft, style.backgroundImageSliceTop, style.backgroundImageSliceRight - style.backgroundImageSliceLeft, style.backgroundImageSliceBottom - style.backgroundImageSliceTop);
+			slice = new haxe.ui.geom.Rectangle(style.backgroundImageSliceLeft, style.backgroundImageSliceTop, style.backgroundImageSliceRight - style.backgroundImageSliceLeft, style.backgroundImageSliceBottom - style.backgroundImageSliceTop);
 		}
 		
 		if (slice == null) {
@@ -243,7 +243,7 @@ class FlxStyleHelper {
 		}
 	}
 	
-	static function setOpenFLRect(oflRect:flash.geom.Rectangle, uiRect:haxe.ui.util.Rectangle):flash.geom.Rectangle {
+	static function setOpenFLRect(oflRect:flash.geom.Rectangle, uiRect:haxe.ui.geom.Rectangle):flash.geom.Rectangle {
 		oflRect.setTo(uiRect.left, uiRect.top, uiRect.width, uiRect.height);
 		return oflRect;
 	}

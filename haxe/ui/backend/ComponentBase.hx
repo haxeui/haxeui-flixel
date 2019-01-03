@@ -16,7 +16,7 @@ import haxe.ui.core.TextInput;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.styles.Style;
-import haxe.ui.util.Rectangle;
+import haxe.ui.geom.Rectangle;
 
 class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	

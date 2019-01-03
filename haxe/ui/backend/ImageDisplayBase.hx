@@ -5,7 +5,7 @@ import flixel.graphics.frames.FlxImageFrame;
 import flixel.math.FlxRect;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.core.Component;
-import haxe.ui.util.Rectangle;
+import haxe.ui.geom.Rectangle;
 
 class ImageDisplayBase extends FlxSprite {
 	
