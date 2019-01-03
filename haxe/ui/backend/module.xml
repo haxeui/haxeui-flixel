@@ -5,8 +5,8 @@
     </resources>
     
     <themes>
-        <flixel-ui parent="default">
-            <style resource="haxeui-flixel/styles/flixel-ui/main.css" />
-        </flixel-ui>
+        <default>
+            <style resource="haxeui-flixel/styles/default/main.css" />
+        </default>
     </themes>
 </module>
