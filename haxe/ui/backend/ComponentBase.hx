@@ -225,8 +225,13 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	function mapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!mouseRegistered) {
-			FlxMouseEventManager.add(this, null, null, null, null, true, true, false);
+			
+			if (!eventMapping.exists(type)) return; // prevents something like a RESIZE event from registering the object in FlxMEM
+			
+			FlxMouseEventManager.add(this, null, null, null, null, false, true, false);
 			mouseRegistered = true;
+			
+			// TODO: need to handle if an onscreen component gets its first mouse event here
 		}
 		
 		else if (eventMapping.get(type)) return;
