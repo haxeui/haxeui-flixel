@@ -7,15 +7,13 @@
 
 
 ## Installation
-`haxeui-flixel` relies on `haxeui-core` as well as `Flixel`. At the moment, `haxeui-flixel` is intended to be used with `dev` versions of `Flixel`. To install:
+`haxeui-flixel` relies on `haxeui-core` as well as `Flixel`.
 
 ```
-haxelib git flixel https://github.com/HaxeFlixel/flixel
+haxelib install flixel
 haxelib install haxeui-core
 haxelib install haxeui-flixel
 ```
-
-Also note that as of right now, `Flixel` has dependencies but can only run on `OpenFL 3.6.1` and `Lime 2.9.1`.
 
 ## Usage
 
