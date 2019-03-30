@@ -1,31 +1,12 @@
 package haxe.ui.backend;
 
-import flixel.FlxSprite;
 import flixel.graphics.frames.FlxImageFrame;
-import flixel.math.FlxRect;
-import haxe.ui.assets.ImageInfo;
-import haxe.ui.core.Component;
-import haxe.ui.geom.Rectangle;
 
-class ImageDisplayBase extends FlxSprite {
-	
-	public var parentComponent:Component;
-	
-	public var aspectRatio:Float = 1; // width x height
-
+class ImageDisplayImpl extends ImageBase {
 	public function new() {
 		super();
 	}
 
-	var _left:Float;
-	var _top:Float;
-
-	var _imageWidth:Float;
-	var _imageHeight:Float;
-	
-	var _imageInfo:ImageInfo;
-	var _imageClipRect:Rectangle;
-	
 	override public function destroy():Void {
 		super.destroy();
 		
@@ -34,7 +15,7 @@ class ImageDisplayBase extends FlxSprite {
 		_imageClipRect = null;
 	}
 	
-	function validateData():Void {
+	override function validateData():Void {
 		
 		if (_imageInfo != null) {
 			
@@ -57,9 +38,9 @@ class ImageDisplayBase extends FlxSprite {
 		}
 	}
 	
-	function validatePosition():Void { }
+	override function validatePosition():Void { }
 	
-	function validateDisplay():Void {
+	override function validateDisplay():Void {
 		
 		// imageClipRect
 		

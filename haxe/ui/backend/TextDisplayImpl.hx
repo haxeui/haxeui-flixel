@@ -7,35 +7,20 @@ import haxe.ui.core.Component;
 import haxe.ui.styles.Style;
 import haxe.ui.core.TextDisplay.TextDisplayData;
 
-class TextDisplayBase {
-	private var _displayData:TextDisplayData = new TextDisplayData();
-
-	public var parentComponent:Component;
+class TextDisplayImpl extends TextBase {
 	public var tf:FlxText;
 	
-	var _left:Float = 0;
-	var _top:Float = 0;
-	var _width:Float = 100;
-	var _height:Float = 0;
-	
-	var _text:String = "";
-	var _textWidth:Float = 0;
-	var _textHeight:Float = 0;
-	
-	var _textStyle:Style;
-	var _fontInfo:FontInfo;
-	
 	public function new() {
-		
+		super();
 		tf = new FlxText();
 		tf.autoSize = true;
 	}
 	
-	function validateData():Void {
+	override function validateData():Void {
 		tf.text = _text;
 	}
 	
-	function validateStyle():Bool {
+	override function validateStyle():Bool {
         var measureTextRequired:Bool = false;
 		
 		if (_textStyle != null) {
@@ -87,17 +72,17 @@ class TextDisplayBase {
 		return measureTextRequired;
 	}
 	
-	public function validatePosition():Void {
+	override  function validatePosition():Void {
     }
 	
-	function validateDisplay():Void {
-		if (!tf.autoSize) {
+	override function validateDisplay():Void {
+		//if (!tf.autoSize) {
 			if (tf.textField.width != _width) tf.textField.width = _width;
 			if (tf.textField.height != _height) tf.textField.height = _height;
-		}
+		//}
 	}
 	
-	function measureText():Void {
+	override function measureText():Void {
         #if html5
 		_textWidth = tf.textField.textWidth + 2;
 		_textHeight = tf.textField.textHeight + 2;

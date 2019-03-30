@@ -3,28 +3,22 @@ package haxe.ui.backend;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.core.Component;
-import haxe.ui.core.IComponentBase;
 import haxe.ui.core.ImageDisplay;
 import haxe.ui.core.TextDisplay;
 import haxe.ui.core.TextInput;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
-import haxe.ui.styles.Style;
 import haxe.ui.geom.Rectangle;
+import haxe.ui.styles.Style;
 
-class ComponentBase extends FlxSpriteGroup implements IComponentBase {
+class ComponentImpl extends ComponentBase {
 	
 	var surface:FlxSprite; // drawing surface
-	var _imageDisplay:ImageDisplay; // where images are displayed
-	var _textDisplay:TextDisplay; // text
-	var _textInput:TextInput;
-	
 	var asComponent:Component = null;
 	
 	public function new() {
@@ -40,74 +34,37 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	//***********************************************************************************************************
 	// Text
 	//***********************************************************************************************************
-	
-	public function getTextDisplay():TextDisplay {
-		return createTextDisplay();
-	}
-	
-	public function createTextDisplay(text:String = null):TextDisplay {
-		
+	public override function createTextDisplay(text:String = null):TextDisplay {
 		if (_textDisplay == null) {
-			_textDisplay = new TextDisplay();
-			_textDisplay.parentComponent = asComponent;
+            super.createTextDisplay(text);
 			add(_textDisplay.tf);
 		}
-		
-		if (text != null) _textDisplay.text = text;
 		
 		return _textDisplay;
 	}
 	
-	public function hasTextDisplay():Bool {
-		return _textDisplay != null;
-	}
-	
-	public function getTextInput(text:String = null):TextInput {
-		return createTextInput();
-	}
-	
-	public function createTextInput(text:String = null):TextInput {
-		
+	public override function createTextInput(text:String = null):TextInput {
 		if (_textInput == null) {
-			_textInput = new TextInput();
-			_textInput.parentComponent = asComponent;
+            super.createTextInput(text);
 			add(_textInput.tf);
 		}
 		
-		if (text != null) _textInput.text = text;
-		
 		return _textInput;
-	}
-	
-	public function hasTextInput():Bool {
-		return _textInput != null;
 	}
 	
 	//***********************************************************************************************************
 	// Image
 	//***********************************************************************************************************
-	
-	public function getImageDisplay():ImageDisplay {
-		return createImageDisplay();
-	}
-	
-	public function createImageDisplay():ImageDisplay {
-		
-		if (_imageDisplay != null) return _imageDisplay;
-		
-		_imageDisplay = new ImageDisplay();
-		_imageDisplay.parentComponent = asComponent;
-		add(_imageDisplay);
+	public override function createImageDisplay():ImageDisplay {
+        if (_imageDisplay == null) {
+            super.createImageDisplay();
+            add(_imageDisplay);
+        }
 		
 		return _imageDisplay;
 	}
 	
-	public function hasImageDisplay():Bool {
-		return _imageDisplay != null;
-	}
-	
-	public function removeImageDisplay():Void {
-		
+	public override function removeImageDisplay():Void {
 		if (_imageDisplay != null) {
 			remove(_imageDisplay, true);
 			_imageDisplay.destroy();
@@ -118,17 +75,12 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	//***********************************************************************************************************
 	// Display list management
 	//***********************************************************************************************************
-	
-	function handleReady() { }
-	
-	function handleCreate(native:Bool):Void { }
-	
-	function handleAddComponent(child:Component):Component {
+	private override function handleAddComponent(child:Component):Component {
 		add(child);
 		return child;
 	}
 	
-	function handleAddComponentAt(child:Component, index:Int):Component {
+	private override function handleAddComponentAt(child:Component, index:Int):Component {
 		
 		// index is in terms of haxeui components, not flixel children
 		
@@ -143,20 +95,20 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		return child;
 	}
 	
-	function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
+	private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
 		if (members.indexOf(child) > -1) remove(child, true);
 		return child;
 	}
 	
-	function handleRemoveComponentAt(index:Int, dispose:Bool = true):Component {
+	private override function handleRemoveComponentAt(index:Int, dispose:Bool = true):Component {
 		return handleRemoveComponent(asComponent.childComponents[index], dispose);
 	}
 	
-	function handleSetComponentIndex(child:Component, index:Int):Void {
+	private override function handleSetComponentIndex(child:Component, index:Int):Void {
 		handleAddComponentAt(child, index);
 	}
 	
-	function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
+	private override function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
 		
 		if (left != null) {
 			
@@ -175,11 +127,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		}
 	}
 	
-	function handlePreReposition() { }
-	
-	function handlePostReposition() { }
-	
-	function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
+	private override function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
 		
 		var intWidth = Std.int(width);
 		var intHeight = Std.int(height);
@@ -194,16 +142,16 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		applyStyle(style);
 	}
 	
-	function handleClipRect(value:Rectangle):Void {
+	private override function handleClipRect(value:Rectangle):Void {
 		if (value == null) clipRect = null;
 		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
 	}
 	
-	function handleVisibility(show:Bool):Void {
+	private override function handleVisibility(show:Bool):Void {
 		visible = show;
 	}
 	
-	function applyStyle(style:Style) {
+	private override function applyStyle(style:Style) {
 		FlxStyleHelper.applyStyle(surface, style);
 	}
 	
@@ -222,7 +170,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		MouseEvent.MOUSE_WHEEL => false,
 	];
 	
-	function mapEvent(type:String, listener:UIEvent->Void) {
+	private override function mapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!mouseRegistered) {
 			
@@ -256,7 +204,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		}
 	}
 	
-	function unmapEvent(type:String, listener:UIEvent->Void) {
+	private override function unmapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!mouseRegistered || !eventMapping.get(type)) return;
 		
@@ -280,7 +228,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		}
 	}
 	
-	function onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentBase):Void {
+	private function onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentImpl):Void {
 		
 		var me = new MouseEvent(type);
 		me.target = cast target;
