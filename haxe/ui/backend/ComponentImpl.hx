@@ -7,6 +7,7 @@ import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import haxe.ui.backend.flixel.FlxStyleHelper;
+import haxe.ui.backend.flixel.FlxUIMouseEventManager;
 import haxe.ui.core.Component;
 import haxe.ui.core.ImageDisplay;
 import haxe.ui.core.TextDisplay;
@@ -176,10 +177,11 @@ class ComponentImpl extends ComponentBase {
 			
 			if (!eventMapping.exists(type)) return; // prevents something like a RESIZE event from registering the object in FlxMEM
 			
-			FlxMouseEventManager.add(this, null, null, null, null, false, true, false);
+			FlxUIMouseEventManager.add(asComponent, null, null, null, null, true, true, false);
 			mouseRegistered = true;
 			
 			// TODO: need to handle if an onscreen component gets its first mouse event here
+			// TODO: check if the above todo is still relevant...
 		}
 		
 		else if (eventMapping.get(type)) return;
@@ -188,19 +190,19 @@ class ComponentImpl extends ComponentBase {
 		
 		switch (type) {
 			case MouseEvent.MOUSE_OVER:
-				FlxMouseEventManager.setMouseOverCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseOverCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_OUT:
-				FlxMouseEventManager.setMouseOutCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseOutCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_DOWN:
-				FlxMouseEventManager.setMouseDownCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseDownCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_UP:
-				FlxMouseEventManager.setMouseUpCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseUpCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.CLICK:
-				FlxMouseEventManager.setMouseClickCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseClickCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_MOVE:
-				FlxMouseEventManager.setMouseMoveCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseMoveCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_WHEEL:
-				FlxMouseEventManager.setMouseWheelCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseWheelCallback(asComponent, onMouseEvent.bind(type, listener));
 		}
 	}
 	
@@ -212,19 +214,19 @@ class ComponentImpl extends ComponentBase {
 		
 		switch (type) {
 			case MouseEvent.MOUSE_OVER:
-				FlxMouseEventManager.setMouseOverCallback(this, null);
+				FlxUIMouseEventManager.setMouseOverCallback(asComponent, null);
 			case MouseEvent.MOUSE_OUT:
-				FlxMouseEventManager.setMouseOutCallback(this, null);
+				FlxUIMouseEventManager.setMouseOutCallback(asComponent, null);
 			case MouseEvent.MOUSE_DOWN:
-				FlxMouseEventManager.setMouseDownCallback(this, null);
+				FlxUIMouseEventManager.setMouseDownCallback(asComponent, null);
 			case MouseEvent.MOUSE_UP:
-				FlxMouseEventManager.setMouseUpCallback(this, null);
+				FlxUIMouseEventManager.setMouseUpCallback(asComponent, null);
 			case MouseEvent.CLICK:
-				FlxMouseEventManager.setMouseClickCallback(this, null);
+				FlxUIMouseEventManager.setMouseClickCallback(asComponent, null);
 			case MouseEvent.MOUSE_MOVE:
-				FlxMouseEventManager.setMouseMoveCallback(this, null);
+				FlxUIMouseEventManager.setMouseMoveCallback(asComponent, null);
 			case MouseEvent.MOUSE_WHEEL:
-				FlxMouseEventManager.setMouseWheelCallback(this, null);
+				FlxUIMouseEventManager.setMouseWheelCallback(asComponent, null);
 		}
 	}
 	
@@ -247,7 +249,7 @@ class ComponentImpl extends ComponentBase {
 		super.destroy();
 		
 		if (mouseRegistered) {
-			FlxMouseEventManager.remove(this);
+			FlxUIMouseEventManager.remove(asComponent);
 			mouseRegistered = false;
 		}
 		
