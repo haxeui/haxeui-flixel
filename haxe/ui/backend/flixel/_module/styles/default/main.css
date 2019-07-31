@@ -1,0 +1,373 @@
+.label {
+    color: black;
+}
+
+.button {
+    background-image: "haxeui-flixel/styles/default/button.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+
+    border: none;
+    background-color: none;
+    padding: 4px 6px;
+}
+
+.button:hover {
+    background-image: "haxeui-flixel/styles/default/button.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.button:down {
+    background-image: "haxeui-flixel/styles/default/button.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.checkbox {
+    horizontal-spacing: 2px;
+}
+
+.checkbox-value {
+    border: none;
+    background-color: none;
+    background-image: "haxeui-flixel/styles/default/check_box.png";
+}
+
+.checkbox-value:selected {
+    icon: "haxeui-flixel/styles/default/check_box_selected.png";
+}
+
+.optionbox {
+    horizontal-spacing: 2px;
+}
+
+.optionbox-value {
+    border: none;
+    background-color: none;
+    background-image: "haxeui-flixel/styles/default/radio.png";
+    width: 11px;
+    height: 11px;
+}
+
+.optionbox-value:selected {
+    icon: "haxeui-flixel/styles/default/radio_selected.png";
+}
+
+.dropdown {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+
+    border: none;
+    background-color: none;
+    padding: 4px 6px;
+}
+
+.dropdown:hover {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.dropdown:down {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.popup {
+    background-image: "haxeui-flixel/styles/default/box.png";
+    background-image-slice: 2px 2px 14px 14px;
+    filter: none;
+    padding: 1px;
+}
+
+.scroll .button {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+
+    border: none;
+    background-color: none;
+    padding: 4px 6px;
+}
+
+.scroll .button:hover {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.scroll .button:down {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.vertical-scroll {
+    width: 12px;
+}
+
+.vertical-scroll .button {
+    width: 12px;
+    height: 12px;
+    background-image: none;
+}
+
+.horizontal-scroll {
+    height: 12px;
+}
+
+.horizontal-scroll .button {
+    width: 12px;
+    height: 12px;
+    background-image: none;
+}
+
+.range {
+    background-image: "haxeui-flixel/styles/default/inset.png";
+    background-image-slice: 5px 5px 13px 13px;
+    padding: 3px;
+}
+
+.range-value {
+    background-color: #3399FF;
+}
+
+.progress {
+    background-image: "haxeui-flixel/styles/default/inset.png";
+    background-image-slice: 5px 5px 13px 13px;
+    padding: 3px;
+}
+
+.progress-value {
+    background-color: #3399FF;
+}
+
+.horizontal-slider {
+    __padding-top: 5px;
+}
+
+.horizontal-slider .slider-value {
+    height: 10px;
+}
+
+.vertical-slider .slider-value {
+    width: 10px;
+}
+
+.horizontal-slider .button {
+    width: 14px;
+    height: 18px;
+    vertical-align: center;
+    background-image: "haxeui-flixel/styles/default/button_arrow_down.png";
+    background-image-slice: 5px 5px 11px 7px;
+    background-image-clip: 0px 0px 18px 14px;
+}
+
+.horizontal-slider .button:hover {
+    background-image: "haxeui-flixel/styles/default/button_arrow_down.png";
+    background-image-slice: 5px 5px 11px 7px;
+    background-image-clip: 18px 0px 36px 14px;
+}
+
+.horizontal-slider .button:down {
+    background-image: "haxeui-flixel/styles/default/button_arrow_down.png";
+    background-image-slice: 5px 5px 11px 7px;
+    background-image-clip: 36px 0px 54px 14px;
+}
+
+.vertical-slider .button {
+    width: 18px;
+    height: 14px;
+    background-image: "haxeui-flixel/styles/default/button_arrow_right.png";
+    background-image-slice: 5px 5px 7px 11px;
+    background-image-clip: 0px 0px 14px 18px;
+}
+
+.vertical-slider .button:hover {
+    background-image: "haxeui-flixel/styles/default/button_arrow_right.png";
+    background-image-slice: 5px 5px 7px 11px;
+    background-image-clip: 14px 0px 28px 18px;
+}
+
+.vertical-slider .button:down {
+    background-image: "haxeui-flixel/styles/default/button_arrow_right.png";
+    background-image-slice: 5px 5px 7px 11px;
+    background-image-clip: 28px 0px 42px 18px;
+}
+
+.listview {
+    background-image: "haxeui-flixel/styles/default/box.png";
+    background-image-slice: 2px 2px 14px 14px;
+    filter: none;
+    __padding: 0;
+}
+
+.scrollview {
+    background-image: "haxeui-flixel/styles/default/box.png";
+    background-image-slice: 2px 2px 14px 14px;
+    filter: none;
+    __padding: 0;
+}
+
+.listview .listview-contents {
+    __padding-left: 1px;
+    __padding-top: 1px;
+    __padding-bottom: 1px;
+}
+
+.listview .vertical-scroll {
+    __padding-top: -1px;
+    __margin-top: -1px;
+    __margin-left: 10px;
+}
+
+.scroll {
+    background-color: #E9E9E9;
+}
+
+.scroll .button {
+    border-radius: 0;
+    border: none;
+    background-color: #E9E9E9;
+    padding: 0;
+    filter: none;
+}
+
+.scroll .button:hover {
+    background-color: #D7D7D7;
+}
+
+.scroll .button:down {
+    background-color: #525252;
+    filter: none;
+}
+
+.scroll .thumb {
+    background-color: #C6C6C6;
+}
+
+.scroll .thumb:hover {
+    background-color: #AAAAAA;
+}
+
+.scroll .thumb:down {
+    background-color: #525252;
+}
+
+.tabbar-contents {
+    horizontal-spacing: -1px;
+}
+
+.tabbar {
+    background-image: "haxeui-flixel/styles/default/tabbar_bg.png";
+    background-image-slice: 2px 2px 14px 14px;
+    filter: none;
+    __padding: 0;
+    padding-left: 0;
+}
+
+.tabbar .button {
+    background-image: "haxeui-flixel/styles/default/tabs.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar .button {
+    background-image: "haxeui-flixel/styles/default/tabs.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar-button-selected {
+    background-image: "haxeui-flixel/styles/default/tabs.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabview {
+    background-image: "haxeui-flixel/styles/default/tabview_bg.png";
+    background-image-slice: 5px 5px 13px 13px;
+    filter: none;
+}
+
+.tabbar-scroll-left {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar-scroll-right {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.switch-button-sub {
+    border: none;
+    background-color: none;
+    background: none;
+    filter: none;
+    background-image: "haxeui-flixel/styles/default/button.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.switch-button-sub-extra {
+    border: none;
+    background-color: none;
+    background: none;
+    filter: none;
+}
+
+.textfield {
+    background-image: "haxeui-flixel/styles/default/inset_thin.png";
+    background-image-slice: 5px 5px 13px 13px;
+    padding: 3px;
+}
+
+.textarea {
+    background-image: "haxeui-flixel/styles/default/inset_thin.png";
+    background-image-slice: 5px 5px 13px 13px;
+    padding: 3px;
+}
+
+.numberstepper {
+    background-image: "haxeui-flixel/styles/default/inset_thin.png";
+    background-image-slice: 5px 5px 13px 13px;
+    padding: 2px;
+}
+
+.numberstepper .textfield {
+    background-image: none;
+}
+
+.numberstepper .button {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.numberstepper .button:hover {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.numberstepper .button:down {
+    background-image: "haxeui-flixel/styles/default/button_thin.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.menubar {
+    background-image: "haxeui-flixel/styles/default/menubar_bg.png";
+    background-image-slice: 2px 2px 14px 14px;
+    filter: none;
+}
+
+.menubar .button {
+    background-image: none;
+}

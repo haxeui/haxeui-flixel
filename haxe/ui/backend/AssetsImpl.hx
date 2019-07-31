@@ -8,13 +8,14 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxImageFrame;
+import haxe.io.Bytes;
 import haxe.ui.assets.FontInfo;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.util.ByteConverter;
 import openfl.Assets;
 import openfl.utils.AssetType;
 
-class AssetsBase {
+class AssetsImpl extends AssetsBase {
 
 	var frames(get, never):FlxFramesCollection;
 	
@@ -23,11 +24,7 @@ class AssetsBase {
 		return null;
 	}
 	
-	public function new() {
-		
-	}
-	
-	function getImageInternal(resourceId:String, callback:ImageInfo->Void):Void {
+	override function getImageInternal(resourceId:String, callback:ImageInfo->Void):Void {
 		
 		var graphic:FlxGraphic = null;
 		var frame:FlxFrame = null;
@@ -54,9 +51,13 @@ class AssetsBase {
 		else callback(null);
 	}
 
-	function getImageFromHaxeResource(resourceId:String, callback:String->ImageInfo->Void):Void {
-			
+	override function getImageFromHaxeResource(resourceId:String, callback:String->ImageInfo->Void):Void {
 		var bytes = Resource.getBytes(resourceId);
+		imageFromBytes(bytes, callback.bind(resourceId));
+	}
+	
+	public override function imageFromBytes(bytes:Bytes, callback:ImageInfo->Void):Void {
+		
 		var ba:ByteArray = ByteConverter.fromHaxeBytes(bytes);
 		
 		var loader:Loader = new Loader();
@@ -67,14 +68,14 @@ class AssetsBase {
 				var frame = FlxImageFrame.fromImage(cast(loader.content, Bitmap).bitmapData).frame;
 				frame.parent.persist = true; // these two booleans will screw up the UI unless changed from the default values
 				frame.parent.destroyOnNoUse = false;
-				callback(resourceId, { data : frame, width : Std.int(frame.sourceSize.x), height : Std.int(frame.sourceSize.y) } );
+				callback( { data : frame, width : Std.int(frame.sourceSize.x), height : Std.int(frame.sourceSize.y) } );
 			}
 		});
 		
 		loader.loadBytes(ba);
 	}
 
-	function getFontInternal(resourceId:String, callback:FontInfo->Void):Void {
+	override function getFontInternal(resourceId:String, callback:FontInfo->Void):Void {
 		
 		var fontName:String = null;
 		
@@ -89,11 +90,11 @@ class AssetsBase {
 		callback( { data : fontName } );
 	}
 
-	function getFontFromHaxeResource(resourceId:String, callback:String->FontInfo->Void):Void {
+	override function getFontFromHaxeResource(resourceId:String, callback:String->FontInfo->Void):Void {
 		callback(resourceId, null);
 	}
 
-	function getTextDelegate(resourceId:String):String {
+	override function getTextDelegate(resourceId:String):String {
 		
 		if (Assets.exists(resourceId)) {
 			return Assets.getText(resourceId);

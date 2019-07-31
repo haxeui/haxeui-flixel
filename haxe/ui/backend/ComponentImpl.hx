@@ -3,35 +3,28 @@ package haxe.ui.backend;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import haxe.ui.backend.flixel.FlxStyleHelper;
+import haxe.ui.backend.flixel.FlxUIMouseEventManager;
 import haxe.ui.core.Component;
-import haxe.ui.core.IComponentBase;
 import haxe.ui.core.ImageDisplay;
-import haxe.ui.core.MouseEvent;
 import haxe.ui.core.TextDisplay;
 import haxe.ui.core.TextInput;
-import haxe.ui.core.UIEvent;
+import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
+import haxe.ui.geom.Rectangle;
 import haxe.ui.styles.Style;
-import haxe.ui.util.Rectangle;
 
-class ComponentBase extends FlxSpriteGroup implements IComponentBase {
+class ComponentImpl extends ComponentBase {
 	
 	var surface:FlxSprite; // drawing surface
-	var image:ImageDisplay; // where images are displayed
-	var tf:TextDisplay; // text
-	var input:TextInput;
-	
-	var asComponent:Component;
+	var asComponent:Component = null;
 	
 	public function new() {
 		super();
-		
-		asComponent = cast this;
-		
+		asComponent = cast(this, Component);
 		scrollFactor.set(0, 0); // ui doesn't scroll by default
 		
 		surface = new FlxSprite();
@@ -42,79 +35,53 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 	//***********************************************************************************************************
 	// Text
 	//***********************************************************************************************************
-	
-	public function getTextDisplay():TextDisplay {
+	public override function createTextDisplay(text:String = null):TextDisplay {
+		if (_textDisplay == null) {
+            super.createTextDisplay(text);
+			add(_textDisplay.tf);
+		}
 		
-		if (tf != null) return tf; 
-		
-		tf = new TextDisplay();
-		tf.parentComponent = asComponent;
-		add(tf.tf);
-		
-		return tf;
+		return _textDisplay;
 	}
 	
-	public function hasTextDisplay():Bool {
-		return tf != null;
-	}
-	
-	public function getTextInput():TextInput {
+	public override function createTextInput(text:String = null):TextInput {
+		if (_textInput == null) {
+            super.createTextInput(text);
+			add(_textInput.tf);
+		}
 		
-		if (input != null) return input;
-		
-		input = new TextInput();
-		input.parentComponent = asComponent;
-		add(input.tf);
-		
-		return input;
-	}
-	
-	public function hasTextInput():Bool {
-		return input != null;
+		return _textInput;
 	}
 	
 	//***********************************************************************************************************
 	// Image
 	//***********************************************************************************************************
-	
-	public function getImageDisplay():ImageDisplay {
+	public override function createImageDisplay():ImageDisplay {
+        if (_imageDisplay == null) {
+            super.createImageDisplay();
+            add(_imageDisplay);
+        }
 		
-		if (image != null) return image;
-		
-		image = new ImageDisplay();
-		image.parent = asComponent;
-		add(image);
-		
-		return image;
+		return _imageDisplay;
 	}
 	
-	public function hasImageDisplay():Bool {
-		return image != null;
-	}
-	
-	public function removeImageDisplay():Void {
-		
-		if (image != null) {
-			remove(image, true);
-			image.destroy();
-			image = null;
+	public override function removeImageDisplay():Void {
+		if (_imageDisplay != null) {
+			remove(_imageDisplay, true);
+			_imageDisplay.destroy();
+			_imageDisplay = null;
 		}
 	}
 	
 	//***********************************************************************************************************
 	// Display list management
 	//***********************************************************************************************************
-	
-	function handleReady() { }
-	
-	function handleCreate(native:Bool):Void { }
-	
-	function handleAddComponent(child:Component):Component {
+	private override function handleAddComponent(child:Component):Component {
 		add(child);
 		return child;
 	}
 	
-	function handleAddComponentAt(child:Component, index:Int):Component {
+	private override function handleAddComponentAt(child:Component, index:Int):Component {
 		
 		// index is in terms of haxeui components, not flixel children
 		
@@ -129,20 +96,20 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		return child;
 	}
 	
-	function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
+	private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
 		if (members.indexOf(child) > -1) remove(child, true);
 		return child;
 	}
 	
-	function handleRemoveComponentAt(index:Int, dispose:Bool = true):Component {
+	private override function handleRemoveComponentAt(index:Int, dispose:Bool = true):Component {
 		return handleRemoveComponent(asComponent.childComponents[index], dispose);
 	}
 	
-	function handleSetComponentIndex(child:Component, index:Int):Void {
+	private override function handleSetComponentIndex(child:Component, index:Int):Void {
 		handleAddComponentAt(child, index);
 	}
 	
-	function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
+	private override function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
 		
 		if (left != null) {
 			
@@ -161,11 +128,7 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		}
 	}
 	
-	function handlePreReposition() { }
-	
-	function handlePostReposition() { }
-	
-	function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
+	private override function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
 		
 		var intWidth = Std.int(width);
 		var intHeight = Std.int(height);
@@ -180,16 +143,16 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		applyStyle(style);
 	}
 	
-	function handleClipRect(value:Rectangle):Void {
+	private override function handleClipRect(value:Rectangle):Void {
 		if (value == null) clipRect = null;
 		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
 	}
 	
-	function handleVisibility(show:Bool):Void {
+	private override function handleVisibility(show:Bool):Void {
 		visible = show;
 	}
 	
-	function applyStyle(style:Style) {
+	private override function applyStyle(style:Style) {
 		FlxStyleHelper.applyStyle(surface, style);
 	}
 	
@@ -208,11 +171,17 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		MouseEvent.MOUSE_WHEEL => false,
 	];
 	
-	function mapEvent(type:String, listener:UIEvent->Void) {
+	private override function mapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!mouseRegistered) {
-			FlxMouseEventManager.add(this, null, null, null, null, true, true, false);
+			
+			if (!eventMapping.exists(type)) return; // prevents something like a RESIZE event from registering the object in FlxMEM
+			
+			FlxUIMouseEventManager.add(asComponent, null, null, null, null, true, true, false);
 			mouseRegistered = true;
+			
+			// TODO: need to handle if an onscreen component gets its first mouse event here
+			// TODO: check if the above todo is still relevant...
 		}
 		
 		else if (eventMapping.get(type)) return;
@@ -221,23 +190,23 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		switch (type) {
 			case MouseEvent.MOUSE_OVER:
-				FlxMouseEventManager.setMouseOverCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseOverCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_OUT:
-				FlxMouseEventManager.setMouseOutCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseOutCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_DOWN:
-				FlxMouseEventManager.setMouseDownCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseDownCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_UP:
-				FlxMouseEventManager.setMouseUpCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseUpCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.CLICK:
-				FlxMouseEventManager.setMouseClickCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseClickCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_MOVE:
-				FlxMouseEventManager.setMouseMoveCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseMoveCallback(asComponent, onMouseEvent.bind(type, listener));
 			case MouseEvent.MOUSE_WHEEL:
-				FlxMouseEventManager.setMouseWheelCallback(this, onMouseEvent.bind(type, listener));
+				FlxUIMouseEventManager.setMouseWheelCallback(asComponent, onMouseEvent.bind(type, listener));
 		}
 	}
 	
-	function unmapEvent(type:String, listener:UIEvent->Void) {
+	private override function unmapEvent(type:String, listener:UIEvent->Void) {
 		
 		if (!mouseRegistered || !eventMapping.get(type)) return;
 		
@@ -245,23 +214,23 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		
 		switch (type) {
 			case MouseEvent.MOUSE_OVER:
-				FlxMouseEventManager.setMouseOverCallback(this, null);
+				FlxUIMouseEventManager.setMouseOverCallback(asComponent, null);
 			case MouseEvent.MOUSE_OUT:
-				FlxMouseEventManager.setMouseOutCallback(this, null);
+				FlxUIMouseEventManager.setMouseOutCallback(asComponent, null);
 			case MouseEvent.MOUSE_DOWN:
-				FlxMouseEventManager.setMouseDownCallback(this, null);
+				FlxUIMouseEventManager.setMouseDownCallback(asComponent, null);
 			case MouseEvent.MOUSE_UP:
-				FlxMouseEventManager.setMouseUpCallback(this, null);
+				FlxUIMouseEventManager.setMouseUpCallback(asComponent, null);
 			case MouseEvent.CLICK:
-				FlxMouseEventManager.setMouseClickCallback(this, null);
+				FlxUIMouseEventManager.setMouseClickCallback(asComponent, null);
 			case MouseEvent.MOUSE_MOVE:
-				FlxMouseEventManager.setMouseMoveCallback(this, null);
+				FlxUIMouseEventManager.setMouseMoveCallback(asComponent, null);
 			case MouseEvent.MOUSE_WHEEL:
-				FlxMouseEventManager.setMouseWheelCallback(this, null);
+				FlxUIMouseEventManager.setMouseWheelCallback(asComponent, null);
 		}
 	}
 	
-	function onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentBase):Void {
+	private function onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentImpl):Void {
 		
 		var me = new MouseEvent(type);
 		me.target = cast target;
@@ -280,18 +249,18 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 		super.destroy();
 		
 		if (mouseRegistered) {
-			FlxMouseEventManager.remove(this);
+			FlxUIMouseEventManager.remove(asComponent);
 			mouseRegistered = false;
 		}
 		
 		if (surface != null) surface.destroy();
 		surface = null;
-		if (image != null) image.destroy();
-		image = null;
-		if (tf != null) tf.tf.destroy();
-		tf = null;
-		if (input != null) input.tf.destroy();
-		input = null;
+		if (_imageDisplay != null) _imageDisplay.destroy();
+		_imageDisplay = null;
+		if (_textDisplay != null) _textDisplay.tf.destroy();
+		_textDisplay = null;
+		if (_textInput != null) _textInput.tf.destroy();
+		_textInput = null;
 		
 		asComponent = null;
 	}
@@ -313,37 +282,37 @@ class ComponentBase extends FlxSpriteGroup implements IComponentBase {
 			}
 		}
 		
-		if (tf != null && tf.tf.dirty) {
+		if (_textDisplay != null && _textDisplay.tf.dirty) {
 			
 			if (Math.isNaN(screenLeft)) {
 				screenLeft = asComponent.screenLeft;
 				screenTop = asComponent.screenTop;
 			}
 			
-			tf.tf.x = tf.left + screenLeft;
-			tf.tf.y = tf.top + screenTop;
+			_textDisplay.tf.x = _textDisplay.left + screenLeft;
+			_textDisplay.tf.y = _textDisplay.top + screenTop;
 		}
 		
-		if (image != null && image.dirty) {
+		if (_imageDisplay != null && _imageDisplay.dirty) {
 			
 			if (Math.isNaN(screenLeft)) {
 				screenLeft = asComponent.screenLeft;
 				screenTop = asComponent.screenTop;
 			}
 			
-			image.x = image.left + screenLeft;
-			image.y = image.top + screenTop;
+			_imageDisplay.x = _imageDisplay.left + screenLeft;
+			_imageDisplay.y = _imageDisplay.top + screenTop;
 		}
 		
-		if (input != null && input.tf.dirty) {
+		if (_textInput != null && _textInput.tf.dirty) {
 			
 			if (Math.isNaN(screenLeft)) {
 				screenLeft = asComponent.screenLeft;
 				screenTop = asComponent.screenTop;
 			}
 			
-			input.tf.x = input.left + screenLeft;
-			input.tf.y = input.top + screenTop;
+			_textInput.tf.x = _textInput.left + screenLeft;
+			_textInput.tf.y = _textInput.top + screenTop;
 		}
 		
 		super.draw();

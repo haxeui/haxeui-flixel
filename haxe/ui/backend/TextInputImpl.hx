@@ -2,10 +2,7 @@ package haxe.ui.backend;
 
 import haxe.ui.core.TextInput.TextInputData;
 
-class TextInputBase extends TextDisplayBase {
-	
-	private var _inputData:TextInputData = new TextInputData();
-
+class TextInputImpl extends TextDisplayImpl {
 	public function new() {
 		super();
 	}

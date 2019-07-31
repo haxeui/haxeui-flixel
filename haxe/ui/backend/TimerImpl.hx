@@ -2,7 +2,7 @@ package haxe.ui.backend;
 
 import flixel.util.FlxTimer;
 
-class TimerBase {
+class TimerImpl {
 	
 	private var _timer:FlxTimer;
 

@@ -7,10 +7,11 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
+import flixel.util.FlxSpriteUtil.LineStyle;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.backend.ImageData;
 import haxe.ui.styles.Style;
-import haxe.ui.util.Slice9;
+import haxe.ui.geom.Slice9;
 
 /**
  * ...
@@ -24,6 +25,56 @@ class FlxStyleHelper {
 		
 		var pixels = sprite.pixels;
 		
+        
+        
+        
+        
+        var left:Float = 0;
+        var top:Float = 0;
+        var width:Float = sprite.frameWidth;
+        var height:Float = sprite.frameHeight;
+        
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+        
+        var rc:Rectangle = new Rectangle(top, left, width, height);
+        var borderRadius:Float = 0;
+        if (style.borderRadius != null) {
+            borderRadius = style.borderRadius;
+        }
+
+        var lineStyle:LineStyle = FlxSpriteUtil.getDefaultLineStyle();
+        lineStyle.thickness = 0;
+        if (style.borderLeftSize != null && style.borderLeftSize != 0
+            && style.borderLeftSize == style.borderRightSize
+            && style.borderLeftSize == style.borderBottomSize
+            && style.borderLeftSize == style.borderTopSize
+
+            && style.borderLeftColor != null
+            && style.borderLeftColor == style.borderRightColor
+            && style.borderLeftColor == style.borderBottomColor
+            && style.borderLeftColor == style.borderTopColor) { // TODO: kinda ugly border issue with pixel anti-aliasing (it seems) - only seems to be html5?
+            lineStyle.thickness = style.borderLeftSize;
+            lineStyle.color = style.borderLeftColor | 0xFF000000;
+            rc.left += style.borderLeftSize / 2;
+            rc.top += style.borderLeftSize / 2;
+            rc.bottom -= style.borderLeftSize / 2;
+            rc.right -= style.borderLeftSize / 2;
+            //rc.inflate( -(style.borderLeftSize / 2), -(style.borderLeftSize / 2));
+        }        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 		if (style.backgroundColor != null) {
 			
 			var opacity = style.backgroundOpacity == null ? 1 : style.backgroundOpacity;
@@ -32,8 +83,16 @@ class FlxStyleHelper {
 			
 			// gradient
 			
-			if (radius == 0) pixels.fillRect(sprite.pixels.rect, color);
-			else FlxSpriteUtil.drawRoundRect(sprite, 0, 0, sprite.frameWidth, sprite.frameHeight, radius, radius, color);
+			if (radius == 0) {
+                pixels.fillRect(rc, color);
+            } else {
+                //var drawStyle:DrawStyle = { smoothing: false };
+                if (lineStyle.thickness > 0) {
+                    FlxSpriteUtil.drawRoundRect(sprite, rc.left, rc.top, rc.width, rc.height, radius, radius, color, lineStyle);
+                } else {
+                    FlxSpriteUtil.drawRoundRect(sprite, rc.left, rc.top, rc.width, rc.height, radius, radius, color);
+                }
+            }
 		}
 		
 		if (style.backgroundImage != null) {
@@ -63,10 +122,10 @@ class FlxStyleHelper {
 			rect.height = Math.min(rect.height, style.backgroundImageClipBottom - style.backgroundImageClipTop);
 		}
 		
-		var slice:haxe.ui.util.Rectangle = null;
+		var slice:haxe.ui.geom.Rectangle = null;
 		
 		if (style.backgroundImageSliceTop != null && style.backgroundImageSliceBottom != null && style.backgroundImageSliceLeft != null && style.backgroundImageSliceRight != null) {
-			slice = new haxe.ui.util.Rectangle(style.backgroundImageSliceLeft, style.backgroundImageSliceTop, style.backgroundImageSliceRight - style.backgroundImageSliceLeft, style.backgroundImageSliceBottom - style.backgroundImageSliceTop);
+			slice = new haxe.ui.geom.Rectangle(style.backgroundImageSliceLeft, style.backgroundImageSliceTop, style.backgroundImageSliceRight - style.backgroundImageSliceLeft, style.backgroundImageSliceBottom - style.backgroundImageSliceTop);
 		}
 		
 		if (slice == null) {
@@ -184,7 +243,7 @@ class FlxStyleHelper {
 		}
 	}
 	
-	static function setOpenFLRect(oflRect:flash.geom.Rectangle, uiRect:haxe.ui.util.Rectangle):flash.geom.Rectangle {
+	static function setOpenFLRect(oflRect:flash.geom.Rectangle, uiRect:haxe.ui.geom.Rectangle):flash.geom.Rectangle {
 		oflRect.setTo(uiRect.left, uiRect.top, uiRect.width, uiRect.height);
 		return oflRect;
 	}
