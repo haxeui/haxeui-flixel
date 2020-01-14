@@ -64,7 +64,10 @@ class FlxStyleHelper {
             //rc.inflate( -(style.borderLeftSize / 2), -(style.borderLeftSize / 2));
         }        
         
-        
+        if (rc.width <= 0 || rc.height <= 0) {
+            return;
+        }
+         
         
         
         
