@@ -57,11 +57,12 @@ class ScreenImpl extends ScreenBase {
 		return s;
 	}
 	
-	public override function addComponent(component:Component) {
+	public override function addComponent(component:Component):Component {
 		container.add(component);
 		component.ready(); // the component will already be ready from the add signal, but in case the user is only using Screen...
         _topLevelComponents.push(component);
         onContainerResize();
+		return component;
 	}
 
     private function onContainerResize() {
@@ -75,8 +76,9 @@ class ScreenImpl extends ScreenBase {
         }
     }
 	
-	public override function removeComponent(component:Component) {
+	public override function removeComponent(component:Component):Component {
 		container.remove(component, true);
+		return component;
 	}
 	
 	override function handleSetComponentIndex(child:Component, index:Int) {
