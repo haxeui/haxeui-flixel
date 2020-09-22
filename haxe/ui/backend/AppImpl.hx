@@ -1,7 +1,7 @@
 package haxe.ui.backend;
 
 import flixel.FlxGame;
-import haxe.ui.backend.flixel.FlxHaxeUIState;
+import haxe.ui.backend.flixel.FlxHaxeUIAppState;
 import openfl.Lib;
 
 class AppImpl extends AppBase {
@@ -9,6 +9,6 @@ class AppImpl extends AppBase {
 	}
 	
 	private override function build() {
-		Lib.current.stage.addChild(new FlxGame(0, 0, FlxHaxeUIState, 1, 60, 60, true));
+		Lib.current.stage.addChild(new FlxGame(0, 0, FlxHaxeUIAppState, 1, 60, 60, true));
 	}
 }

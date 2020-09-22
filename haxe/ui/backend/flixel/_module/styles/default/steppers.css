@@ -1,0 +1,36 @@
+.numberstepper {
+    padding: 0px;
+    spacing: 0;
+}
+
+.stepper {
+    spacing: 0;
+}
+
+.stepper-inc {
+    icon: "haxeui-flixel/styles/default/images/up_arrow.png";
+}
+
+.stepper-deinc {
+    icon: "haxeui-flixel/styles/default/images/down_arrow.png";
+}
+
+.stepper-inc:down {
+    icon: "haxeui-flixel/styles/default/images/up_arrow.png";
+}
+
+.stepper-deinc:down {
+    icon: "haxeui-flixel/styles/default/images/down_arrow.png";
+}
+
+.stepper-button {
+    padding: 3px;
+}
+
+
+.stepper-textfield, .stepper-textfield:active {
+    background-image: "haxeui-flixel/styles/default/images/inset_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+

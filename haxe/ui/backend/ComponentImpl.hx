@@ -1,65 +1,292 @@
 package haxe.ui.backend;
 
-import flixel.FlxCamera;
-import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.input.mouse.FlxMouseEventManager;
-import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import haxe.ui.backend.flixel.FlxStyleHelper;
-import haxe.ui.backend.flixel.FlxUIMouseEventManager;
+import haxe.ui.backend.flixel.MouseHelper;
+import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
 import haxe.ui.core.ImageDisplay;
+import haxe.ui.core.Screen;
 import haxe.ui.core.TextDisplay;
 import haxe.ui.core.TextInput;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.geom.Rectangle;
 import haxe.ui.styles.Style;
+import haxe.ui.util.MathUtil;
 
 class ComponentImpl extends ComponentBase {
+    private var _eventMap:Map<String, UIEvent->Void>;
+    
+    private var _surface:FlxSprite;
+    
+    private var lastMouseX:Float = -1;
+    private var lastMouseY:Float = -1;
 	
-	var surface:FlxSprite; // drawing surface
-	var asComponent:Component = null;
-	
-	public function new() {
-		super();
-		asComponent = cast(this, Component);
-		scrollFactor.set(0, 0); // ui doesn't scroll by default
+	// For doubleclick detection
+	private var _lastClickTime:Float = 0;
+	private var _lastClickTimeDiff:Float = MathUtil.MAX_INT;
+	private var _lastClickX:Float = -1;
+	private var _lastClickY:Float = -1;
+    
+    public function new() {
+        super();
+        _eventMap = new Map<String, UIEvent->Void>();
+        
+        this.pixelPerfectRender = true;
+        
+        scrollFactor.set(0, 0); // ui doesn't scroll by default
+
+		_surface = new FlxSprite();
+		_surface.makeGraphic(1, 1, 0x0, true);
+        _surface.pixelPerfectRender = true;
+		add(_surface);
+        
+        recursiveReady();
+    }
+    
+    private function recursiveReady() {
+        var component:Component = cast(this, Component);
+        component.ready();
+        for (child in component.childComponents) {
+            child.recursiveReady();
+        }
+    }
+    
+    // lets cache certain items so we dont have to loop multiple times per frame
+    private var _cachedScreenX:Null<Float> = null;
+    private var _cachedScreenY:Null<Float> = null;
+    private var _cachedClipComponent:Component = null;
+    private var _cachedClipComponentNone:Null<Bool> = null;
+    private var _cachedRootComponent:Component = null;
+    
+    private function clearCaches() {
+        _cachedScreenX = null;
+        _cachedScreenY = null;
+        _cachedClipComponent = null;
+        _cachedClipComponentNone = null;
+        _cachedRootComponent = null;
+    }
+    
+    private function cacheScreenPos() {
+        if (_cachedScreenX != null && _cachedScreenY != null) {
+            return;
+        }
+        
+        var c:Component = cast(this, Component);
+        var xpos:Float = 0;
+        var ypos:Float = 0;
+        while (c != null) {
+            xpos += c.left;
+            ypos += c.top;
+            if (c.componentClipRect != null) {
+                xpos -= c.componentClipRect.left;
+                ypos -= c.componentClipRect.top;
+            }
+            c = c.parentComponent;
+        }
+        
+        _cachedScreenX = xpos;
+        _cachedScreenY = ypos;
+    }
+    
+    private var screenX(get, null):Float;
+    private function get_screenX():Float {
+        cacheScreenPos();
+        return _cachedScreenX;
+    }
+
+    private var screenY(get, null):Float;
+    private function get_screenY():Float {
+        cacheScreenPos();
+        return _cachedScreenY;
+    }
+
+    private function findRootComponent():Component {
+        if (_cachedRootComponent != null) {
+            return _cachedRootComponent;
+        }
+        
+        var c:Component = cast(this, Component);
+        while (c.parentComponent != null) {
+            c = c.parentComponent;
+        }
+        
+        _cachedRootComponent = c;
+        
+        return c;
+    }
+    
+    private function isRootComponent():Bool {
+        return (findRootComponent() == this);
+    }
+    
+    private function findClipComponent():Component {
+        if (_cachedClipComponent != null) {
+            return _cachedClipComponent;
+        } else if (_cachedClipComponentNone == true) {
+            return null;
+        }
+        
+        var c:Component = cast(this, Component);
+        var clip:Component = null;
+        while (c != null) {
+            if (c.componentClipRect != null) {
+                clip = c;
+                break;
+            }
+            c = c.parentComponent;
+        }
+
+        _cachedClipComponent = clip;
+        if (clip == null) {
+            _cachedClipComponentNone = true;
+        }
+        
+        return clip;
+    }
+
+    @:access(haxe.ui.core.Component)
+    private function inBounds(x:Float, y:Float):Bool {
+        if (cast(this, Component).hidden == true) {
+            return false;
+        }
+
+        var b:Bool = false;
+        var sx = screenX * Toolkit.scaleX;
+        var sy = screenY * Toolkit.scaleY;
+        var cx = cast(this, Component).componentWidth * Toolkit.scaleX;
+        var cy = cast(this, Component).componentHeight * Toolkit.scaleY;
+
+        if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
+            b = true;
+        }
+
+        // let make sure its in the clip rect too
+        if (b == true) {
+            var clip:Component = findClipComponent();
+            if (clip != null) {
+                b = false;
+                var sx = (clip.screenX + clip.componentClipRect.left) * Toolkit.scaleX;
+                var sy = (clip.screenY + clip.componentClipRect.top) * Toolkit.scaleY;
+                var cx = clip.componentClipRect.width * Toolkit.scaleX;
+                var cy = clip.componentClipRect.height * Toolkit.scaleY;
+                if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
+                    b = true;
+                }
+            }
+        }
+        return b;
+    }
+    
+    private override function handlePosition(left:Null<Float>, top:Null<Float>, style:Style) {
+        if (left == null && top == null) {
+            return;
+        }
+        
+        if (parentComponent == null) {
+            if (left != null) {
+                this.x = left;
+            }
+            if (top != null) {
+                this.y = top;
+            }
+        }
+    }
+    
+    private override function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
+        if (_surface == null) {
+            return;
+        }
+        
+        if (width == null || height == null || width < 0 || height < 0) {
+            return;
+        }
+        
+        var w:Int = Std.int(width);
+        var h:Int = Std.int(height);
+        if (_surface.width != w || _surface.height != h) {
+            _surface.makeGraphic(w, h, 0x0, true);
+            applyStyle(style);
+            if (clipRect != null && _surface != null) {
+                this.clipRect = this.clipRect;
+            }
+        }
+    }
+    
+    //***********************************************************************************************************
+    // Display tree
+    //***********************************************************************************************************
+    
+    private override function handleSetComponentIndex(child:Component, index:Int) {
+		handleAddComponentAt(child, index);
+    }
+
+    private override function handleAddComponent(child:Component):Component {
+		add(child);
+		return child;
+    }
+
+    private override function handleAddComponentAt(child:Component, index:Int):Component {
+		// index is in terms of haxeui components, not flixel children
+		var indexOffset = 0;
 		
-		surface = new FlxSprite();
-		surface.makeGraphic(1, 1, 0x0, true);
-		add(surface);
-	}
-	
-	//***********************************************************************************************************
-	// Text
-	//***********************************************************************************************************
-	public override function createTextDisplay(text:String = null):TextDisplay {
-		if (_textDisplay == null) {
-            super.createTextDisplay(text);
-			add(_textDisplay.tf);
+		while (indexOffset < members.length) {
+			if (!Std.is(members[indexOffset], Component)) {
+                indexOffset++;
+            } else{
+                break;
+            }
 		}
 		
-		return _textDisplay;
+		insert(index + indexOffset, child);
+		return child;
+    }
+
+    private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
+		if (members.indexOf(child) > -1) {
+            remove(child, true);
+        }
+		return child;
+    }
+
+    private override function handleRemoveComponentAt(index:Int, dispose:Bool = true):Component {
+		return handleRemoveComponent(this.childComponents[index], dispose);
+    }
+    
+    private override function handleClipRect(value:Rectangle):Void {
+        if (value == null) {
+            clipRect = null;
+        } else {
+            clipRect = FlxRect.get(value.left + _surface.x - parentComponent.x,
+                                   value.top + _surface.y - parentComponent.y,
+                                   value.width, value.height);
+        }
+    }
+    
+	private override function handleVisibility(show:Bool):Void {
+		this.visible = show;
 	}
-	
-	public override function createTextInput(text:String = null):TextInput {
-		if (_textInput == null) {
-            super.createTextInput(text);
-			add(_textInput.tf);
-		}
-		
-		return _textInput;
-	}
-	
+
+    //***********************************************************************************************************
+    // Style
+    //***********************************************************************************************************
+    private override function applyStyle(style:Style) {
+        FlxStyleHelper.applyStyle(_surface, style);
+    }
+    
 	//***********************************************************************************************************
 	// Image
 	//***********************************************************************************************************
 	public override function createImageDisplay():ImageDisplay {
         if (_imageDisplay == null) {
             super.createImageDisplay();
+            _imageDisplay.visible = false;
             add(_imageDisplay);
+            Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
+                _imageDisplay.visible = true;
+            });
         }
 		
 		return _imageDisplay;
@@ -72,309 +299,546 @@ class ComponentImpl extends ComponentBase {
 			_imageDisplay = null;
 		}
 	}
+    
+    //***********************************************************************************************************
+    // Events
+    //***********************************************************************************************************
+    private override function mapEvent(type:String, listener:UIEvent->Void) {
+        switch (type) {
+            case MouseEvent.MOUSE_MOVE:
+                if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false) {
+                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                    _eventMap.set(MouseEvent.MOUSE_MOVE, listener);
+                }
+                
+            case MouseEvent.MOUSE_OVER:
+                if (_eventMap.exists(MouseEvent.MOUSE_OVER) == false) {
+                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                    _eventMap.set(MouseEvent.MOUSE_OVER, listener);
+                }
+                
+            case MouseEvent.MOUSE_OUT:
+                if (_eventMap.exists(MouseEvent.MOUSE_OUT) == false) {
+                    _eventMap.set(MouseEvent.MOUSE_OUT, listener);
+                }
+
+            case MouseEvent.MOUSE_DOWN:
+                if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false) {
+                    MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    _eventMap.set(MouseEvent.MOUSE_DOWN, listener);
+                }
+
+            case MouseEvent.MOUSE_UP:
+                if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
+                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    _eventMap.set(MouseEvent.MOUSE_UP, listener);
+                }
+                
+            case MouseEvent.MOUSE_WHEEL:
+                if (_eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
+                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                    MouseHelper.notify(MouseEvent.MOUSE_WHEEL, __onMouseWheel);
+                    _eventMap.set(MouseEvent.MOUSE_WHEEL, listener);
+                }
+                
+            case MouseEvent.CLICK:
+                if (_eventMap.exists(MouseEvent.CLICK) == false) {
+                    _eventMap.set(MouseEvent.CLICK, listener);
+
+                    if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false) {
+                        MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                        //_eventMap.set(MouseEvent.MOUSE_DOWN, listener);
+                    }
+
+                    if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
+                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                        //_eventMap.set(MouseEvent.MOUSE_UP, listener);
+                    } 
+                }
+                
+			case MouseEvent.DBL_CLICK:
+                if (_eventMap.exists(MouseEvent.DBL_CLICK) == false) {
+                    _eventMap.set(MouseEvent.DBL_CLICK, listener);
+					
+                    if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
+                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onDoubleClick);
+                        _eventMap.set(MouseEvent.MOUSE_UP, listener);
+                    }
+                }
+                
+            case MouseEvent.RIGHT_MOUSE_DOWN:
+                if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
+                    MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    _eventMap.set(MouseEvent.RIGHT_MOUSE_DOWN, listener);
+                }
+
+            case MouseEvent.RIGHT_MOUSE_UP:
+                if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
+                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    _eventMap.set(MouseEvent.RIGHT_MOUSE_UP, listener);
+                }
+                
+            case MouseEvent.RIGHT_CLICK:
+                if (_eventMap.exists(MouseEvent.RIGHT_CLICK) == false) {
+                    _eventMap.set(MouseEvent.RIGHT_CLICK, listener);
+
+                    if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
+                        MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                        _eventMap.set(MouseEvent.RIGHT_MOUSE_DOWN, listener);
+                    }
+
+                    if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
+                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                        _eventMap.set(MouseEvent.RIGHT_MOUSE_UP, listener);
+                    }
+                }
+        }
+    }
+
+    private override function unmapEvent(type:String, listener:UIEvent->Void) {
+        switch (type) {
+            case MouseEvent.MOUSE_MOVE:
+                _eventMap.remove(type);
+                if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false
+                    && _eventMap.exists(MouseEvent.MOUSE_OVER) == false
+                    && _eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
+                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                }
+                
+            case MouseEvent.MOUSE_OVER:
+                _eventMap.remove(type);
+                if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false
+                    && _eventMap.exists(MouseEvent.MOUSE_OVER) == false
+                    && _eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
+                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                }
+                
+            case MouseEvent.MOUSE_OUT:
+                _eventMap.remove(type);
+
+            case MouseEvent.MOUSE_DOWN:
+                _eventMap.remove(type);
+                if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false
+                    && _eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
+                    MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                }
+
+            case MouseEvent.MOUSE_UP:
+                _eventMap.remove(type);
+                if (_eventMap.exists(MouseEvent.MOUSE_UP) == false
+                    && _eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
+                    MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
+                }
+                
+            case MouseEvent.MOUSE_WHEEL:
+                _eventMap.remove(type);
+                MouseHelper.remove(MouseEvent.MOUSE_WHEEL, __onMouseWheel);
+                if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false
+                    && _eventMap.exists(MouseEvent.MOUSE_OVER) == false
+                    && _eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
+                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                }
+                
+            case MouseEvent.CLICK:
+                _eventMap.remove(type);
+                
+			case MouseEvent.DBL_CLICK:
+                _eventMap.remove(type);
+                MouseHelper.remove(MouseEvent.MOUSE_UP, __onDoubleClick);
+                
+            case MouseEvent.RIGHT_MOUSE_DOWN:
+                _eventMap.remove(type);
+                if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false
+                    && _eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
+                    MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                }
+
+            case MouseEvent.RIGHT_MOUSE_UP:
+                _eventMap.remove(type);
+                if (_eventMap.exists(MouseEvent.MOUSE_UP) == false
+                    && _eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
+                    MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
+                }
+                
+            case MouseEvent.RIGHT_CLICK:
+                _eventMap.remove(type);
+        }
+    }
+    
+    private var _mouseOverFlag:Bool = false;
+    private function __onMouseMove(event:MouseEvent) {
+        var x = event.screenX;
+        var y = event.screenY;
+        lastMouseX = x;
+        lastMouseY = y;
+        
+        if (StateHelper.stateHasMember(_surface) == false) {
+            if (_mouseOverFlag == true) {
+                _mouseOverFlag = false;
+                var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    fn(mouseEvent);
+                }
+            }
+            return;
+        }
+        
+        var i = inBounds(x, y);
+        if (i == true) {
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
+        if (i == true && _mouseOverFlag == false) {
+            _mouseOverFlag = true;
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        } else if (i == false && _mouseOverFlag == true) {
+            _mouseOverFlag = false;
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
+    }
+
+    private var _mouseDownFlag:Bool = false;
+    private var _mouseDownButton:Int = -1;
+    private function __onMouseDown(event:MouseEvent) {
+        if (StateHelper.stateHasMember(_surface) == false) {
+            return;
+        }
+        
+        var button:Int = event.data;
+        var x = event.screenX;
+        var y = event.screenY;
+        lastMouseX = x;
+        lastMouseY = y;
+        var i = inBounds(x, y);
+        if (i == true && _mouseDownFlag == false) {
+            /*
+            if (hasComponentOver(cast this, x, y) == true) {
+                return;
+            }
+            */
+            _mouseDownFlag = true;
+            _mouseDownButton = button;
+            var type = button == 0 ? haxe.ui.events.MouseEvent.MOUSE_DOWN: haxe.ui.events.MouseEvent.RIGHT_MOUSE_DOWN;
+            var fn:UIEvent->Void = _eventMap.get(type);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
+    }
+
+    private function __onMouseUp(event:MouseEvent) {
+        if (StateHelper.stateHasMember(_surface) == false) {
+            return;
+        }
+        
+        var button:Int = _mouseDownButton;
+        var x = event.screenX;
+        var y = event.screenY;
+        
+        lastMouseX = x;
+        lastMouseY = y;
+        var i = inBounds(x, y);
+        if (i == true) {
+            /*
+            if (hasComponentOver(cast this, x, y) == true) {
+                return;
+            }
+            */
+			
+            if (_mouseDownFlag == true) {
+                var type = button == 0 ? haxe.ui.events.MouseEvent.CLICK: haxe.ui.events.MouseEvent.RIGHT_CLICK;
+                var fn:UIEvent->Void = _eventMap.get(type);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    Toolkit.callLater(function() {
+                        fn(mouseEvent);
+                    });
+                }
+				
+				if (type == haxe.ui.events.MouseEvent.CLICK) {
+					_lastClickTimeDiff = Timer.stamp() - _lastClickTime;
+					_lastClickTime = Timer.stamp();
+					if (_lastClickTimeDiff >= 0.5) { // 0.5 seconds
+						_lastClickX = x;
+						_lastClickY = y;
+					}
+				}
+            }
+
+            _mouseDownFlag = false;
+            var type = button == 0 ? haxe.ui.events.MouseEvent.MOUSE_UP: haxe.ui.events.MouseEvent.RIGHT_MOUSE_UP;
+            var fn:UIEvent->Void = _eventMap.get(type);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
+        _mouseDownFlag = false;
+    }
 	
-	//***********************************************************************************************************
-	// Display list management
-	//***********************************************************************************************************
-	private override function handleAddComponent(child:Component):Component {
-		add(child);
-		return child;
-	}
-	
-	private override function handleAddComponentAt(child:Component, index:Int):Component {
-		
-		// index is in terms of haxeui components, not flixel children
-		
-		var indexOffset = 0;
-		
-		while (indexOffset < members.length) {
-			if (!Std.is(members[indexOffset], Component)) indexOffset++;
-			else break;
+	private function __onDoubleClick(event:MouseEvent) {
+        if (StateHelper.stateHasMember(_surface) == false) {
+            return;
+        }
+        
+        var button:Int = _mouseDownButton;
+        var x = event.screenX;
+        var y = event.screenY;
+        
+        lastMouseX = x;
+        lastMouseY = y;
+        var i = inBounds(x, y);
+        if (i == true && button == 0) {
+            /*
+            if (hasComponentOver(cast this, x, y) == true) {
+                return;
+            }
+            */
+			
+            _mouseDownFlag = false;
+			var mouseDelta:Float = MathUtil.distance(x, y, _lastClickX, _lastClickY);
+			if (_lastClickTimeDiff < 0.5 && mouseDelta < 5) { // 0.5 seconds
+				var type = haxe.ui.events.MouseEvent.DBL_CLICK;
+				var fn:UIEvent->Void = _eventMap.get(type);
+				if (fn != null) {
+					var mouseEvent = new haxe.ui.events.MouseEvent(type);
+					mouseEvent.screenX = x / Toolkit.scaleX;
+					mouseEvent.screenY = y / Toolkit.scaleY;
+					fn(mouseEvent);
+				}
+			}
+        }
+        _mouseDownFlag = false;
+    }
+
+    private function __onMouseWheel(event:MouseEvent) {
+        if (StateHelper.stateHasMember(_surface) == false) {
+            return;
+        }
+        
+        var delta = event.delta;
+        var fn = _eventMap.get(MouseEvent.MOUSE_WHEEL);
+
+        if (fn == null) {
+            return;
+        }
+
+        if (!inBounds(lastMouseX, lastMouseY)) {
+            return;
+        }
+
+        var mouseEvent = new MouseEvent(MouseEvent.MOUSE_WHEEL);
+        mouseEvent.screenX = lastMouseX / Toolkit.scaleX;
+        mouseEvent.screenY = lastMouseY / Toolkit.scaleY;
+        mouseEvent.delta = Math.max(-1, Math.min(1, -delta));
+        fn(mouseEvent);
+    }
+    
+    //***********************************************************************************************************
+    // Text related
+    //***********************************************************************************************************
+	public override function createTextDisplay(text:String = null):TextDisplay {
+		if (_textDisplay == null) {
+            super.createTextDisplay(text);
+            _textDisplay.tf.visible = false;
+            add(_textDisplay.tf);
+            Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
+                _textDisplay.tf.visible = true;
+            });
 		}
 		
-		insert(index + indexOffset, child);
-		return child;
+		return _textDisplay;
 	}
-	
-	private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
-		if (members.indexOf(child) > -1) remove(child, true);
-		return child;
-	}
-	
-	private override function handleRemoveComponentAt(index:Int, dispose:Bool = true):Component {
-		return handleRemoveComponent(asComponent.childComponents[index], dispose);
-	}
-	
-	private override function handleSetComponentIndex(child:Component, index:Int):Void {
-		handleAddComponentAt(child, index);
-	}
-	
-	private override function handlePosition(left:Null<Float>, top:Null<Float>, style:Style):Void {
-		
-		if (left != null) {
-			
-			x = asComponent.left = left;
-			
-			if (asComponent.parentComponent != null) x += asComponent.parentComponent.x;
-			if (asComponent.componentClipRect != null) x -= asComponent.componentClipRect.left;
+    
+	public override function createTextInput(text:String = null):TextInput {
+		if (_textInput == null) {
+            super.createTextInput(text);
+            _textInput.tf.visible = false;
+            add(_textInput.tf);
+            Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
+                _textInput.tf.visible = true;
+            });
 		}
 		
-		if (top != null) {
-			
-			y = asComponent.top = top;
-			
-			if (asComponent.parentComponent != null) y += asComponent.parentComponent.y;
-			if (asComponent.componentClipRect != null) y -= asComponent.componentClipRect.top;
-		}
+		return _textInput;
 	}
-	
-	private override function handleSize(width:Null<Float>, height:Null<Float>, style:Style) {
-		
-		var intWidth = Std.int(width);
-		var intHeight = Std.int(height);
-		
-		if (intWidth < 1) intWidth = 1;
-		if (intHeight < 1) intHeight = 1;
-		
-		surface.makeGraphic(intWidth, intHeight, 0x0, true);
-		
-		if (clipRect != null) surface.clipRect = clipRect;
-		
-		applyStyle(style);
-	}
-	
-	private override function handleClipRect(value:Rectangle):Void {
-		if (value == null) clipRect = null;
-		else clipRect = FlxRect.get(value.left, value.top, value.width, value.height);
-	}
-	
-	private override function handleVisibility(show:Bool):Void {
-		visible = show;
-	}
-	
-	private override function applyStyle(style:Style) {
-		FlxStyleHelper.applyStyle(surface, style);
-	}
-	
-	//***********************************************************************************************************
-	// Event handling
-	//***********************************************************************************************************
-	
-	var mouseRegistered:Bool = false;
-	var eventMapping:Map<String, Bool> = [
-		MouseEvent.MOUSE_OVER => false,
-		MouseEvent.MOUSE_OUT => false,
-		MouseEvent.MOUSE_DOWN => false,
-		MouseEvent.MOUSE_UP => false,
-		MouseEvent.CLICK => false,
-		MouseEvent.MOUSE_MOVE => false,
-		MouseEvent.MOUSE_WHEEL => false,
-	];
-	
-	private override function mapEvent(type:String, listener:UIEvent->Void) {
-		
-		if (!mouseRegistered) {
-			
-			if (!eventMapping.exists(type)) return; // prevents something like a RESIZE event from registering the object in FlxMEM
-			
-			FlxUIMouseEventManager.add(asComponent, null, null, null, null, true, true, false);
-			mouseRegistered = true;
-			
-			// TODO: need to handle if an onscreen component gets its first mouse event here
-			// TODO: check if the above todo is still relevant...
-		}
-		
-		else if (eventMapping.get(type)) return;
-		
-		eventMapping.set(type, true);
-		
-		switch (type) {
-			case MouseEvent.MOUSE_OVER:
-				FlxUIMouseEventManager.setMouseOverCallback(asComponent, onMouseEvent.bind(type, listener));
-			case MouseEvent.MOUSE_OUT:
-				FlxUIMouseEventManager.setMouseOutCallback(asComponent, onMouseEvent.bind(type, listener));
-			case MouseEvent.MOUSE_DOWN:
-				FlxUIMouseEventManager.setMouseDownCallback(asComponent, onMouseEvent.bind(type, listener));
-			case MouseEvent.MOUSE_UP:
-				FlxUIMouseEventManager.setMouseUpCallback(asComponent, onMouseEvent.bind(type, listener));
-			case MouseEvent.CLICK:
-				FlxUIMouseEventManager.setMouseClickCallback(asComponent, onMouseEvent.bind(type, listener));
-			case MouseEvent.MOUSE_MOVE:
-				FlxUIMouseEventManager.setMouseMoveCallback(asComponent, onMouseEvent.bind(type, listener));
-			case MouseEvent.MOUSE_WHEEL:
-				FlxUIMouseEventManager.setMouseWheelCallback(asComponent, onMouseEvent.bind(type, listener));
-		}
-	}
-	
-	private override function unmapEvent(type:String, listener:UIEvent->Void) {
-		
-		if (!mouseRegistered || !eventMapping.get(type)) return;
-		
-		eventMapping.set(type, false);
-		
-		switch (type) {
-			case MouseEvent.MOUSE_OVER:
-				FlxUIMouseEventManager.setMouseOverCallback(asComponent, null);
-			case MouseEvent.MOUSE_OUT:
-				FlxUIMouseEventManager.setMouseOutCallback(asComponent, null);
-			case MouseEvent.MOUSE_DOWN:
-				FlxUIMouseEventManager.setMouseDownCallback(asComponent, null);
-			case MouseEvent.MOUSE_UP:
-				FlxUIMouseEventManager.setMouseUpCallback(asComponent, null);
-			case MouseEvent.CLICK:
-				FlxUIMouseEventManager.setMouseClickCallback(asComponent, null);
-			case MouseEvent.MOUSE_MOVE:
-				FlxUIMouseEventManager.setMouseMoveCallback(asComponent, null);
-			case MouseEvent.MOUSE_WHEEL:
-				FlxUIMouseEventManager.setMouseWheelCallback(asComponent, null);
-		}
-	}
-	
-	private function onMouseEvent(type:String, listener:UIEvent->Void, target:ComponentImpl):Void {
-		
-		var me = new MouseEvent(type);
-		me.target = cast target;
-		me.screenX = FlxG.mouse.screenX;
-		me.screenY = FlxG.mouse.screenY;
-		me.buttonDown = FlxG.mouse.pressed;
-		if (type == MouseEvent.MOUSE_WHEEL) me.delta = FlxG.mouse.wheel;
-		listener(me);
-	}
-	
+    //***********************************************************************************************************
+    // Util
+    //***********************************************************************************************************
+    private function repositionChildren() {
+        if (_surface != null) {
+            _surface.x = this.screenLeft;
+            _surface.y = this.screenTop;
+        }
+        
+        if (_textDisplay != null) {
+            var offsetX = 2;
+            var offsetY = 2;
+			_textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
+			_textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
+        }
+        
+        if (_textInput != null) {
+            var offsetX = 2;
+            var offsetY = 2;
+			_textInput.tf.x = _surface.x + _textInput.left - offsetX;
+			_textInput.tf.y = _surface.y + _textInput.top - offsetY;
+        }
+        
+        if (_imageDisplay != null) {
+            var offsetX = 0;
+            var offsetY = 0;
+			_imageDisplay.x = _surface.x + _imageDisplay.left - offsetX;
+			_imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
+        }
+    }
+    
+    private function hasComponentOver(ref:Component, x:Float, y:Float):Bool {
+        var array:Array<Component> = getComponentsAtPoint(x, y);
+        if (array.length == 0) {
+            return false;
+        }
+
+        return !hasChildRecursive(cast ref, cast array[array.length - 1]);
+    }
+
+    private function getComponentsAtPoint(x:Float, y:Float):Array<Component> {
+        var array:Array<Component> = new Array<Component>();
+        for (r in Screen.instance.rootComponents) {
+            findChildrenAtPoint(r, x, y, array);
+        }
+        return array;
+    }
+
+    private function findChildrenAtPoint(child:Component, x:Float, y:Float, array:Array<Component>) {
+        if (child.inBounds(x, y) == true) {
+            array.push(child);
+            for (c in child.childComponents) {
+                findChildrenAtPoint(c, x, y, array);
+            }
+        }
+    }
+
+    public function hasChildRecursive(parent:Component, child:Component):Bool {
+        if (parent == child) {
+            return true;
+        }
+        var r = false;
+        for (t in parent.childComponents) {
+            if (t == child) {
+                r = true;
+                break;
+            }
+
+            r = hasChildRecursive(t, child);
+            if (r == true) {
+                break;
+            }
+        }
+
+        return r;
+    }
+    
 	//***********************************************************************************************************
 	// Flixel overrides
 	//***********************************************************************************************************
-	
-	override public function destroy():Void {
-		super.destroy();
-		
-		if (mouseRegistered) {
-			FlxUIMouseEventManager.remove(asComponent);
-			mouseRegistered = false;
-		}
-		
-		if (surface != null) surface.destroy();
-		surface = null;
-		if (_imageDisplay != null) _imageDisplay.destroy();
-		_imageDisplay = null;
-		if (_textDisplay != null) _textDisplay.tf.destroy();
-		_textDisplay = null;
-		if (_textInput != null) _textInput.tf.destroy();
-		_textInput = null;
-		
-		asComponent = null;
-	}
-	
-	// some extra child management needs to occur
-	override public function draw():Void {
-		
-		var screenLeft = Math.NaN;
-		var screenTop = Math.NaN;
-		
-		if (dirty) {
-			
-			screenLeft = asComponent.screenLeft;
-			screenTop = asComponent.screenTop;
-			
-			if (x != screenLeft || y != screenTop) {
-				x = screenLeft;
-				y = screenTop;
-			}
-		}
-		
-		if (_textDisplay != null && _textDisplay.tf.dirty) {
-			
-			if (Math.isNaN(screenLeft)) {
-				screenLeft = asComponent.screenLeft;
-				screenTop = asComponent.screenTop;
-			}
-			
-			_textDisplay.tf.x = _textDisplay.left + screenLeft;
-			_textDisplay.tf.y = _textDisplay.top + screenTop;
-		}
-		
-		if (_imageDisplay != null && _imageDisplay.dirty) {
-			
-			if (Math.isNaN(screenLeft)) {
-				screenLeft = asComponent.screenLeft;
-				screenTop = asComponent.screenTop;
-			}
-			
-			_imageDisplay.x = _imageDisplay.left + screenLeft;
-			_imageDisplay.y = _imageDisplay.top + screenTop;
-		}
-		
-		if (_textInput != null && _textInput.tf.dirty) {
-			
-			if (Math.isNaN(screenLeft)) {
-				screenLeft = asComponent.screenLeft;
-				screenTop = asComponent.screenTop;
-			}
-			
-			_textInput.tf.x = _textInput.left + screenLeft;
-			_textInput.tf.y = _textInput.top + screenTop;
-		}
-		
-		super.draw();
-	}
-	
-	// Flixel uses width/height for the hitbox, but HaxeUI uses them graphically
-	// This is an issue when it comes to clipRects, so we have to override the overlap functions that mouse events use
-	override public function overlapsPoint(point:FlxPoint, inScreenSpace:Bool = true, ?camera:FlxCamera):Bool {
-		
-		var result:Bool = false;
-		for (sprite in _sprites)
-		{
-			if (sprite != null && sprite.exists && sprite.visible)
-			{
-				if (sprite.flixelType == SPRITEGROUP) result = sprite.overlapsPoint(point, inScreenSpace, camera);
-				else result = overlapsPointHelper(sprite, point, inScreenSpace, camera);
-			}
-			
-			if (result) return true;
-		}
-		
-		return false;
-	}
-	
-	// This is essentially overriding FlxSprite's overlapsPoint for use with clipRects
-	// Not its intended functionality, but hey
-	function overlapsPointHelper(sprite:FlxSprite, point:FlxPoint, inScreenSpace:Bool = true, ?camera:FlxCamera):Bool {
-		
-		// does not account for offset, which isn't used in the backend anyway
-		
-		var rect:FlxRect;
-		
-		if (sprite.clipRect == null) rect = FlxRect.get(sprite.x, sprite.y, sprite.width, sprite.height);
-		
-		else {
-			rect = FlxRect.get();
-			rect.copyFrom(sprite._frame.frame);
-			rect.x += sprite.x;	rect.y += sprite.y;
-		}
-		
-		var xx = point.x;
-		var yy = point.y;
-		
-		point.putWeak();
-		
-		if (inScreenSpace) {
-			
-			if (camera == null) camera = FlxG.camera;
-			
-			xx -= camera.scroll.x;
-			yy -= camera.scroll.y;
-			
-			if (sprite.pixelPerfectPosition) rect.floor(); // is flooring wh ok?
-			
-			rect.x -= camera.scroll.x * sprite.scrollFactor.x;
-			rect.y -= camera.scroll.y * sprite.scrollFactor.y;
-		}
-		
-		var ret = xx >= rect.left && xx < rect.right && yy >= rect.top && yy < rect.bottom;
-		
-		rect.put();
-		
-		return ret;
-	}
+
+    private var _updates:Int = 0;
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
+        
+        clearCaches();
+        
+        repositionChildren();
+        
+        if (clipRect != null && _updates < 3) { // TODO: all very smelly, seems cliprect doesnt update instantly from handleClipRect - needs more than one pass too - no idea whats going on, this is a very ugly work around
+            _updates++;
+            this.clipRect = this.clipRect;
+        }
+    }
+
+    public override function destroy():Void {
+        super.destroy();
+        
+        if (_surface != null) {
+            _surface.destroy();
+            _surface = null;
+        }
+        
+        if (_textDisplay != null) {
+            _textDisplay.tf.destroy();
+            _textDisplay = null;
+        }
+        
+        if (_textInput != null) {
+            _textInput.tf.destroy();
+            _textInput = null;
+        }
+        
+        if (_imageDisplay != null) {
+            _imageDisplay.destroy();
+            _imageDisplay = null;
+        }
+    }
+    
+    /*
+    private override function set_x(value:Float):Float {
+        var different = (value != x);
+        var r = super.set_x(value);
+        if (different == false) {
+            return r;
+        }
+        
+        if (parentComponent == null) {
+            this.left = value;
+        }
+        
+        return r;
+    }
+    
+    private override function set_y(value:Float):Float {
+        var different = (value != y);
+        var r = super.set_y(value);
+        if (different == false) {
+            return r;
+        }
+        
+        if (parentComponent == null) {
+            this.top = value;
+        }
+        
+        return r;
+    }
+    */
 }

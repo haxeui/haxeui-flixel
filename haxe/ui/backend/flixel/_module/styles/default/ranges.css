@@ -1,0 +1,81 @@
+.range {
+    background-image: "haxeui-flixel/styles/default/images/inset_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+    
+    border: none;
+    padding: 2px;
+    border-radius: none;
+    filter: none;
+}
+
+.range-value {
+    border: none;
+    border-radius: none;
+}
+
+.horizontal-range, .vertical-range {
+    background: none;
+}    
+
+.range-value {
+    background-color: #3399FF;
+}
+
+.progress-value {
+    background-color: #3399FF;
+}
+
+.horizontal-slider .slider-value {
+    height: 8px;
+}
+
+.vertical-slider .slider-value {
+    width: 8px;
+}
+
+.progress {
+    background: none;
+}
+
+.horizontal-slider .button {
+    width: 14px;
+    height: 18px;
+    background-image: "haxeui-flixel/styles/default/images/button_arrow_down.png";
+    background-image-slice: 5px 5px 11px 7px;
+    background-image-clip: 0px 0px 18px 14px;
+    margin-top: 2px;
+}
+
+.horizontal-slider .button:hover {
+    background-image: "haxeui-flixel/styles/default/images/button_arrow_down.png";
+    background-image-slice: 5px 5px 11px 7px;
+    background-image-clip: 18px 0px 36px 14px;
+}
+
+.horizontal-slider .button:down {
+    background-image: "haxeui-flixel/styles/default/images/button_arrow_down.png";
+    background-image-slice: 5px 5px 11px 7px;
+    background-image-clip: 36px 0px 54px 14px;
+}
+
+.vertical-slider .button {
+    width: 18px;
+    height: 14px;
+    background-image: "haxeui-flixel/styles/default/images/button_arrow.png";
+    background-image-slice: 5px 5px 7px 11px;
+    background-image-clip: 0px 0px 14px 18px;
+    margin-left: 2px;
+}
+
+.vertical-slider .button:hover {
+    background-image: "haxeui-flixel/styles/default/images/button_arrow.png";
+    background-image-slice: 5px 5px 7px 11px;
+    background-image-clip: 14px 0px 28px 18px;
+}
+
+.vertical-slider .button:down {
+    background-image: "haxeui-flixel/styles/default/images/button_arrow.png";
+    background-image-slice: 5px 5px 7px 11px;
+    background-image-clip: 28px 0px 42px 18px;
+}

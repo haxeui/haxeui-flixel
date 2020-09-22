@@ -1,0 +1,54 @@
+.property-group .dropdown {
+    background-image: "haxeui-flixel/styles/default/images/button_no_border.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.property-group .dropdown:hover {
+    background-image: "haxeui-flixel/styles/default/images/button_no_border.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.property-group .dropdown:down {
+    background-image: "haxeui-flixel/styles/default/images/button_no_border.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.property-group .textfield {
+    background-image: none;
+}
+
+.property-group-contents {
+    width: 100%;
+    spacing: 1;
+    background-color: #000000;
+    padding-bottom: 1px;
+}
+
+.property-group-item-editor-container {
+    
+}        
+
+.property-group .number-stepper {
+    background-image: none;
+    padding: 0;
+}
+
+.property-group-header:expanded .property-group-header-icon {
+    resource: "haxeui-flixel/styles/default/images/down_arrow_square.png";
+}
+
+.property-group-header:collapsed .property-group-header-icon {
+    resource: "haxeui-flixel/styles/default/images/right_arrow_square.png";
+}
+
+.property-group-header {
+    __background-color: #c5c5c5;
+}
+
+.property-group-header:hover {
+    __background-color: #d0d0d0;
+}
+

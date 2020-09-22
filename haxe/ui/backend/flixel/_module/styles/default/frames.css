@@ -1,0 +1,17 @@
+.frame-contents {
+    background-image: "haxeui-flixel/styles/default/images/frame.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+    
+    border: none;
+    background-color: none;
+}
+
+.frame-title {
+    color: #000000;
+}
+
+.frame-left-line, .frame-right-line {
+    background-color: #000000;
+    height: 1px;
+}

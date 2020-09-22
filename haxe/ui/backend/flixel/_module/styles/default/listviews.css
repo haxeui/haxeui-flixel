@@ -1,0 +1,8 @@
+.listview .itemrenderer:selected {
+    background-color: #3399FF;
+    color: white;
+}
+
+.listview .itemrenderer:selected .label {
+    color: white;
+}

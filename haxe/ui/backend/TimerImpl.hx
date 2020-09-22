@@ -9,7 +9,8 @@ class TimerImpl {
 	public function new(delay:Int, callback:Void->Void) {
 		
 		_timer = new FlxTimer();
-		_timer.start(delay / 1000, function(_) {
+        var d = delay / 1000;
+		_timer.start(d, function(_) {
 			callback();
 		});
 	}

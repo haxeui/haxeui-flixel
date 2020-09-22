@@ -1,31 +1,28 @@
 package haxe.ui.backend;
 
-import flixel.math.FlxRect;
 import flixel.text.FlxText;
-import haxe.ui.assets.FontInfo;
-import haxe.ui.core.Component;
-import haxe.ui.styles.Style;
-import haxe.ui.core.TextDisplay.TextDisplayData;
 
 class TextDisplayImpl extends TextBase {
 	public var tf:FlxText;
-	
+    
 	public function new() {
 		super();
 		tf = new FlxText();
+        tf.pixelPerfectPosition = true;
 		tf.autoSize = true;
 	}
-	
-	override function validateData():Void {
-		tf.text = _text;
-	}
-	
-	override function validateStyle():Bool {
+    
+    private override function validateData() {
+        tf.text = _text;
+    }
+    
+    private override function validateStyle():Bool {
         var measureTextRequired:Bool = false;
 		
 		if (_textStyle != null) {
 			
 			if (_textStyle.textAlign != null) {
+                tf.autoSize = false;
                 tf.alignment = _textStyle.textAlign;
                 measureTextRequired = true;
             }
@@ -57,12 +54,12 @@ class TextDisplayImpl extends TextBase {
 			
 			if (tf.wordWrap != _displayData.wordWrap) {
                 tf.wordWrap = _displayData.wordWrap;
-                tf.autoSize = !_displayData.wordWrap;
+                //tf.autoSize = !_displayData.wordWrap;
                 measureTextRequired = true;
             }
 			if (tf.textField.multiline != _displayData.multiline) {
                 tf.textField.multiline = _displayData.multiline;
-                tf.autoSize = !_displayData.multiline;
+                //tf.autoSize = !_displayData.multiline;
                 measureTextRequired = true;
             }
 			
@@ -70,25 +67,19 @@ class TextDisplayImpl extends TextBase {
 		}
 		
 		return measureTextRequired;
-	}
-	
-	override  function validatePosition():Void {
     }
-	
-	override function validateDisplay():Void {
-		//if (!tf.autoSize) {
-			if (tf.textField.width != _width) tf.textField.width = _width;
-			if (tf.textField.height != _height) tf.textField.height = _height;
-		//}
-	}
-	
-	override function measureText():Void {
-        #if html5
-		_textWidth = tf.textField.textWidth + 2;
-		_textHeight = tf.textField.textHeight + 2;
-        #else
-		_textWidth = tf.textField.textWidth + 4;
-		_textHeight = tf.textField.textHeight + 4;
-        #end
-	}
+    
+    private override function validateDisplay() {
+        if (tf.textField.width != _width) {
+            tf.textField.width = _width;
+        }
+        if (tf.textField.height != _height) {
+            tf.textField.height = _height;
+        }
+    }
+    
+    private override function measureText() {
+		_textWidth = Math.fround(tf.textField.textWidth) + 2;
+		_textHeight = Math.fround(tf.textField.textHeight);
+    }
 }

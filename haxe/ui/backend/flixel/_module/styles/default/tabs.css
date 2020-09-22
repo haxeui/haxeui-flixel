@@ -1,0 +1,62 @@
+.tabbar {
+    horizontal-spacing: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
+    height: auto;
+    width: auto;
+    clip: true;
+    background-image: "haxeui-flixel/styles/default/images/tabbar_bg.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar > .tabbar-contents {
+    border: none;
+    spacing: 0;
+}
+
+.tabbar-button {
+    background-image: "haxeui-flixel/styles/default/images/tabbar.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+
+    border: none;
+    background-color: none;
+    padding: 5px 8px;
+    padding-bottom: 6px;
+}
+
+.tabbar-button:hover {
+    background-image: "haxeui-flixel/styles/default/images/tabbar.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar-button-selected {
+    background-image: "haxeui-flixel/styles/default/images/tabbar.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+
+.tabbar-scroll-left {
+    icon: "haxeui-core/styles/default/left_arrow.png";
+    border-radius: 0;
+    padding: 5px;
+}
+
+.tabbar-scroll-right {
+    icon: "haxeui-core/styles/default/right_arrow.png";
+    border-radius: 0;
+    padding: 5px;
+}
+
+.tabview > .tabview-content {
+    background-image: "haxeui-flixel/styles/default/images/tabview_bg.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+    
+    border: none;
+    padding: 5px;
+    background-color: none;
+}

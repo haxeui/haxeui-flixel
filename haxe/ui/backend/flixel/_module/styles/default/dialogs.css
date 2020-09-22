@@ -1,0 +1,33 @@
+.dialog {
+    background-image: "haxeui-flixel/styles/default/images/button.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+
+    border: none;
+    background-color: none;
+    padding: 5px;
+}
+
+.dialog-title {
+    background-color: none;
+    border: none;
+    __padding: 0px;
+    __padding-bottom: 5px;
+}
+
+.dialog-content {
+    padding: 0px;
+    __background-image: "haxeui-flixel/styles/default/images/inset_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.dialog-footer-container {
+    background-color: none;
+    border: none;
+}
+
+.dialog-footer {
+    padding: 0;
+    padding-top: 5px;
+}

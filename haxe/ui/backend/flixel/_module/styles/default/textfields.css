@@ -1,0 +1,23 @@
+.textfield {
+    background-image: "haxeui-flixel/styles/default/images/inset_thin.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+    
+    background-color: none;
+    color: #000000;
+    border: none;
+    border-radius: none;
+    padding: 5px 5px;
+}
+
+.textfield:active {
+    border: none;
+}
+
+.textfield:empty {
+    color: #A0A0A0;
+}
+
+.textfield:disabled {
+    color: #909090;
+}

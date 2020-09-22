@@ -1,0 +1,37 @@
+.dropdown {
+    background-image: "haxeui-flixel/styles/default/images/dropdown.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+
+    border: none;
+    background-color: none;
+    padding: 5px 8px;
+    padding-bottom: 6px;
+}
+
+.dropdown:hover {
+    background-image: "haxeui-flixel/styles/default/images/dropdown.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.dropdown:down {
+    background-image: "haxeui-flixel/styles/default/images/dropdown.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+
+.dropdown {
+    icon: "haxeui-flixel/styles/default/images/up_down_arrows.png";
+}
+
+.dropdown-popup {
+    background-image: "haxeui-flixel/styles/default/images/tabview_bg.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+
+    border: none;
+    background-color: none;
+    padding: 3px;
+}

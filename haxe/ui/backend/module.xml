@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <module id="haxeui-flixel">
-    <resources>
-        <resource path="/haxe/ui/backend/flixel/_module/styles" prefix="haxeui-flixel/styles" />
-    </resources>
-    
     <themes>
         <default>
             <style resource="haxeui-flixel/styles/default/main.css" />
+            <style resource="haxeui-flixel/styles/default/buttons.css" />
+            <style resource="haxeui-flixel/styles/default/checkboxes.css" />
+            <style resource="haxeui-flixel/styles/default/textfields.css" />
+            <style resource="haxeui-flixel/styles/default/steppers.css" />
+            <style resource="haxeui-flixel/styles/default/dropdowns.css" />
+            <style resource="haxeui-flixel/styles/default/ranges.css" />
+            <style resource="haxeui-flixel/styles/default/scrolls.css" />
+            <style resource="haxeui-flixel/styles/default/tabs.css" />
+            <style resource="haxeui-flixel/styles/default/dialogs.css" />
+            <style resource="haxeui-flixel/styles/default/propertygrids.css" />
+            <style resource="haxeui-flixel/styles/default/listviews.css" />
+            <style resource="haxeui-flixel/styles/default/tableviews.css" />
+            <style resource="haxeui-flixel/styles/default/frames.css" />
         </default>
     </themes>
 </module>

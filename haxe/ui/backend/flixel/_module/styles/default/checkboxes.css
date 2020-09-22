@@ -1,0 +1,42 @@
+.checkbox {
+    horizontal-spacing: 2px;
+}
+
+.checkbox-value {
+    background-image: "haxeui-flixel/styles/default/images/checkbox.png";
+    background-image-clip: 0px 0px 11px 11px;
+    
+    border: none;
+    padding: 2px;
+    border-radius: none;
+    filter: none;
+    width: 11px;
+    height: 11px;
+}
+
+.checkbox-value:selected {
+    icon: none;
+    background-image-clip: 11px 0px 22px 11px;
+}
+
+
+.optionbox {
+    horizontal-spacing: 2px;
+}
+
+.optionbox-value {
+    background-image: "haxeui-flixel/styles/default/images/optionbox.png";
+    background-image-clip: 0px 0px 11px 11px;
+    
+    border: none;
+    padding: 2px;
+    border-radius: none;
+    filter: none;
+    width: 11px;
+    height: 11px;
+}
+
+.optionbox-value:selected {
+    icon: none;
+    background-image-clip: 11px 0px 22px 11px;
+}
