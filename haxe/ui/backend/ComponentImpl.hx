@@ -703,15 +703,25 @@ class ComponentImpl extends ComponentBase {
         }
         
         if (_textDisplay != null) {
+            #if html5
+            var offsetX = 1;
+            var offsetY = 1;
+            #else
             var offsetX = 2;
             var offsetY = 2;
+            #end
 			_textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
 			_textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
         }
         
         if (_textInput != null) {
+            #if html5
+            var offsetX = 1;
+            var offsetY = 1;
+            #else
             var offsetX = 2;
             var offsetY = 2;
+            #end
 			_textInput.tf.x = _surface.x + _textInput.left - offsetX;
 			_textInput.tf.y = _surface.y + _textInput.top - offsetY;
         }

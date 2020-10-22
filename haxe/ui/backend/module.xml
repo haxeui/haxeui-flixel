@@ -13,6 +13,7 @@
             <style resource="haxeui-flixel/styles/default/tabs.css" />
             <style resource="haxeui-flixel/styles/default/dialogs.css" />
             <style resource="haxeui-flixel/styles/default/propertygrids.css" />
+            <style resource="haxeui-flixel/styles/default/menus.css" />
             <style resource="haxeui-flixel/styles/default/listviews.css" />
             <style resource="haxeui-flixel/styles/default/tableviews.css" />
             <style resource="haxeui-flixel/styles/default/frames.css" />

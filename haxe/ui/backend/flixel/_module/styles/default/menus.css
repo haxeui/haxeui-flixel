@@ -1,0 +1,63 @@
+.menubar {
+    background-image: "haxeui-flixel/styles/default/images/menubar_bg.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.menubar-button {
+    background-image: none;
+    color: black;
+    background-color: #c5c5c5;
+}
+
+.menubar-button:hover {
+    background-image: "haxeui-flixel/styles/default/images/button.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+    color: black;
+}
+
+.menubar-button:down {
+    background-image: "haxeui-flixel/styles/default/images/dropdown.png";
+    background-image-clip: 36px 0px 54px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+    background-color: #c5c5c5;
+}
+
+.menu {
+    background-image: "haxeui-flixel/styles/default/images/button.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+    background-color: none;
+    padding: 3px;
+}
+
+.menu.expanded {
+    background-image: "haxeui-flixel/styles/default/images/menu.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+    background-color: none;
+}
+
+.menu-filler {
+    background-image: "haxeui-flixel/styles/default/images/menu_filler.png";
+    background-image-slice: 1px 1px 2px 2px;
+    height: 3px;
+    width: 100%;
+}
+
+.menuitem {
+    background-color: none;
+}
+
+/* TODO: something weird happens here
+.menuitem:hover, .menuitem:selected {
+    background-image: "haxeui-flixel/styles/default/images/selection.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.menuitem .label:hover, .menuitem .label:selected {
+    color: white;
+}
+*/
