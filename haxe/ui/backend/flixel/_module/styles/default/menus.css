@@ -47,17 +47,13 @@
 }
 
 .menuitem {
-    background-color: none;
+    background-color: #c5c5c5;
 }
 
-/* TODO: something weird happens here
 .menuitem:hover, .menuitem:selected {
-    background-image: "haxeui-flixel/styles/default/images/selection.png";
-    background-image-clip: 0px 0px 18px 18px;
-    background-image-slice: 5px 5px 13px 13px;
+    background-color: #3399FF;
 }
 
 .menuitem .label:hover, .menuitem .label:selected {
     color: white;
 }
-*/

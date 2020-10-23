@@ -18,11 +18,10 @@ class TextDisplayImpl extends TextBase {
     
     private override function validateStyle():Bool {
         var measureTextRequired:Bool = false;
-		
 		if (_textStyle != null) {
-			
+
 			if (_textStyle.textAlign != null) {
-                tf.autoSize = false;
+                //tf.autoSize = false;
                 tf.alignment = _textStyle.textAlign;
                 measureTextRequired = true;
             }
@@ -41,7 +40,6 @@ class TextDisplayImpl extends TextBase {
                 tf.bold = _textStyle.fontBold;
                 measureTextRequired = true;
             }
-            
 			if (_textStyle.fontItalic != null) {
                 tf.italic = _textStyle.fontItalic;
                 measureTextRequired = true;
@@ -57,6 +55,7 @@ class TextDisplayImpl extends TextBase {
                 //tf.autoSize = !_displayData.wordWrap;
                 measureTextRequired = true;
             }
+
 			if (tf.textField.multiline != _displayData.multiline) {
                 tf.textField.multiline = _displayData.multiline;
                 //tf.autoSize = !_displayData.multiline;
