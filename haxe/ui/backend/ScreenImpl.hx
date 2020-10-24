@@ -1,6 +1,7 @@
 package haxe.ui.backend;
 
 import flixel.FlxG;
+import flixel.FlxState;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -14,6 +15,26 @@ class ScreenImpl extends ScreenBase {
     
     public function new() {
         _mapping = new Map<String, UIEvent->Void>();
+        
+        FlxG.signals.postStateSwitch.add(onPostStateSwitch);
+    }
+    
+    private function onPostStateSwitch() {
+        checkMembers(FlxG.state);
+    }
+    
+    private function checkMembers(state:FlxState) {
+        for (m in state.members) {
+            if (Std.is(m, Component)) {
+                var c = cast(m, Component);
+                if (c.percentWidth > 0) {
+                    c.width = (this.width * c.percentWidth) / 100;
+                }
+                if (c.percentHeight > 0) {
+                    c.height = (this.height * c.percentHeight) / 100;
+                }
+            }
+        }
     }
     
 	private override function get_width():Float {
