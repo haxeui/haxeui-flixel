@@ -707,7 +707,7 @@ class ComponentImpl extends ComponentBase {
             var offsetX = 1;
             var offsetY = 1;
             #else
-            var offsetX = 2;
+            var offsetX = 1;
             var offsetY = 2;
             #end
 			_textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
@@ -719,7 +719,7 @@ class ComponentImpl extends ComponentBase {
             var offsetX = 1;
             var offsetY = 1;
             #else
-            var offsetX = 2;
+            var offsetX = 1;
             var offsetY = 2;
             #end
 			_textInput.tf.x = _surface.x + _textInput.left - offsetX;

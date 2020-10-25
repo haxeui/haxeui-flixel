@@ -3,8 +3,8 @@ import flixel.FlxG;
 import haxe.ui.events.MouseEvent;
 
 class MouseHelper {
-    public static var currentMouseX:Int = 0;
-    public static var currentMouseY:Int = 0;
+    public static var currentMouseX:Float = 0;
+    public static var currentMouseY:Float = 0;
     
     private static var _hasOnMouseDown:Bool = false;
     private static var _hasOnMouseUp:Bool = false;
@@ -103,8 +103,8 @@ class MouseHelper {
         list = list.copy();
         
         var event = new MouseEvent(MouseEvent.MOUSE_DOWN);
-        event.screenX = FlxG.mouse.screenX;
-        event.screenY = FlxG.mouse.screenY;
+        event.screenX = e.stageX;
+        event.screenY = e.stageY;
         event.data = buttonPressed;
         for (l in list) {
             l(event);
@@ -120,8 +120,8 @@ class MouseHelper {
         list = list.copy();
         
         var event = new MouseEvent(MouseEvent.MOUSE_UP);
-        event.screenX = FlxG.mouse.screenX;
-        event.screenY = FlxG.mouse.screenY;
+        event.screenX = e.stageX;
+        event.screenY = e.stageY;
         event.data = buttonPressed;
         for (l in list) {
             l(event);
@@ -129,8 +129,8 @@ class MouseHelper {
     }
     
     private static function onMouseMove(e:openfl.events.MouseEvent) {
-        currentMouseX = FlxG.mouse.screenX;
-        currentMouseY = FlxG.mouse.screenY;
+        currentMouseX = e.stageX;
+        currentMouseY = e.stageY;
         
         var list = _callbacks.get(MouseEvent.MOUSE_MOVE);
         if (list == null || list.length == 0) {
@@ -140,8 +140,8 @@ class MouseHelper {
         list = list.copy();
         
         var event = new MouseEvent(MouseEvent.MOUSE_MOVE);
-        event.screenX = FlxG.mouse.screenX;
-        event.screenY = FlxG.mouse.screenY;
+        event.screenX = e.stageX;
+        event.screenY = e.stageY;
         for (l in list) {
             l(event);
         }
