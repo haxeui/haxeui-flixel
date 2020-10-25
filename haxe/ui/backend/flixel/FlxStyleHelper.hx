@@ -126,6 +126,8 @@ class FlxStyleHelper {
 			else {
 				sprite.pixels.draw(bmd, matrix, null, null, null);
 			}
+			
+			sprite.dirty = true;
 		}
 		
 		else {
