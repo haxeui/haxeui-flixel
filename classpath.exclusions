@@ -1,3 +1,6 @@
 ; exclude paths from classpath when searching for haxeui arifacts (module.xml, native.xml, etc)
 ; speeds up build
-\/flixel
+\/flixel\/
+\/lime\/.*src.?$
+\/openfl\/.*src.?$
+\/actuate\/.*src.?$
