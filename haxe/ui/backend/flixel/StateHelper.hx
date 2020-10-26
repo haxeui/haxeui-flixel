@@ -29,6 +29,10 @@ class StateHelper {
             group = currentState;
         }
         
+        if (group == null) {
+            return false;
+        }
+        
         for (m in group.members) {
             if (m == member) {
                 return true;
