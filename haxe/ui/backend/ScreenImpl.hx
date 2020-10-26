@@ -1,7 +1,10 @@
 package haxe.ui.backend;
 
+import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.group.FlxGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -20,10 +23,12 @@ class ScreenImpl extends ScreenBase {
     }
     
     private function onPostStateSwitch() {
+        _topLevelComponents = [];
         checkMembers(FlxG.state);
     }
     
-    private function checkMembers(state:FlxState) {
+    private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
+        var found = false; // we only want top level components
         for (m in state.members) {
             if (Std.is(m, Component)) {
                 var c = cast(m, Component);
@@ -33,8 +38,18 @@ class ScreenImpl extends ScreenBase {
                 if (c.percentHeight > 0) {
                     c.height = (this.height * c.percentHeight) / 100;
                 }
+                _topLevelComponents.push(c);
+                found = true;
+            } else if (Std.is(m, FlxTypedGroup)) {
+                var group:FlxTypedGroup<FlxBasic> = cast m;
+                if (checkMembers(group) == true) {
+                    found = true;
+                    break;
+                }
+                trace("its a group");
             }
         }
+        return found;
     }
     
 	private override function get_width():Float {
@@ -59,6 +74,13 @@ class ScreenImpl extends ScreenBase {
 	}
     
     public override function addComponent(component:Component):Component {
+        if (_topLevelComponents.length > 0) {
+            var cameras = StateHelper.findCameras(_topLevelComponents[0]);
+            if (cameras != null) {
+                component.cameras = cameras;
+            }
+        }
+        
         StateHelper.currentState.add(component);
         _topLevelComponents.push(component);
         onContainerResize();

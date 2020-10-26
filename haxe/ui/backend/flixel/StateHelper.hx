@@ -1,6 +1,7 @@
 package haxe.ui.backend.flixel;
 
 import flixel.FlxBasic;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
@@ -23,17 +24,21 @@ class StateHelper {
         return s;
     }
     
-    public static function stateHasMember(member:FlxBasic, state:FlxState = null):Bool {
-        if (state == null) {
-            state = currentState;
+    public static function hasMember(member:FlxBasic, group:FlxTypedGroup<FlxBasic> = null):Bool {
+        if (group == null) {
+            group = currentState;
         }
         
-        for (m in state.members) {
+        for (m in group.members) {
             if (m == member) {
                 return true;
             }
             
-            if (Std.is(m, FlxSpriteGroup)) {
+            if (Std.is(m, FlxTypedGroup)) {
+                if (hasMember(member, cast m) == true) {
+                    return true;
+                }
+            } else if (Std.is(m, FlxSpriteGroup)) {
                 if (groupHasMember(member, cast m) == true) {
                     return true;
                 }
@@ -43,18 +48,40 @@ class StateHelper {
         return false;
     }
     
-    private static function groupHasMember(member:FlxBasic, group:FlxSpriteGroup):Bool {
+    private static function groupHasMember(member:FlxBasic, group:FlxSpriteGroup) {
         for (m in group.members) {
             if (m == member) {
                 return true;
             }
             
-            if (Std.is(m, FlxSpriteGroup)) {
+            if (Std.is(m, FlxTypedGroup)) {
+                if (hasMember(member, cast m) == true) {
+                    return true;
+                }
+            } else if (Std.is(m, FlxSpriteGroup)) {
                 if (groupHasMember(member, cast m) == true) {
                     return true;
                 }
             }
         }
+        
         return false;
+    }
+    
+    public static function findCameras(member:FlxBasic, group:FlxTypedGroup<FlxBasic> = null):Array<FlxCamera> {
+        if (group == null) {
+            group = currentState;
+        }
+        
+        for (m in group.members) {
+            if (m.cameras != null && m.cameras.length > 0) {
+                var sub:FlxTypedGroup<FlxBasic> = cast m;
+                if (sub != null && hasMember(member, sub)) {
+                    return m.cameras;
+                }
+            }
+        }
+        
+        return null;
     }
 }

@@ -476,7 +476,7 @@ class ComponentImpl extends ComponentBase {
         lastMouseX = x;
         lastMouseY = y;
         
-        if (StateHelper.stateHasMember(_surface) == false) {
+        if (StateHelper.hasMember(_surface) == false) {
             if (_mouseOverFlag == true) {
                 _mouseOverFlag = false;
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
@@ -524,7 +524,7 @@ class ComponentImpl extends ComponentBase {
     private var _mouseDownFlag:Bool = false;
     private var _mouseDownButton:Int = -1;
     private function __onMouseDown(event:MouseEvent) {
-        if (StateHelper.stateHasMember(_surface) == false) {
+        if (StateHelper.hasMember(_surface) == false) {
             return;
         }
         
@@ -554,7 +554,7 @@ class ComponentImpl extends ComponentBase {
     }
 
     private function __onMouseUp(event:MouseEvent) {
-        if (StateHelper.stateHasMember(_surface) == false) {
+        if (StateHelper.hasMember(_surface) == false) {
             return;
         }
         
@@ -608,7 +608,7 @@ class ComponentImpl extends ComponentBase {
     }
 	
 	private function __onDoubleClick(event:MouseEvent) {
-        if (StateHelper.stateHasMember(_surface) == false) {
+        if (StateHelper.hasMember(_surface) == false) {
             return;
         }
         
@@ -643,7 +643,7 @@ class ComponentImpl extends ComponentBase {
     }
 
     private function __onMouseWheel(event:MouseEvent) {
-        if (StateHelper.stateHasMember(_surface) == false) {
+        if (StateHelper.hasMember(_surface) == false) {
             return;
         }
         
