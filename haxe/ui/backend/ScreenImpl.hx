@@ -46,7 +46,6 @@ class ScreenImpl extends ScreenBase {
                     found = true;
                     break;
                 }
-                trace("its a group");
             }
         }
         return found;
