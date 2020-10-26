@@ -33,6 +33,10 @@ class StateHelper {
             return false;
         }
         
+        if (member == group) {
+            return true;
+        }
+        
         for (m in group.members) {
             if (m == member) {
                 return true;
@@ -53,6 +57,14 @@ class StateHelper {
     }
     
     private static function groupHasMember(member:FlxBasic, group:FlxSpriteGroup) {
+        if (group == null) {
+            return false;
+        }
+        
+        if (member == group) {
+            return true;
+        }
+        
         for (m in group.members) {
             if (m == member) {
                 return true;
@@ -79,8 +91,7 @@ class StateHelper {
         
         for (m in group.members) {
             if (m.cameras != null && m.cameras.length > 0) {
-                var sub:FlxTypedGroup<FlxBasic> = cast m;
-                if (sub != null && hasMember(member, sub)) {
+                if (m == member || (Std.is(m, FlxTypedGroup) && hasMember(member, cast m))) {
                     return m.cameras;
                 }
             }
