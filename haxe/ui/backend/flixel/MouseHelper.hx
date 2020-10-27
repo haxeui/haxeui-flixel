@@ -103,8 +103,13 @@ class MouseHelper {
         list = list.copy();
         
         var event = new MouseEvent(MouseEvent.MOUSE_DOWN);
-        event.screenX = e.stageX;
-        event.screenY = e.stageY;
+        if (e != null) {
+            event.screenX = e.stageX;
+            event.screenY = e.stageY;
+        } else {
+            event.screenX = currentMouseX;
+            event.screenY = currentMouseY;
+        }
         event.data = buttonPressed;
         for (l in list) {
             l(event);
@@ -120,8 +125,13 @@ class MouseHelper {
         list = list.copy();
         
         var event = new MouseEvent(MouseEvent.MOUSE_UP);
-        event.screenX = e.stageX;
-        event.screenY = e.stageY;
+        if (e != null) {
+            event.screenX = e.stageX;
+            event.screenY = e.stageY;
+        } else {
+            event.screenX = currentMouseX;
+            event.screenY = currentMouseY;
+        }
         event.data = buttonPressed;
         for (l in list) {
             l(event);
@@ -129,8 +139,10 @@ class MouseHelper {
     }
     
     private static function onMouseMove(e:openfl.events.MouseEvent) {
-        currentMouseX = e.stageX;
-        currentMouseY = e.stageY;
+        if (e != null) {
+            currentMouseX = e.stageX;
+            currentMouseY = e.stageY;
+        }
         
         var list = _callbacks.get(MouseEvent.MOUSE_MOVE);
         if (list == null || list.length == 0) {
@@ -140,8 +152,13 @@ class MouseHelper {
         list = list.copy();
         
         var event = new MouseEvent(MouseEvent.MOUSE_MOVE);
-        event.screenX = e.stageX;
-        event.screenY = e.stageY;
+        if (e != null) {
+            event.screenX = e.stageX;
+            event.screenY = e.stageY;
+        } else {
+            event.screenX = currentMouseX;
+            event.screenY = currentMouseY;
+        }
         for (l in list) {
             l(event);
         }
