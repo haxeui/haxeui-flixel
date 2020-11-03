@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
 import haxe.ui.backend.flixel.FlxStyleHelper;
@@ -822,33 +823,19 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
-    /*
     private override function set_x(value:Float):Float {
-        var different = (value != x);
         var r = super.set_x(value);
-        if (different == false) {
-            return r;
-        }
-        
-        if (parentComponent == null) {
+        if (this.parentComponent == null) {
             this.left = value;
         }
-        
         return r;
     }
     
     private override function set_y(value:Float):Float {
-        var different = (value != y);
         var r = super.set_y(value);
-        if (different == false) {
-            return r;
-        }
-        
-        if (parentComponent == null) {
+        if (this.parentComponent == null) {
             this.top = value;
         }
-        
         return r;
     }
-    */
 }
