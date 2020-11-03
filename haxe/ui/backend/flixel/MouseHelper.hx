@@ -104,11 +104,11 @@ class MouseHelper {
         
         var event = new MouseEvent(MouseEvent.MOUSE_DOWN);
         if (e != null) {
-            event.screenX = e.stageX;
-            event.screenY = e.stageY;
+            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / FlxG.scaleMode.scale.x;
+            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / FlxG.scaleMode.scale.y;
         } else {
-            event.screenX = currentMouseX;
-            event.screenY = currentMouseY;
+            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / FlxG.scaleMode.scale.x;
+            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / FlxG.scaleMode.scale.y;
         }
         event.data = buttonPressed;
         for (l in list) {
@@ -126,11 +126,11 @@ class MouseHelper {
         
         var event = new MouseEvent(MouseEvent.MOUSE_UP);
         if (e != null) {
-            event.screenX = e.stageX;
-            event.screenY = e.stageY;
+            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / FlxG.scaleMode.scale.x;
+            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / FlxG.scaleMode.scale.y;
         } else {
-            event.screenX = currentMouseX;
-            event.screenY = currentMouseY;
+            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / FlxG.scaleMode.scale.x;
+            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / FlxG.scaleMode.scale.y;
         }
         event.data = buttonPressed;
         for (l in list) {
@@ -150,14 +150,13 @@ class MouseHelper {
         }
         
         list = list.copy();
-        
         var event = new MouseEvent(MouseEvent.MOUSE_MOVE);
         if (e != null) {
-            event.screenX = e.stageX;
-            event.screenY = e.stageY;
+            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / FlxG.scaleMode.scale.x;
+            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / FlxG.scaleMode.scale.y;
         } else {
-            event.screenX = currentMouseX;
-            event.screenY = currentMouseY;
+            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / FlxG.scaleMode.scale.x;
+            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / FlxG.scaleMode.scale.y;
         }
         for (l in list) {
             l(event);
