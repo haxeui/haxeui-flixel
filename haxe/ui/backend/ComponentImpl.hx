@@ -3,6 +3,7 @@ package haxe.ui.backend;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
+import flixel.text.FlxText.FlxTextBorderStyle;
 import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
@@ -13,6 +14,7 @@ import haxe.ui.core.TextDisplay;
 import haxe.ui.core.TextInput;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
+import haxe.ui.filters.Outline;
 import haxe.ui.geom.Rectangle;
 import haxe.ui.styles.Style;
 import haxe.ui.util.MathUtil;
@@ -275,6 +277,19 @@ class ComponentImpl extends ComponentBase {
     //***********************************************************************************************************
     private override function applyStyle(style:Style) {
         FlxStyleHelper.applyStyle(_surface, style);
+        applyFilters(style);
+    }
+    
+    private function applyFilters(style:Style) {
+        if (style.filter != null && style.filter.length > 0) {
+            for (f in style.filter) {
+                if (_textDisplay != null && Std.is(f, Outline)) {
+                    var o = cast(f, Outline);
+                    var col = o.color;
+                    _textDisplay.tf.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000 | o.color, o.size);
+                }
+            }
+        }
     }
     
 	//***********************************************************************************************************
@@ -676,6 +691,7 @@ class ComponentImpl extends ComponentBase {
             add(_textDisplay.tf);
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
                 _textDisplay.tf.visible = true;
+                applyFilters(style);
             });
 		}
 		
