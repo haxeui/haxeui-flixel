@@ -96,7 +96,7 @@ class TextDisplayImpl extends TextBase {
         return text;
     }
     
-    private function processTags(s:String, rules:Array<FlxTextFormatMarkerPair>) {
+    private static function processTags(s:String, rules:Array<FlxTextFormatMarkerPair>) {
         var inTag:Bool = false;
         var endTag:Bool = false;
         var tagDetails = "";
