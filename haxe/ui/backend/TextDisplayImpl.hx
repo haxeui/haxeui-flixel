@@ -19,10 +19,8 @@ class TextDisplayImpl extends TextBase {
                 tf.text = normalizeText(_text);
             }
         } else if (_htmlText != null) {
-            trace(_htmlText);
             var rules = [];
             var outText = processTags(_htmlText, rules);
-            trace(outText);
             if (rules.length > 0) {
                 tf.applyMarkup(outText, rules);
             } else {
