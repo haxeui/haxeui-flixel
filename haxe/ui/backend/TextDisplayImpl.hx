@@ -1,6 +1,7 @@
 package haxe.ui.backend;
 
 import flixel.text.FlxText;
+import haxe.ui.util.Color;
 
 class TextDisplayImpl extends TextBase {
 	public var tf:FlxText;
@@ -13,29 +14,42 @@ class TextDisplayImpl extends TextBase {
 	}
     
     private override function validateData() {
-        tf.text = _text;
+        if (_text != null) {
+            if (_dataSource == null) {
+                tf.text = normalizeText(_text);
+            }
+        } else if (_htmlText != null) {
+            trace(_htmlText);
+            var rules = [];
+            var outText = processTags(_htmlText, rules);
+            trace(outText);
+            if (rules.length > 0) {
+                tf.applyMarkup(outText, rules);
+            } else {
+                tf.text = normalizeText(_htmlText);
+            }
+        }
     }
     
     private override function validateStyle():Bool {
         var measureTextRequired:Bool = false;
 		if (_textStyle != null) {
-
 			if (_textStyle.textAlign != null) {
                 //tf.autoSize = false;
                 tf.alignment = _textStyle.textAlign;
                 measureTextRequired = true;
             }
-			
+
 			if (_textStyle.fontSize != null) {
                 tf.size = Std.int(_textStyle.fontSize);
                 measureTextRequired = true;
             }
-			
+            
 			if (_fontInfo != null) {
                 tf.font = _fontInfo.data;
                 measureTextRequired = true;
             }
-			
+            
 			if (_textStyle.fontBold != null) {
                 tf.bold = _textStyle.fontBold;
                 measureTextRequired = true;
@@ -44,8 +58,7 @@ class TextDisplayImpl extends TextBase {
                 tf.italic = _textStyle.fontItalic;
                 measureTextRequired = true;
             }
-			// if (_textStyle.fontUnderline != null) tf.underline = _textStyle.fontUnderline;
-			
+
 			if (_textStyle.color != null) {
                 tf.color = _textStyle.color;
             }
@@ -61,8 +74,6 @@ class TextDisplayImpl extends TextBase {
                 //tf.autoSize = !_displayData.multiline;
                 measureTextRequired = true;
             }
-			
-			tf.drawFrame(true); // see if this needs to be called each time
 		}
 		
 		return measureTextRequired;
@@ -80,5 +91,71 @@ class TextDisplayImpl extends TextBase {
     private override function measureText() {
 		_textWidth = Math.fround(tf.textField.textWidth) + 2;
 		_textHeight = Math.fround(tf.textField.textHeight);
+    }
+    
+    private function normalizeText(text:String):String {
+        text = StringTools.replace(text, "\\n", "\n");
+        return text;
+    }
+    
+    private function processTags(s:String, rules:Array<FlxTextFormatMarkerPair>) {
+        var inTag:Bool = false;
+        var endTag:Bool = false;
+        var tagDetails = "";
+        var out = "";
+        
+        var tagStack:Array<String> = [];
+        var colorMap:Map<String, Int> = new Map<String, Int>();
+        
+        for (i in 0...s.length) {
+            var c = s.charAt(i);
+            switch (c) {
+                case "<":
+                    var temp = s.substring(i + 1, i + 6);
+                    if (temp == "font " || temp == "/font") { // bit hacky!
+                        inTag = true;
+                        endTag = false;
+                        tagDetails = "";
+                    }
+                case "/":
+                    if (inTag == true) {
+                        endTag = true;
+                    }
+                case ">":
+                    if (inTag == true) {
+                        if (endTag == false) {
+                            var n = tagDetails.indexOf("color=");
+                            if (n != -1) {
+                                var col = tagDetails.substring(n + "color=".length);
+                                col = StringTools.replace(col, "'", "");
+                                col = StringTools.replace(col, "\"", "");
+                                tagStack.push(col);
+                                out += "<" + col + ">";
+                                colorMap.set("<" + col + ">", Color.fromString(col));
+                            } else {
+                                tagStack.push(tagDetails);
+                                out += tagDetails;
+                            }
+                            
+                        } else {
+                            var startTagDetails = tagStack.pop();
+                            out += "<" + startTagDetails + ">";
+                        }
+                        inTag = false;
+                    }
+                default:
+                    if (inTag == true) {
+                        tagDetails += c.toLowerCase();
+                    } else {
+                        out += c;
+                    }
+            }
+        }
+        
+        for (k in colorMap.keys()) {
+            rules.push(new FlxTextFormatMarkerPair(new FlxTextFormat(colorMap.get(k)), k));
+        }
+        
+        return out;
     }
 }
