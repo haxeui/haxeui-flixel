@@ -8,18 +8,23 @@
     padding: 5px;
 }
 
+.dialog-close-button {
+    resource: "haxeui-flixel/styles/default/images/close.png";
+}
+
 .dialog-title {
-    background-color: none;
+    background-color: #3399FF;
     border: none;
-    __padding: 0px;
-    __padding-bottom: 5px;
+}
+
+.dialog-title-label {
+    color: white;
+    __margin-top: -1px;
 }
 
 .dialog-content {
     padding: 0px;
-    __background-image: "haxeui-flixel/styles/default/images/inset_thin.png";
-    background-image-clip: 0px 0px 18px 18px;
-    background-image-slice: 5px 5px 13px 13px;
+    padding-top: 5px;
 }
 
 .dialog-footer-container {
