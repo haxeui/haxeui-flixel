@@ -264,6 +264,8 @@ class ComponentImpl extends ComponentBase {
         if (value == null) {
             clipRect = null;
         } else {
+            value.top = Std.int(value.top);
+            value.left = Std.int(value.left);
             clipRect = FlxRect.get(value.left + _surface.x - parentComponent.x,
                                    value.top + _surface.y - parentComponent.y,
                                    value.width, value.height);
