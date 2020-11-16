@@ -38,12 +38,14 @@ class ComponentImpl extends ComponentBase {
         _eventMap = new Map<String, UIEvent->Void>();
         
         this.pixelPerfectRender = true;
+        this.moves = false;
         
         scrollFactor.set(0, 0); // ui doesn't scroll by default
 
 		_surface = new FlxSprite();
 		_surface.makeGraphic(1, 1, 0x0, true);
         _surface.pixelPerfectRender = true;
+        _surface.moves = false;
 		add(_surface);
         
         recursiveReady();
