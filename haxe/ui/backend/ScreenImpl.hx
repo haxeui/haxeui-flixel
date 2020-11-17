@@ -2,9 +2,9 @@ package haxe.ui.backend;
 
 import flixel.FlxBasic;
 import flixel.FlxG;
-import flixel.FlxState;
-import flixel.group.FlxGroup;
+import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -19,18 +19,40 @@ class ScreenImpl extends ScreenBase {
     public function new() {
         _mapping = new Map<String, UIEvent->Void>();
         
+        FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
+        onPostStateSwitch();
+    }
+    
+    private function onPostGameStart() {
+        onPostStateSwitch();
     }
     
     private function onPostStateSwitch() {
+        if (FlxG.game == null) {
+            return;
+        }
         _topLevelComponents = [];
         checkMembers(FlxG.state);
+    }
+    
+    private function onMemberAdded(m:FlxBasic) {
+        if (Std.is(m, Component) && _topLevelComponents.indexOf(cast(m, Component)) == -1) {
+            var c = cast(m, Component);
+            if (c.percentWidth > 0) {
+                c.width = (this.width * c.percentWidth) / 100;
+            }
+            if (c.percentHeight > 0) {
+                c.height = (this.height * c.percentHeight) / 100;
+            }
+            _topLevelComponents.push(c);
+        }
     }
     
     private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
         var found = false; // we only want top level components
         for (m in state.members) {
-            if (Std.is(m, Component)) {
+            if (Std.is(m, Component) && _topLevelComponents.indexOf(cast(m, Component)) == -1) {
                 var c = cast(m, Component);
                 if (c.percentWidth > 0) {
                     c.width = (this.width * c.percentWidth) / 100;
@@ -42,7 +64,15 @@ class ScreenImpl extends ScreenBase {
                 found = true;
             } else if (Std.is(m, FlxTypedGroup)) {
                 var group:FlxTypedGroup<FlxBasic> = cast m;
+                group.memberAdded.addOnce(onMemberAdded);
                 if (checkMembers(group) == true) {
+                    found = true;
+                    break;
+                }
+            } else if (Std.is(m, FlxTypedSpriteGroup)) {
+                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
+                spriteGroup.group.memberAdded.addOnce(onMemberAdded);
+                if (checkMembers(cast spriteGroup.group) == true) {
                     found = true;
                     break;
                 }
