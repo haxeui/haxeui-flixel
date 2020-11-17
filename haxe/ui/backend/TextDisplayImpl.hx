@@ -96,6 +96,10 @@ class TextDisplayImpl extends TextBase {
         return text;
     }
     
+    private override function get_supportsHtml():Bool {
+        return true;
+    }
+    
     private static function processTags(s:String, rules:Array<FlxTextFormatMarkerPair>) {
         var inTag:Bool = false;
         var endTag:Bool = false;
