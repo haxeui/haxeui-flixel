@@ -1,6 +1,5 @@
 package haxe.ui.backend;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
 import flixel.text.FlxText.FlxTextBorderStyle;
@@ -374,13 +373,14 @@ class ComponentImpl extends ComponentBase {
 
                     if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false) {
                         MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                        _eventMap.set(MouseEvent.MOUSE_DOWN, null);
                         MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
-                        //_eventMap.set(MouseEvent.MOUSE_DOWN, listener);
+                        _eventMap.set(MouseEvent.MOUSE_UP, null);
                     }
 
                     if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
                         MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
-                        //_eventMap.set(MouseEvent.MOUSE_UP, listener);
+                        _eventMap.set(MouseEvent.MOUSE_UP, null);
                     } 
                 }
                 
@@ -526,14 +526,17 @@ class ComponentImpl extends ComponentBase {
                 fn(mouseEvent);
             }
         }
+        
         if (i == true && _mouseOverFlag == false) {
-            _mouseOverFlag = true;
-            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
-            if (fn != null) {
-                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
-                mouseEvent.screenX = x / Toolkit.scaleX;
-                mouseEvent.screenY = y / Toolkit.scaleY;
-                fn(mouseEvent);
+            if (isEventRelevant(getComponentsAtPoint(x, y, true), MouseEvent.MOUSE_OVER)) {
+                _mouseOverFlag = true;
+                var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    fn(mouseEvent);
+                }
             }
         } else if (i == false && _mouseOverFlag == true) {
             _mouseOverFlag = false;
@@ -566,15 +569,17 @@ class ComponentImpl extends ComponentBase {
                 return;
             }
             */
-            _mouseDownFlag = true;
-            _mouseDownButton = button;
-            var type = button == 0 ? haxe.ui.events.MouseEvent.MOUSE_DOWN: haxe.ui.events.MouseEvent.RIGHT_MOUSE_DOWN;
-            var fn:UIEvent->Void = _eventMap.get(type);
-            if (fn != null) {
-                var mouseEvent = new haxe.ui.events.MouseEvent(type);
-                mouseEvent.screenX = x / Toolkit.scaleX;
-                mouseEvent.screenY = y / Toolkit.scaleY;
-                fn(mouseEvent);
+            if (isEventRelevant(getComponentsAtPoint(x, y, true), MouseEvent.MOUSE_DOWN)) {
+                _mouseDownFlag = true;
+                _mouseDownButton = button;
+                var type = button == 0 ? haxe.ui.events.MouseEvent.MOUSE_DOWN: haxe.ui.events.MouseEvent.RIGHT_MOUSE_DOWN;
+                var fn:UIEvent->Void = _eventMap.get(type);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    fn(mouseEvent);
+                }
             }
         }
     }
@@ -691,6 +696,20 @@ class ComponentImpl extends ComponentBase {
         fn(mouseEvent);
     }
     
+    private function isEventRelevant(children:Array<Component>, eventType:String):Bool {
+        for (c in children) {
+            if (c._eventMap.exists(eventType)) {
+                if (c == this) {
+                    break;
+                } else {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
     //***********************************************************************************************************
     // Text related
     //***********************************************************************************************************
@@ -770,11 +789,16 @@ class ComponentImpl extends ComponentBase {
         return !hasChildRecursive(cast ref, cast array[array.length - 1]);
     }
 
-    private function getComponentsAtPoint(x:Float, y:Float):Array<Component> {
+    private function getComponentsAtPoint(x:Float, y:Float, reverse:Bool = false):Array<Component> {
         var array:Array<Component> = new Array<Component>();
         for (r in Screen.instance.rootComponents) {
             findChildrenAtPoint(r, x, y, array);
         }
+        
+        if (reverse == true) {
+            array.reverse();
+        }
+        
         return array;
     }
 
