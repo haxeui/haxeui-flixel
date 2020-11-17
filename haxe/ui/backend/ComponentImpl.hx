@@ -248,9 +248,13 @@ class ComponentImpl extends ComponentBase {
 		return child;
     }
 
+    private var _destroy:Bool = false;
     private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
 		if (members.indexOf(child) > -1) {
             remove(child, true);
+            if (dispose == true) {
+                child._destroy = true;
+            }
         }
 		return child;
     }
@@ -839,6 +843,10 @@ class ComponentImpl extends ComponentBase {
     public override function update(elapsed:Float) {
         super.update(elapsed);
         
+        if (_destroy == true) {
+            destroyInternal();
+        }
+        
         clearCaches();
         
         repositionChildren();
@@ -849,9 +857,7 @@ class ComponentImpl extends ComponentBase {
         }
     }
 
-    public override function destroy():Void {
-        super.destroy();
-        
+    private function destroyInternal() {
         if (_surface != null) {
             _surface.destroy();
             _surface = null;
@@ -871,6 +877,21 @@ class ComponentImpl extends ComponentBase {
             _imageDisplay.destroy();
             _imageDisplay = null;
         }
+        
+        super.destroy();
+    }
+    
+    public override function destroy():Void {
+        if (parentComponent != null) {
+            if (parentComponent.getComponentIndex(cast this) != -1) {
+                parentComponent.removeComponent(cast this);
+                return;
+            }
+        } else {
+            Screen.instance.removeComponent(cast this);
+        }
+        
+        _destroy = true;
     }
     
     private override function set_x(value:Float):Float {
