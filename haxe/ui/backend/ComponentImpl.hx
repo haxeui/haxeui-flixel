@@ -701,17 +701,16 @@ class ComponentImpl extends ComponentBase {
     }
     
     private function isEventRelevant(children:Array<Component>, eventType:String):Bool {
+        var relevant = false;
         for (c in children) {
-            if (c._eventMap.exists(eventType)) {
-                if (c == this) {
-                    break;
-                } else {
-                    return false;
-                }
+            if (c == this) {
+                relevant = true;
+            }
+            if (c.parentComponent == null) {
+                break;
             }
         }
-        
-        return true;
+        return relevant;
     }
     
     //***********************************************************************************************************
