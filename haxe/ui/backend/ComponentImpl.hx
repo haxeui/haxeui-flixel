@@ -701,6 +701,7 @@ class ComponentImpl extends ComponentBase {
     }
     
     private function isEventRelevant(children:Array<Component>, eventType:String):Bool {
+        return true;
         var relevant = false;
         for (c in children) {
             if (c == this) {
