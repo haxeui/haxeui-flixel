@@ -32,12 +32,12 @@ class ScreenImpl extends ScreenBase {
         if (FlxG.game == null) {
             return;
         }
-        _topLevelComponents = [];
+        rootComponents = [];
         checkMembers(FlxG.state);
     }
     
     private function onMemberAdded(m:FlxBasic) {
-        if (Std.is(m, Component) && _topLevelComponents.indexOf(cast(m, Component)) == -1) {
+        if (Std.is(m, Component) && rootComponents.indexOf(cast(m, Component)) == -1) {
             var c = cast(m, Component);
             if (c.percentWidth > 0) {
                 c.width = (this.width * c.percentWidth) / 100;
@@ -45,14 +45,14 @@ class ScreenImpl extends ScreenBase {
             if (c.percentHeight > 0) {
                 c.height = (this.height * c.percentHeight) / 100;
             }
-            _topLevelComponents.push(c);
+            rootComponents.push(c);
         }
     }
     
     private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
         var found = false; // we only want top level components
         for (m in state.members) {
-            if (Std.is(m, Component) && _topLevelComponents.indexOf(cast(m, Component)) == -1) {
+            if (Std.is(m, Component) && rootComponents.indexOf(cast(m, Component)) == -1) {
                 var c = cast(m, Component);
                 if (c.percentWidth > 0) {
                     c.width = (this.width * c.percentWidth) / 100;
@@ -60,7 +60,7 @@ class ScreenImpl extends ScreenBase {
                 if (c.percentHeight > 0) {
                     c.height = (this.height * c.percentHeight) / 100;
                 }
-                _topLevelComponents.push(c);
+                rootComponents.push(c);
                 found = true;
             } else if (Std.is(m, FlxTypedGroup)) {
                 var group:FlxTypedGroup<FlxBasic> = cast m;
@@ -103,28 +103,28 @@ class ScreenImpl extends ScreenBase {
 	}
     
     public override function addComponent(component:Component):Component {
-        if (_topLevelComponents.length > 0) {
-            var cameras = StateHelper.findCameras(_topLevelComponents[0]);
+        if (rootComponents.length > 0) {
+            var cameras = StateHelper.findCameras(rootComponents[0]);
             if (cameras != null) {
                 component.cameras = cameras;
             }
         }
         
         StateHelper.currentState.add(component);
-        _topLevelComponents.push(component);
+        rootComponents.push(component);
         onContainerResize();
         return component;
     }
     
 	public override function removeComponent(component:Component):Component {
 		StateHelper.currentState.remove(component, true);
-        _topLevelComponents.remove(component);
+        rootComponents.remove(component);
         onContainerResize();
 		return component;
 	}
     
     private function onContainerResize() {
-        for (c in _topLevelComponents) {
+        for (c in rootComponents) {
             if (c.percentWidth > 0) {
                 c.width = (this.width * c.percentWidth) / 100;
             }
