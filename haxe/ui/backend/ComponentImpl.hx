@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
 import flixel.text.FlxText.FlxTextBorderStyle;
@@ -734,8 +735,9 @@ class ComponentImpl extends ComponentBase {
 	public override function createTextInput(text:String = null):TextInput {
 		if (_textInput == null) {
             super.createTextInput(text);
+            _textInput.attach();
             _textInput.tf.visible = false;
-            add(_textInput.tf);
+            FlxG.addChildBelowMouse(_textInput.tf);
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
                 _textInput.tf.visible = true;
             });
@@ -774,6 +776,7 @@ class ComponentImpl extends ComponentBase {
             #end
 			_textInput.tf.x = _surface.x + _textInput.left - offsetX;
 			_textInput.tf.y = _surface.y + _textInput.top - offsetY;
+            _textInput.update();
         }
         
         if (_imageDisplay != null) {
@@ -869,7 +872,7 @@ class ComponentImpl extends ComponentBase {
         }
         
         if (_textInput != null) {
-            _textInput.tf.destroy();
+            _textInput.destroy();
             _textInput = null;
         }
         
