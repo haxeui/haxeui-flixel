@@ -33,6 +33,7 @@ class ScreenImpl extends ScreenBase {
             return;
         }
         rootComponents = [];
+        FlxG.state.memberAdded.add(onMemberAdded);
         checkMembers(FlxG.state);
     }
     
