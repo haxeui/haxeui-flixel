@@ -42,7 +42,10 @@ class FlxStyleHelper {
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderLeftColor;
                 
-                pixels.fillRect(rc, color);
+                pixels.fillRect(new Rectangle(rc.left, rc.top, rc.width, borderSize), color); // top
+                pixels.fillRect(new Rectangle(rc.right - borderSize, rc.top + borderSize, borderSize, rc.height - (borderSize * 2)), color); // right
+                pixels.fillRect(new Rectangle(rc.left, rc.height - borderSize, rc.width, borderSize), color); // bottom
+                pixels.fillRect(new Rectangle(rc.left, rc.top + borderSize, borderSize, rc.height - (borderSize * 2)), color); // left 
                 rc.inflate(-borderSize, -borderSize);
         }        
         
