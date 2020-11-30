@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import haxe.ui.backend.flixel.InputManager;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -15,13 +16,32 @@ import openfl.Lib;
 
 class ScreenImpl extends ScreenBase {
     private var _mapping:Map<String, UIEvent->Void>;
+    private static var _inputManager:InputManager = null;
     
     public function new() {
         _mapping = new Map<String, UIEvent->Void>();
+
+        if (_inputManager == null) {
+            _inputManager = new InputManager();
+            _inputManager.onResetCb = onReset;
+            FlxG.inputs.add(_inputManager);
+        }
         
         FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
         onPostStateSwitch();
+    }
+    
+    private function onReset() {
+        if (FlxG.state != null && FlxG.state.subState != null) {
+            var cachedSubStateOpenedCallback = FlxG.state.subState.openCallback;
+            FlxG.state.subState.openCallback = function() {
+                onMemberAdded(FlxG.state.subState);
+                if (cachedSubStateOpenedCallback != null) {
+                    cachedSubStateOpenedCallback();
+                }
+            }
+        }
     }
     
     private function onPostGameStart() {
@@ -47,6 +67,9 @@ class ScreenImpl extends ScreenBase {
                 c.height = (this.height * c.percentHeight) / 100;
             }
             rootComponents.push(c);
+        } else if (Std.is(m, FlxTypedGroup)) {
+            var group:FlxTypedGroup<FlxBasic> = cast m;
+            checkMembers(group);
         }
     }
     
