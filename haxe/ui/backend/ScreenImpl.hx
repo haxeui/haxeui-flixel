@@ -5,7 +5,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import haxe.ui.backend.flixel.InputManager;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -16,21 +15,27 @@ import openfl.Lib;
 
 class ScreenImpl extends ScreenBase {
     private var _mapping:Map<String, UIEvent->Void>;
-    private static var _inputManager:InputManager = null;
+    private static var _inputManager:haxe.ui.backend.flixel.InputManager = null;
     
     public function new() {
         _mapping = new Map<String, UIEvent->Void>();
 
+        #if (flixel <= "4.8.1") // subStateOpened / subStateClosed added in 4.9.0
+        
         if (_inputManager == null) {
-            _inputManager = new InputManager();
+            _inputManager = new haxe.ui.backend.flixel.InputManager();
             _inputManager.onResetCb = onReset;
             FlxG.inputs.add(_inputManager);
         }
+        
+        #end
         
         FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
         onPostStateSwitch();
     }
+    
+    #if (flixel <= "4.8.1") // subStateOpened / subStateClosed added in 4.9.0
     
     private function onReset() {
         if (FlxG.state != null && FlxG.state.subState != null) {
@@ -44,6 +49,8 @@ class ScreenImpl extends ScreenBase {
         }
     }
     
+    #end
+    
     private function onPostGameStart() {
         onPostStateSwitch();
     }
@@ -53,6 +60,11 @@ class ScreenImpl extends ScreenBase {
             return;
         }
         rootComponents = [];
+        
+        #if (flixel >= "4.9.0")
+        FlxG.state.subStateOpened.add(onMemberAdded);
+        #end
+        
         FlxG.state.memberAdded.add(onMemberAdded);
         checkMembers(FlxG.state);
     }
