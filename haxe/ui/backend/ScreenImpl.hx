@@ -15,12 +15,15 @@ import openfl.Lib;
 
 class ScreenImpl extends ScreenBase {
     private var _mapping:Map<String, UIEvent->Void>;
+    
+    #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
     private static var _inputManager:haxe.ui.backend.flixel.InputManager = null;
+    #end
     
     public function new() {
         _mapping = new Map<String, UIEvent->Void>();
 
-        #if (flixel <= "4.8.1") // subStateOpened / subStateClosed added in 4.9.0
+        #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
         
         if (_inputManager == null) {
             _inputManager = new haxe.ui.backend.flixel.InputManager();
@@ -35,7 +38,7 @@ class ScreenImpl extends ScreenBase {
         onPostStateSwitch();
     }
     
-    #if (flixel <= "4.8.1") // subStateOpened / subStateClosed added in 4.9.0
+    #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
     
     private function onReset() {
         if (FlxG.state != null && FlxG.state.subState != null) {
@@ -61,7 +64,7 @@ class ScreenImpl extends ScreenBase {
         }
         rootComponents = [];
         
-        #if (flixel >= "4.9.0")
+        #if (flixel >= "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
         FlxG.state.subStateOpened.add(onMemberAdded);
         #end
         
