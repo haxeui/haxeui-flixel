@@ -1,8 +1,9 @@
 .scrollview {
-    background-image: "haxeui-flixel/styles/default/images/inset_thin.png";
+    background-image: "haxeui-flixel/styles/default/images/inset_thin_transparent.png";
     background-image-clip: 0px 0px 18px 18px;
     background-image-slice: 5px 5px 13px 13px;
     
+    background-color: white;
     border: none;
     padding: 2px;
     border-radius: none;
