@@ -25,7 +25,11 @@
 }
 
 .property-group .stepper-inc {
-    background-image: "haxeui-flixel/styles/default/images/number_stepper_button_propertygrid.png";
+    background-image: "haxeui-flixel/styles/default/images/number_stepper_inc_button_propertygrid.png";
+}
+
+.property-group .stepper-deinc {
+    background-image: "haxeui-flixel/styles/default/images/number_stepper_deinc_button_propertygrid.png";
 }
 
 .property-group .textfield {
