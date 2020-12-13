@@ -14,6 +14,7 @@ import haxe.ui.core.TextDisplay;
 import haxe.ui.core.TextInput;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
+import haxe.ui.filters.DropShadow;
 import haxe.ui.filters.Outline;
 import haxe.ui.geom.Rectangle;
 import haxe.ui.styles.Style;
@@ -301,6 +302,9 @@ class ComponentImpl extends ComponentBase {
                     var o = cast(f, Outline);
                     var col = o.color;
                     _textDisplay.tf.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000 | o.color, o.size);
+                } else if (_textDisplay != null && Std.is(f, DropShadow)) {
+                    var o = cast(f, DropShadow);
+                    _textDisplay.tf.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF000000 | o.color, o.distance);
                 }
             }
         }
