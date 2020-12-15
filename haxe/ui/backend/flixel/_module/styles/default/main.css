@@ -6,3 +6,7 @@
     font-name: "flixel/fonts/nokiafc22.ttf";
     font-size: 8px;
 }
+
+.tooltip {
+    border: 1px solid black;
+}
