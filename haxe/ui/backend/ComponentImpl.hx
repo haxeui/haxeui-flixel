@@ -789,6 +789,29 @@ class ComponentImpl extends ComponentBase {
 			_imageDisplay.x = _surface.x + _imageDisplay.left - offsetX;
 			_imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
         }
+        
+        for (m in members) {
+            if (isUnsolicitedMember(m) == true) {
+                m.x = this.screenLeft;
+                m.y = this.screenTop;
+            }
+        }
+    }
+    
+    private function isUnsolicitedMember(m:FlxSprite) {
+        if (m == _surface) {
+            return false;
+        }
+        
+        if (_textDisplay != null && m == _textDisplay.tf) {
+            return false;
+        }
+        
+        if (m == _imageDisplay) {
+            return false;
+        }
+        
+        return !Std.is(m, Component);
     }
     
     private function hasComponentOver(ref:Component, x:Float, y:Float):Bool {
