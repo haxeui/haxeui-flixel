@@ -16,7 +16,7 @@ class FlxStyleHelper {
 		if (sprite == null || sprite.pixels == null) {
             return;
         }
-		
+
 		var pixels:BitmapData = sprite.pixels;
         
         var left:Float = 0;
@@ -29,6 +29,9 @@ class FlxStyleHelper {
         }
         
         var rc:Rectangle = new Rectangle(top, left, width, height);
+        
+        pixels.fillRect(rc, 0x0);
+        
         if (style.borderLeftSize != null && style.borderLeftSize != 0
             && style.borderLeftSize == style.borderRightSize
             && style.borderLeftSize == style.borderBottomSize
