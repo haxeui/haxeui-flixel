@@ -13,6 +13,7 @@ import haxe.ui.events.UIEvent;
 import lime.system.System;
 import openfl.Lib;
 
+@:access(haxe.ui.backend.ComponentImpl)
 class ScreenImpl extends ScreenBase {
     private var _mapping:Map<String, UIEvent->Void>;
     
@@ -82,6 +83,7 @@ class ScreenImpl extends ScreenBase {
                 c.height = (this.height * c.percentHeight) / 100;
             }
             rootComponents.push(c);
+            c.recursiveReady();
         } else if (Std.is(m, FlxTypedGroup)) {
             var group:FlxTypedGroup<FlxBasic> = cast m;
             checkMembers(group);
@@ -100,6 +102,7 @@ class ScreenImpl extends ScreenBase {
                     c.height = (this.height * c.percentHeight) / 100;
                 }
                 rootComponents.push(c);
+                c.recursiveReady();
                 found = true;
             } else if (Std.is(m, FlxTypedGroup)) {
                 var group:FlxTypedGroup<FlxBasic> = cast m;
@@ -151,6 +154,7 @@ class ScreenImpl extends ScreenBase {
         
         StateHelper.currentState.add(component);
         rootComponents.push(component);
+        component.recursiveReady();
         onContainerResize();
         return component;
     }

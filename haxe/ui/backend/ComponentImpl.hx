@@ -49,7 +49,7 @@ class ComponentImpl extends ComponentBase {
         _surface.moves = false;
 		add(_surface);
         
-        recursiveReady();
+        //recursiveReady();
     }
     
     private function recursiveReady() {
@@ -206,17 +206,21 @@ class ComponentImpl extends ComponentBase {
             return;
         }
         
-        if (width == null || height == null || width < 0 || height < 0) {
+        if (width == null || height == null) {
             return;
         }
         
         var w:Int = Std.int(width);
         var h:Int = Std.int(height);
         if (_surface.width != w || _surface.height != h) {
-            _surface.makeGraphic(w, h, 0x0, true);
-            applyStyle(style);
-            if (clipRect != null && _surface != null) {
-                this.clipRect = this.clipRect;
+            if (w <= 0 || h <= 0) {
+                _surface.makeGraphic(1, 1, 0x0, true);
+            } else {
+                _surface.makeGraphic(w, h, 0x0, true);
+                applyStyle(style);
+                if (clipRect != null && _surface != null) {
+                    this.clipRect = this.clipRect;
+                }
             }
         }
     }
@@ -230,14 +234,13 @@ class ComponentImpl extends ComponentBase {
     }
 
     private override function handleAddComponent(child:Component):Component {
-		add(child);
+		handleAddComponentAt(child, childComponents.length - 1);
 		return child;
     }
 
     private override function handleAddComponentAt(child:Component, index:Int):Component {
 		// index is in terms of haxeui components, not flixel children
 		var indexOffset = 0;
-		
 		while (indexOffset < members.length) {
 			if (!Std.is(members[indexOffset], Component)) {
                 indexOffset++;
