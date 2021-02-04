@@ -842,9 +842,9 @@ class ComponentImpl extends ComponentBase {
     private function findChildrenAtPoint(child:Component, x:Float, y:Float, array:Array<Component>) {
         if (child.inBounds(x, y) == true) {
             array.push(child);
-            for (c in child.childComponents) {
-                findChildrenAtPoint(c, x, y, array);
-            }
+        }
+        for (c in child.childComponents) {
+            findChildrenAtPoint(c, x, y, array);
         }
     }
 
