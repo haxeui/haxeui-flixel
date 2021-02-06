@@ -51,40 +51,39 @@ class FlxStyleHelper {
                 pixels.fillRect(new Rectangle(rc.left, rc.top + borderSize, borderSize, rc.height - (borderSize * 2)), color); // left 
                 rc.inflate(-borderSize, -borderSize);
         } else { // compound border
-            var rcCopy = rc.clone();
+            var org = rc.clone();
+            
             if (style.borderTopSize != null && style.borderTopSize > 0) {
                 var borderSize = style.borderTopSize;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderTopColor;
-                pixels.fillRect(new Rectangle(rc.left, rc.top, rc.width, borderSize), color); // top
-                rcCopy.top += borderSize;
+                pixels.fillRect(new Rectangle(rc.left, rc.top, org.width, borderSize), color); // top
+                rc.top += borderSize;
             }
             
             if (style.borderBottomSize != null && style.borderBottomSize > 0) {
                 var borderSize = style.borderBottomSize;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderBottomColor;
-                pixels.fillRect(new Rectangle(rc.left, rc.height - borderSize, rc.width, borderSize), color); // bottom
-                rcCopy.bottom -= borderSize;
+                pixels.fillRect(new Rectangle(rc.left, org.height - borderSize, rc.width, borderSize), color); // bottom
+                rc.bottom -= borderSize;
             }
             
             if (style.borderLeftSize != null && style.borderLeftSize > 0) {
                 var borderSize = style.borderLeftSize;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderLeftColor;
-                pixels.fillRect(new Rectangle(rc.left, rc.top, borderSize, rc.height), color); // left 
-                rcCopy.left += borderSize;
+                pixels.fillRect(new Rectangle(rc.left, rc.top, borderSize, org.height - rc.top), color); // left 
+                rc.left += borderSize;
             }
             
             if (style.borderRightSize != null && style.borderRightSize > 0) {
                 var borderSize = style.borderRightSize;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderRightColor;
-                pixels.fillRect(new Rectangle(rc.right - borderSize, rc.top, borderSize, rc.height), color); // right 
-                rcCopy.right -= borderSize;
+                pixels.fillRect(new Rectangle(org.width - borderSize, rc.top, borderSize, org.height), color); // right 
+                rc.right -= borderSize;
             }
-            
-            rc = rcCopy;
         }
         
         
