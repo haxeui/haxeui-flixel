@@ -84,7 +84,6 @@ class ScreenImpl extends ScreenBase {
             if (c.percentHeight > 0) {
                 c.height = (this.height * c.percentHeight) / 100;
             }
-            trace("here + " + c.id);
             rootComponents.push(c);
             c.recursiveReady();
         } else if (Std.is(m, FlxTypedGroup)) {
