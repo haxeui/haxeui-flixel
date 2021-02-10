@@ -71,6 +71,8 @@ class ScreenImpl extends ScreenBase {
         
         FlxG.state.memberAdded.add(onMemberAdded);
         checkMembers(FlxG.state);
+        
+        FlxG.state.memberRemoved.add(onMemberRemoved);
     }
     
     private function onMemberAdded(m:FlxBasic) {
@@ -82,11 +84,18 @@ class ScreenImpl extends ScreenBase {
             if (c.percentHeight > 0) {
                 c.height = (this.height * c.percentHeight) / 100;
             }
+            trace("here + " + c.id);
             rootComponents.push(c);
             c.recursiveReady();
         } else if (Std.is(m, FlxTypedGroup)) {
             var group:FlxTypedGroup<FlxBasic> = cast m;
             checkMembers(group);
+        }
+    }
+    
+    private function onMemberRemoved(m:FlxBasic) {
+        if (Std.is(m, Component) && rootComponents.indexOf(cast(m, Component)) != -1) {
+            removeComponent(cast m);
         }
     }
     
