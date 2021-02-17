@@ -3,7 +3,7 @@
 }
 
 .checkbox-value {
-    background-image: "haxeui-flixel/styles/default/images/checkbox.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/checkbox.png";
     background-image-clip: 0px 0px 11px 11px;
     
     border: none;
@@ -25,7 +25,7 @@
 }
 
 .optionbox-value {
-    background-image: "haxeui-flixel/styles/default/images/optionbox.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/optionbox.png";
     background-image-clip: 0px 0px 11px 11px;
     
     border: none;

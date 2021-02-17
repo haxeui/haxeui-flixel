@@ -1,5 +1,5 @@
 .scrollview {
-    background-image: "haxeui-flixel/styles/default/images/inset_thin_transparent.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/inset_thin_transparent.png";
     background-image-clip: 0px 0px 18px 18px;
     background-image-slice: 5px 5px 13px 13px;
     
@@ -31,17 +31,17 @@
     height: 13px;
     width: 13px;
     background-color: #e9e9e9;
-    icon: "haxeui-flixel/styles/default/images/up_arrow.png";
+    icon: "haxeui-flixel/styles/flixel-ui/images/up_arrow.png";
 }
 
 .vertical-scroll  .deinc:hover {
     background-color: #d0d0d0;
-    icon: "haxeui-flixel/styles/default/images/up_arrow.png";
+    icon: "haxeui-flixel/styles/flixel-ui/images/up_arrow.png";
 }
 
 .vertical-scroll  .deinc:down {
     background-color: #c5c5c5;
-    icon: "haxeui-flixel/styles/default/images/up_arrow.png";
+    icon: "haxeui-flixel/styles/flixel-ui/images/up_arrow.png";
 }
 
 
@@ -49,17 +49,17 @@
     height: 13px;
     width: 13px;
     background-color: #e9e9e9;
-    icon: "haxeui-flixel/styles/default/images/down_arrow.png";
+    icon: "haxeui-flixel/styles/flixel-ui/images/down_arrow.png";
 }
 
 .vertical-scroll  .inc:hover {
     background-color: #d0d0d0;
-    icon: "haxeui-flixel/styles/default/images/down_arrow.png";
+    icon: "haxeui-flixel/styles/flixel-ui/images/down_arrow.png";
 }
 
 .vertical-scroll  .inc:down {
     background-color: #c5c5c5;
-    icon: "haxeui-flixel/styles/default/images/down_arrow.png";
+    icon: "haxeui-flixel/styles/flixel-ui/images/down_arrow.png";
 }
 
 

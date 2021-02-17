@@ -7,29 +7,29 @@
 }
 
 .property-group .dropdown {
-    background-image: "haxeui-flixel/styles/default/images/drop_down_propertygrid.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/drop_down_propertygrid.png";
     background-image-clip: 0px 0px 18px 18px;
     background-image-slice: 5px 5px 13px 13px;
 }
 
 .property-group .dropdown:hover {
-    background-image: "haxeui-flixel/styles/default/images/drop_down_propertygrid.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/drop_down_propertygrid.png";
     background-image-clip: 18px 0px 36px 18px;
     background-image-slice: 5px 5px 13px 13px;
 }
 
 .property-group .dropdown:down {
-    background-image: "haxeui-flixel/styles/default/images/drop_down_propertygrid.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/drop_down_propertygrid.png";
     background-image-clip: 36px 0px 54px 18px;
     background-image-slice: 5px 5px 13px 13px;
 }
 
 .property-group .stepper-inc {
-    background-image: "haxeui-flixel/styles/default/images/number_stepper_inc_button_propertygrid.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/number_stepper_inc_button_propertygrid.png";
 }
 
 .property-group .stepper-deinc {
-    background-image: "haxeui-flixel/styles/default/images/number_stepper_deinc_button_propertygrid.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/number_stepper_deinc_button_propertygrid.png";
 }
 
 .property-group .textfield {
@@ -69,11 +69,11 @@
 }
 
 .property-group-header:expanded .property-group-header-icon {
-    resource: "haxeui-flixel/styles/default/images/down_arrow_square.png";
+    resource: "haxeui-flixel/styles/flixel-ui/images/down_arrow_square.png";
 }
 
 .property-group-header:collapsed .property-group-header-icon {
-    resource: "haxeui-flixel/styles/default/images/right_arrow_square.png";
+    resource: "haxeui-flixel/styles/flixel-ui/images/right_arrow_square.png";
 }
 
 .property-group-header {

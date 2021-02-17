@@ -1,5 +1,5 @@
 .button {
-    background-image: "haxeui-flixel/styles/default/images/button.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/button.png";
     background-image-clip: 0px 0px 18px 18px;
     background-image-slice: 5px 5px 13px 13px;
 
@@ -10,13 +10,13 @@
 }
 
 .button:hover {
-    background-image: "haxeui-flixel/styles/default/images/button.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/button.png";
     background-image-clip: 18px 0px 36px 18px;
     background-image-slice: 5px 5px 13px 13px;
 }
 
 .button:down {
-    background-image: "haxeui-flixel/styles/default/images/button.png";
+    background-image: "haxeui-flixel/styles/flixel-ui/images/button.png";
     background-image-clip: 36px 0px 54px 18px;
     background-image-slice: 5px 5px 13px 13px;
 }
