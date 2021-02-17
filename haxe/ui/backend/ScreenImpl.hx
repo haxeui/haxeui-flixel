@@ -189,6 +189,11 @@ class ScreenImpl extends ScreenBase {
         }
     }
     
+    private override function handleSetComponentIndex(child:Component, index:Int) {
+        StateHelper.currentState.remove(child);
+        StateHelper.currentState.insert(index, child);
+    }
+    
     private override function supportsEvent(type:String):Bool {
         if (type == MouseEvent.MOUSE_MOVE
             || type == MouseEvent.MOUSE_DOWN
