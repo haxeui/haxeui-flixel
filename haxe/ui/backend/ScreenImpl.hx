@@ -160,15 +160,19 @@ class ScreenImpl extends ScreenBase {
             }
         }
         
-        StateHelper.currentState.add(component);
-        rootComponents.push(component);
-        component.recursiveReady();
-        onContainerResize();
+        if (StateHelper.currentState.exists == true) {
+            StateHelper.currentState.add(component);
+            rootComponents.push(component);
+            component.recursiveReady();
+            onContainerResize();
+        }
         return component;
     }
     
 	public override function removeComponent(component:Component):Component {
-		StateHelper.currentState.remove(component, true);
+        if (StateHelper.currentState.exists == true) {
+            StateHelper.currentState.remove(component, true);
+        }
         rootComponents.remove(component);
         onContainerResize();
 		return component;
