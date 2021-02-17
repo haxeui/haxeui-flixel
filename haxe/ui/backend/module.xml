@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <module id="haxeui-flixel">
     <themes>
-       <flixel-ui parent="default">
+        <default>
+            <style resource="haxeui-flixel/styles/default/main.css" />
+        </default>
+        <flixel-ui parent="default">
             <style resource="haxeui-flixel/styles/flixel-ui/main.css" />
             <style resource="haxeui-flixel/styles/flixel-ui/buttons.css" />
             <style resource="haxeui-flixel/styles/flixel-ui/checkboxes.css" />

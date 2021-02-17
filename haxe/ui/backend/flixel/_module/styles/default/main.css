@@ -1,0 +1,9 @@
+.label {
+    __font-name: "flixel/fonts/monsterrat.ttf";
+    __font-size: 12px;
+}
+
+.textfield, .textarea {
+    __font-name: "flixel/fonts/monsterrat.ttf";
+    __font-size: 12px;
+}
