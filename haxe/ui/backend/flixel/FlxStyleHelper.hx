@@ -6,6 +6,7 @@ import flixel.util.FlxColor;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.geom.Slice9;
 import haxe.ui.styles.Style;
+import haxe.ui.util.ColorUtil;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -89,9 +90,32 @@ class FlxStyleHelper {
         
         if (style.backgroundColor != null) {
 			var opacity = style.backgroundOpacity == null ? 1 : style.backgroundOpacity;
-			var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.backgroundColor;
-            
-            pixels.fillRect(rc, color);
+            if (style.backgroundColorEnd != null && style.backgroundColor != style.backgroundColorEnd) {
+                var gradientType:String = "vertical";
+                if (style.backgroundGradientStyle != null) {
+                    gradientType = style.backgroundGradientStyle;
+                }
+
+                var arr:Array<Int> = null;
+                var n:Int = 0;
+                var rcLine:Rectangle = new Rectangle();
+                if (gradientType == "vertical") {
+                    arr = ColorUtil.buildColorArray(style.backgroundColor, style.backgroundColorEnd, Std.int(rc.height));
+                    for (c in arr) {
+                        rcLine.setTo(rc.left, rc.top + n, rc.width, 1);
+                        pixels.fillRect(rcLine, Std.int(opacity * 0xFF) << 24 | c);
+                        n++;
+                    }
+                } else if (gradientType == "horizontal") {
+                    arr = ColorUtil.buildColorArray(style.backgroundColor, style.backgroundColorEnd, Std.int(rc.width));
+                    for (c in arr) {
+                        n++;
+                    }
+                }
+            } else {
+                var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.backgroundColor;
+                pixels.fillRect(rc, color);
+            }
         }
         
         if (style.backgroundImage != null) {
