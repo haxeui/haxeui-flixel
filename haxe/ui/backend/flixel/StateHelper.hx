@@ -42,11 +42,11 @@ class StateHelper {
                 return true;
             }
             
-            if (Std.is(m, FlxTypedGroup)) {
+            if ((m is FlxTypedGroup)) {
                 if (hasMember(member, cast m) == true) {
                     return true;
                 }
-            } else if (Std.is(m, FlxSpriteGroup)) {
+            } else if ((m is FlxSpriteGroup)) {
                 if (groupHasMember(member, cast m) == true) {
                     return true;
                 }
@@ -70,11 +70,11 @@ class StateHelper {
                 return true;
             }
             
-            if (Std.is(m, FlxTypedGroup)) {
+            if ((m is FlxTypedGroup)) {
                 if (hasMember(member, cast m) == true) {
                     return true;
                 }
-            } else if (Std.is(m, FlxSpriteGroup)) {
+            } else if ((m is FlxSpriteGroup)) {
                 if (groupHasMember(member, cast m) == true) {
                     return true;
                 }
@@ -95,7 +95,7 @@ class StateHelper {
         
         for (m in group.members) {
             if (m.cameras != null && m.cameras.length > 0) {
-                if (m == member || (Std.is(m, FlxTypedGroup) && hasMember(member, cast m))) {
+                if (m == member || ((m is FlxTypedGroup) && hasMember(member, cast m))) {
                     return m.cameras;
                 }
             }

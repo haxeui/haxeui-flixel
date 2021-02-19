@@ -76,7 +76,7 @@ class ScreenImpl extends ScreenBase {
     }
     
     private function onMemberAdded(m:FlxBasic) {
-        if (Std.is(m, Component) && rootComponents.indexOf(cast(m, Component)) == -1) {
+        if ((m is Component) && rootComponents.indexOf(cast(m, Component)) == -1) {
             var c = cast(m, Component);
             if (c.percentWidth > 0) {
                 c.width = (this.width * c.percentWidth) / 100;
@@ -86,14 +86,14 @@ class ScreenImpl extends ScreenBase {
             }
             rootComponents.push(c);
             c.recursiveReady();
-        } else if (Std.is(m, FlxTypedGroup)) {
+        } else if ((m is FlxTypedGroup)) {
             var group:FlxTypedGroup<FlxBasic> = cast m;
             checkMembers(group);
         }
     }
     
     private function onMemberRemoved(m:FlxBasic) {
-        if (Std.is(m, Component) && rootComponents.indexOf(cast(m, Component)) != -1) {
+        if ((m is Component) && rootComponents.indexOf(cast(m, Component)) != -1) {
             removeComponent(cast m);
         }
     }
@@ -101,7 +101,7 @@ class ScreenImpl extends ScreenBase {
     private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
         var found = false; // we only want top level components
         for (m in state.members) {
-            if (Std.is(m, Component) && rootComponents.indexOf(cast(m, Component)) == -1) {
+            if ((m is Component) && rootComponents.indexOf(cast(m, Component)) == -1) {
                 var c = cast(m, Component);
                 if (c.percentWidth > 0) {
                     c.width = (this.width * c.percentWidth) / 100;
@@ -112,14 +112,14 @@ class ScreenImpl extends ScreenBase {
                 rootComponents.push(c);
                 c.recursiveReady();
                 found = true;
-            } else if (Std.is(m, FlxTypedGroup)) {
+            } else if ((m is FlxTypedGroup)) {
                 var group:FlxTypedGroup<FlxBasic> = cast m;
                 group.memberAdded.addOnce(onMemberAdded);
                 if (checkMembers(group) == true) {
                     found = true;
                     break;
                 }
-            } else if (Std.is(m, FlxTypedSpriteGroup)) {
+            } else if ((m is FlxTypedSpriteGroup)) {
                 var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
                 spriteGroup.group.memberAdded.addOnce(onMemberAdded);
                 if (checkMembers(cast spriteGroup.group) == true) {

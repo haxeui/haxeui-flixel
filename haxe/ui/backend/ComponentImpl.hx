@@ -242,7 +242,7 @@ class ComponentImpl extends ComponentBase {
 		// index is in terms of haxeui components, not flixel children
 		var indexOffset = 0;
 		while (indexOffset < members.length) {
-			if (!Std.is(members[indexOffset], Component)) {
+			if (!(members[indexOffset] is Component)) {
                 indexOffset++;
             } else{
                 break;
@@ -301,11 +301,11 @@ class ComponentImpl extends ComponentBase {
     private function applyFilters(style:Style) {
         if (style.filter != null && style.filter.length > 0) {
             for (f in style.filter) {
-                if (_textDisplay != null && Std.is(f, Outline)) {
+                if (_textDisplay != null && (f is Outline)) {
                     var o = cast(f, Outline);
                     var col = o.color;
                     _textDisplay.tf.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000 | o.color, o.size);
-                } else if (_textDisplay != null && Std.is(f, DropShadow)) {
+                } else if (_textDisplay != null && (f is DropShadow)) {
                     var o = cast(f, DropShadow);
                     _textDisplay.tf.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF000000 | o.color, o.distance);
                 }
@@ -814,7 +814,7 @@ class ComponentImpl extends ComponentBase {
             return false;
         }
         
-        return !Std.is(m, Component);
+        return !(m is Component);
     }
     
     private function hasComponentOver(ref:Component, x:Float, y:Float):Bool {
