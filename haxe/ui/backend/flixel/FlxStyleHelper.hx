@@ -109,6 +109,8 @@ class FlxStyleHelper {
                 } else if (gradientType == "horizontal") {
                     arr = ColorUtil.buildColorArray(style.backgroundColor, style.backgroundColorEnd, Std.int(rc.width));
                     for (c in arr) {
+                        rcLine.setTo(rc.left + n, rc.top, 1, rc.height);
+                        pixels.fillRect(rcLine, Std.int(opacity * 0xFF) << 24 | c);
                         n++;
                     }
                 }
