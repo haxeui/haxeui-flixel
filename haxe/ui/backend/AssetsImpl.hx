@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxImageFrame;
 import haxe.io.Bytes;
 import haxe.ui.assets.FontInfo;
 import haxe.ui.assets.ImageInfo;
+import haxe.ui.backend.ImageData;
 import haxe.ui.util.ByteConverter;
 import openfl.Assets;
 import openfl.display.Bitmap;
@@ -85,6 +86,14 @@ class AssetsImpl extends AssetsBase {
 		}
 		return null;
 	}
+    
+    public override function imageInfoFromImageData(imageData:ImageData):ImageInfo {
+        return {
+            data: imageData,
+            width: imageData.parent.width,
+            height: imageData.parent.height
+        }
+    }
     
 	private static inline function isEmbeddedFont(fontName:String):Bool {
 		return fontName != "_sans" && fontName != "_serif" && fontName != "_typewriter";
