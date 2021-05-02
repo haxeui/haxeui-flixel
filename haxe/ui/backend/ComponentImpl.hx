@@ -793,7 +793,7 @@ class ComponentImpl extends ComponentBase {
 			_imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
         }
         
-        if (members != null) {
+        if (group != null && members != null) {
             for (m in members) {
                 if (isUnsolicitedMember(m) == true) {
                     m.x = this.screenLeft;
