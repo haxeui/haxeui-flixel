@@ -793,10 +793,12 @@ class ComponentImpl extends ComponentBase {
 			_imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
         }
         
-        for (m in members) {
-            if (isUnsolicitedMember(m) == true) {
-                m.x = this.screenLeft;
-                m.y = this.screenTop;
+        if (members != null) {
+            for (m in members) {
+                if (isUnsolicitedMember(m) == true) {
+                    m.x = this.screenLeft;
+                    m.y = this.screenTop;
+                }
             }
         }
     }
