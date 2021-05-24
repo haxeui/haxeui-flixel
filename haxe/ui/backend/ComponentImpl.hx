@@ -280,8 +280,12 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
+    @:access(haxe.ui.core.Component)
 	private override function handleVisibility(show:Bool):Void {
 		this.visible = show;
+        for (c in childComponents) {
+            c.handleVisibility(!c.hidden);
+        }
 	}
 
     //***********************************************************************************************************
