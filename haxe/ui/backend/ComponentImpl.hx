@@ -785,8 +785,11 @@ class ComponentImpl extends ComponentBase {
             var offsetX = 2;
             var offsetY = 2;
             #end
-			_textInput.tf.x = _surface.x + _textInput.left - offsetX;
-			_textInput.tf.y = _surface.y + _textInput.top - offsetY;
+            
+			_textInput.tf.x = (_surface.x + _textInput.left - offsetX) * FlxG.scaleMode.scale.x;
+			_textInput.tf.y = (_surface.y + _textInput.top - offsetY) * FlxG.scaleMode.scale.y;
+            _textInput.tf.scaleX = FlxG.scaleMode.scale.x;
+            _textInput.tf.scaleY = FlxG.scaleMode.scale.y;
             _textInput.update();
         }
         
