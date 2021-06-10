@@ -282,7 +282,7 @@ class ComponentImpl extends ComponentBase {
     
     @:access(haxe.ui.core.Component)
 	private override function handleVisibility(show:Bool):Void {
-		this.visible = show;
+		super.visible = show;
         for (c in childComponents) {
             c.handleVisibility(!c.hidden);
         }
@@ -949,6 +949,15 @@ class ComponentImpl extends ComponentBase {
         if (this.parentComponent == null) {
             this.top = value;
         }
+        return r;
+    }
+    
+    private override function set_visible(value:Bool):Bool {
+        if (value == this.visible) {
+            return value;
+        }
+        var r = super.set_visible(value);
+        cast(this, Component).hidden = !value;
         return r;
     }
 }
