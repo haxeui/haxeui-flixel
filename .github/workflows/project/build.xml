@@ -13,8 +13,9 @@
     <haxelib name="openfl" />
     <haxelib name="actuate" />
 
+    <haxelib name="flixel" />
     <haxelib name="haxeui-core" />
-    <haxelib name="haxeui-openfl" />
+    <haxelib name="haxeui-flixel" />
 
     <haxeflag name="--macro" value="haxe.macro.Compiler.include('haxe.ui', ['haxe.ui.macros'])" />
 </project>
