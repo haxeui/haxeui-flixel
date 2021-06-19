@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="http://haxeui.org/db/haxeui2-warning.png"/>
-</p>
-
 # haxeui-flixel
 `haxeui-flixel` is the `Flixel` backend for `HaxeUI`.
 

@@ -1,0 +1,52 @@
+name: Build
+
+on: [push, repository_dispatch]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.2]
+        target: [html5, linux, windows, mac]
+        exclude:  
+          - os: windows-latest
+            haxe-version: 3.4.7
+          - os: ubuntu-latest
+            target: windows
+          - os: ubuntu-latest
+            target: mac
+          - os: windows-latest
+            target: linux
+          - os: windows-latest
+            target: mac
+          - os: macos-latest
+            target: linux
+          - os: macos-latest
+            target: windows
+
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Haxe (${{ matrix.target }}, haxe ${{ matrix.haxe-version }}, ${{ matrix.os }})
+      uses: krdlab/setup-haxe@v1
+      with:
+        haxe-version: ${{ matrix.haxe-version }}
+
+    - name: Setup app (${{ matrix.target }}, haxe ${{ matrix.haxe-version }}, ${{ matrix.os }})
+      run: |
+        git clone --branch master https://github.com/haxeui/haxeui-core.git --depth=1
+        haxelib dev haxeui-core haxeui-core
+        haxelib dev haxeui-openfl .
+        haxelib install hxcpp --always --quiet
+        haxelib install hscript --always --quiet
+        haxelib install actuate --always --quiet
+        haxelib install openfl --always --quiet
+        echo "y" | haxelib run openfl setup
+
+    - name: Build app (${{ matrix.target }}, haxe ${{ matrix.haxe-version }}, ${{ matrix.os }})
+      run: |
+        cd .github/workflows/project
+        haxelib run openfl build ${{ matrix.target }}
