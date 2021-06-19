@@ -39,7 +39,7 @@ jobs:
       run: |
         git clone --branch master https://github.com/haxeui/haxeui-core.git --depth=1
         haxelib dev haxeui-core haxeui-core
-        haxelib dev haxeui-openfl .
+        haxelib dev haxeui-flixel .
         haxelib install hxcpp --always --quiet
         haxelib install hscript --always --quiet
         haxelib install actuate --always --quiet
