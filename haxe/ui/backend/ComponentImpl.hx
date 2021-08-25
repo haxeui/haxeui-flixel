@@ -514,8 +514,8 @@ class ComponentImpl extends ComponentBase {
         lastMouseX = x;
         lastMouseY = y;
         
-        if (StateHelper.hasMember(_surface) == false) {
-            if (_mouseOverFlag == true) {
+        if (_mouseOverFlag == true) {
+            if (StateHelper.hasMember(_surface) == false) {
                 _mouseOverFlag = false;
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
                 if (fn != null) {
@@ -524,8 +524,8 @@ class ComponentImpl extends ComponentBase {
                     mouseEvent.screenY = y / Toolkit.scaleY;
                     fn(mouseEvent);
                 }
+                return;
             }
-            return;
         }
         
         var i = inBounds(x, y);
@@ -565,6 +565,10 @@ class ComponentImpl extends ComponentBase {
     private var _mouseDownFlag:Bool = false;
     private var _mouseDownButton:Int = -1;
     private function __onMouseDown(event:MouseEvent) {
+        if (_mouseOverFlag == false) {
+            return;
+        }
+        
         if (StateHelper.hasMember(_surface) == false) {
             return;
         }
@@ -597,6 +601,10 @@ class ComponentImpl extends ComponentBase {
     }
 
     private function __onMouseUp(event:MouseEvent) {
+        if (_mouseOverFlag == false) {
+            return;
+        }
+        
         if (StateHelper.hasMember(_surface) == false) {
             return;
         }
