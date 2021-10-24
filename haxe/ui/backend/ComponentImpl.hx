@@ -19,6 +19,7 @@ import haxe.ui.filters.Outline;
 import haxe.ui.geom.Rectangle;
 import haxe.ui.styles.Style;
 import haxe.ui.util.MathUtil;
+import openfl.events.Event;
 
 class ComponentImpl extends ComponentBase {
     private var _eventMap:Map<String, UIEvent->Void>;
@@ -434,6 +435,14 @@ class ComponentImpl extends ComponentBase {
                         _eventMap.set(MouseEvent.RIGHT_MOUSE_UP, listener);
                     }
                 }
+                
+            case UIEvent.CHANGE:
+                if (_eventMap.exists(UIEvent.CHANGE) == false) {
+                    if (hasTextInput() == true) {
+                        _eventMap.set(UIEvent.CHANGE, listener);
+                        getTextInput().tf.addEventListener(Event.CHANGE, __onTextInputChange);
+                    }
+                }
         }
     }
 
@@ -504,6 +513,19 @@ class ComponentImpl extends ComponentBase {
                 
             case MouseEvent.RIGHT_CLICK:
                 _eventMap.remove(type);
+                
+            case UIEvent.CHANGE:
+                _eventMap.remove(type);
+                if (hasTextInput() == true) {
+                    getTextInput().tf.removeEventListener(Event.CHANGE, __onTextInputChange);
+                }
+        }
+    }
+
+    private function __onTextInputChange(event:Event) {
+        var fn:UIEvent->Void = _eventMap.get(UIEvent.CHANGE);
+        if (fn != null) {
+            fn(new UIEvent(UIEvent.CHANGE));
         }
     }
     

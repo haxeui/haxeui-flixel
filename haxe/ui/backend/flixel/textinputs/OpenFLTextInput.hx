@@ -5,6 +5,7 @@ import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
 import haxe.ui.geom.Rectangle;
+import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
@@ -26,6 +27,7 @@ class OpenFLTextInput extends TextBase {
         tf.multiline = true;
         tf.wordWrap = true;
         //tf.stage.focus = null;
+        tf.addEventListener(Event.CHANGE, onChange);
     }
     
     public function attach() {
@@ -69,12 +71,7 @@ class OpenFLTextInput extends TextBase {
                 break;
             }
         }
-        /*
-        trace(components.length);
-        for (c in components) {
-            trace(c.className);
-        }
-        */
+
         if (overlaps == true && tf.visible == true) {
             tf.visible = false;
         } else if (overlaps == false && tf.visible == false) {
