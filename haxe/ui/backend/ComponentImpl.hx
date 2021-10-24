@@ -365,12 +365,18 @@ class ComponentImpl extends ComponentBase {
                     MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
                     MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
                     _eventMap.set(MouseEvent.MOUSE_DOWN, listener);
+                    if (hasTextInput()) {
+                        getTextInput().tf.addEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseEvent);
+                    }
                 }
 
             case MouseEvent.MOUSE_UP:
                 if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
                     MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
                     _eventMap.set(MouseEvent.MOUSE_UP, listener);
+                    if (hasTextInput()) {
+                        getTextInput().tf.addEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseEvent);
+                    }
                 }
                 
             case MouseEvent.MOUSE_WHEEL:
@@ -395,6 +401,10 @@ class ComponentImpl extends ComponentBase {
                         MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
                         _eventMap.set(MouseEvent.MOUSE_UP, null);
                     } 
+                    
+                    if (hasTextInput()) {
+                        getTextInput().tf.addEventListener(openfl.events.MouseEvent.CLICK, __onTextInputMouseEvent);
+                    }
                 }
                 
 			case MouseEvent.DBL_CLICK:
@@ -473,12 +483,19 @@ class ComponentImpl extends ComponentBase {
                     && _eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
                     MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
                 }
+                if (hasTextInput()) {
+                    getTextInput().tf.removeEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseEvent);
+                }
+                
 
             case MouseEvent.MOUSE_UP:
                 _eventMap.remove(type);
                 if (_eventMap.exists(MouseEvent.MOUSE_UP) == false
                     && _eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
                     MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
+                }
+                if (hasTextInput()) {
+                    getTextInput().tf.removeEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseEvent);
                 }
                 
             case MouseEvent.MOUSE_WHEEL:
@@ -492,6 +509,9 @@ class ComponentImpl extends ComponentBase {
                 
             case MouseEvent.CLICK:
                 _eventMap.remove(type);
+                if (hasTextInput()) {
+                    getTextInput().tf.removeEventListener(openfl.events.MouseEvent.CLICK, __onTextInputMouseEvent);
+                }
                 
 			case MouseEvent.DBL_CLICK:
                 _eventMap.remove(type);
@@ -526,6 +546,27 @@ class ComponentImpl extends ComponentBase {
         var fn:UIEvent->Void = _eventMap.get(UIEvent.CHANGE);
         if (fn != null) {
             fn(new UIEvent(UIEvent.CHANGE));
+        }
+    }
+    
+    // since we use openfl's text input for text input we need to handle its events differently 
+    // to how we do in the rest of haxeui-flixel
+    private function __onTextInputMouseEvent(event:openfl.events.MouseEvent) {
+        var type = null;
+        switch (event.type) {
+            case openfl.events.MouseEvent.MOUSE_DOWN:
+                type = MouseEvent.MOUSE_DOWN;
+            case openfl.events.MouseEvent.MOUSE_UP:
+                type = MouseEvent.MOUSE_UP;
+            case openfl.events.MouseEvent.CLICK:
+                type = MouseEvent.CLICK;
+        }
+        var fn:UIEvent->Void = _eventMap.get(type);
+        if (fn != null) {
+            var mouseEvent = new haxe.ui.events.MouseEvent(type);
+            mouseEvent.screenX = event.stageX / Toolkit.scaleX;
+            mouseEvent.screenY = event.stageY / Toolkit.scaleY;
+            fn(mouseEvent);
         }
     }
     
