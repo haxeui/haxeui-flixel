@@ -44,7 +44,7 @@ class ComponentImpl extends ComponentBase {
         this.moves = false;
         
         #if mobile
-        //cast(this, Component).addClass(":mobile");
+        cast(this, Component).addClass(":mobile");
         #end
         
         scrollFactor.set(0, 0); // ui doesn't scroll by default
@@ -575,12 +575,17 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
+    #if !mobile
     private var _mouseOverFlag:Bool = false;
+    #end
+    
     private function __onMouseMove(event:MouseEvent) {
         var x = event.screenX;
         var y = event.screenY;
         lastMouseX = x;
         lastMouseY = y;
+        
+        #if !mobile
         
         if (_mouseOverFlag == true) {
             if (StateHelper.hasMember(_surface) == false) {
@@ -628,14 +633,18 @@ class ComponentImpl extends ComponentBase {
                 fn(mouseEvent);
             }
         }
+        
+        #end
     }
 
     private var _mouseDownFlag:Bool = false;
     private var _mouseDownButton:Int = -1;
     private function __onMouseDown(event:MouseEvent) {
+        #if !mobile
         if (_mouseOverFlag == false) {
             return;
         }
+        #end
         
         if (StateHelper.hasMember(_surface) == false) {
             return;
@@ -669,9 +678,11 @@ class ComponentImpl extends ComponentBase {
     }
 
     private function __onMouseUp(event:MouseEvent) {
+        #if !mobile
         if (_mouseOverFlag == false) {
             return;
         }
+        #end
         
         if (StateHelper.hasMember(_surface) == false) {
             return;
