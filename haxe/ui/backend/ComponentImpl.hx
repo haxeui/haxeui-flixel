@@ -278,12 +278,11 @@ class ComponentImpl extends ComponentBase {
         if (value == null) {
             clipRect = null;
         } else {
-            trace("clip rect: " + value.toString());
             value.top = Std.int(value.top);
             value.left = Std.int(value.left - 1);
             clipRect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
                                    (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
-                                   value.width * Toolkit.scaleX, value.height * Toolkit.scaleY);
+                                   (value.width * Toolkit.scaleX) - Toolkit.scaleX, (value.height * Toolkit.scaleY) - Toolkit.scaleY);
         }
     }
     
