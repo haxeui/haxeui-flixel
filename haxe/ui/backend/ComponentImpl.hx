@@ -571,6 +571,9 @@ class ComponentImpl extends ComponentBase {
             var mouseEvent = new haxe.ui.events.MouseEvent(type);
             mouseEvent.screenX = event.stageX / Toolkit.scaleX;
             mouseEvent.screenY = event.stageY / Toolkit.scaleY;
+            #if mobile
+            mouseEvent.touchEvent = true;
+            #end
             fn(mouseEvent);
         }
     }
@@ -595,6 +598,9 @@ class ComponentImpl extends ComponentBase {
                     var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
                     mouseEvent.screenX = x / Toolkit.scaleX;
                     mouseEvent.screenY = y / Toolkit.scaleY;
+                    #if mobile
+                    mouseEvent.touchEvent = true;
+                    #end
                     fn(mouseEvent);
                 }
                 return;
@@ -608,6 +614,9 @@ class ComponentImpl extends ComponentBase {
                 var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
                 mouseEvent.screenX = x / Toolkit.scaleX;
                 mouseEvent.screenY = y / Toolkit.scaleY;
+                #if mobile
+                mouseEvent.touchEvent = true;
+                #end
                 fn(mouseEvent);
             }
         }
@@ -620,6 +629,9 @@ class ComponentImpl extends ComponentBase {
                     var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
                     mouseEvent.screenX = x / Toolkit.scaleX;
                     mouseEvent.screenY = y / Toolkit.scaleY;
+                    #if mobile
+                    mouseEvent.touchEvent = true;
+                    #end
                     fn(mouseEvent);
                 }
             }
@@ -630,6 +642,9 @@ class ComponentImpl extends ComponentBase {
                 var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
                 mouseEvent.screenX = x / Toolkit.scaleX;
                 mouseEvent.screenY = y / Toolkit.scaleY;
+                #if mobile
+                mouseEvent.touchEvent = true;
+                #end
                 fn(mouseEvent);
             }
         }
@@ -671,6 +686,9 @@ class ComponentImpl extends ComponentBase {
                     var mouseEvent = new haxe.ui.events.MouseEvent(type);
                     mouseEvent.screenX = x / Toolkit.scaleX;
                     mouseEvent.screenY = y / Toolkit.scaleY;
+                    #if mobile
+                    mouseEvent.touchEvent = true;
+                    #end
                     fn(mouseEvent);
                 }
             }
@@ -709,6 +727,9 @@ class ComponentImpl extends ComponentBase {
                     var mouseEvent = new haxe.ui.events.MouseEvent(type);
                     mouseEvent.screenX = x / Toolkit.scaleX;
                     mouseEvent.screenY = y / Toolkit.scaleY;
+                    #if mobile
+                    mouseEvent.touchEvent = true;
+                    #end
                     Toolkit.callLater(function() {
                         fn(mouseEvent);
                     });
@@ -731,6 +752,9 @@ class ComponentImpl extends ComponentBase {
                 var mouseEvent = new haxe.ui.events.MouseEvent(type);
                 mouseEvent.screenX = x / Toolkit.scaleX;
                 mouseEvent.screenY = y / Toolkit.scaleY;
+                #if mobile
+                mouseEvent.touchEvent = true;
+                #end
                 fn(mouseEvent);
             }
         }
@@ -765,6 +789,9 @@ class ComponentImpl extends ComponentBase {
 					var mouseEvent = new haxe.ui.events.MouseEvent(type);
 					mouseEvent.screenX = x / Toolkit.scaleX;
 					mouseEvent.screenY = y / Toolkit.scaleY;
+                    #if mobile
+                    mouseEvent.touchEvent = true;
+                    #end
 					fn(mouseEvent);
 				}
 			}
@@ -792,6 +819,9 @@ class ComponentImpl extends ComponentBase {
         mouseEvent.screenX = lastMouseX / Toolkit.scaleX;
         mouseEvent.screenY = lastMouseY / Toolkit.scaleY;
         mouseEvent.delta = Math.max(-1, Math.min(1, -delta));
+        #if mobile
+        mouseEvent.touchEvent = true;
+        #end
         fn(mouseEvent);
     }
     

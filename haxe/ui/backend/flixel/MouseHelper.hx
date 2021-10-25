@@ -181,11 +181,21 @@ class MouseHelper {
     private static var buttonPressed(get, null):Int;
     private static function get_buttonPressed():Int {
         var n = -1;
+        
+        #if FLX_NO_MOUSE
+        
+        n = 0;
+        
+        #else
+        
         if (FlxG.mouse.pressed == true) {
             n = 0;
         } else if (FlxG.mouse.pressedRight == true) {
             n = 1;
         }
+        
+        #end
+        
         return n;
     }
 }

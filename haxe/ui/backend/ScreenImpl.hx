@@ -242,6 +242,9 @@ class ScreenImpl extends ScreenBase {
             mouseEvent.screenX = event.screenX / Toolkit.scaleX;
             mouseEvent.screenY = event.screenY / Toolkit.scaleY;
             mouseEvent.buttonDown = event.data;
+            #if mobile
+            mouseEvent.touchEvent = true;
+            #end
             fn(mouseEvent);
         }
     }
@@ -253,6 +256,9 @@ class ScreenImpl extends ScreenBase {
             mouseEvent.screenX = event.screenX / Toolkit.scaleX;
             mouseEvent.screenY = event.screenY / Toolkit.scaleY;
             mouseEvent.buttonDown = event.data;
+            #if mobile
+            mouseEvent.touchEvent = true;
+            #end
             fn(mouseEvent);
         }
     }
@@ -264,6 +270,9 @@ class ScreenImpl extends ScreenBase {
             mouseEvent.screenX = event.screenX / Toolkit.scaleX;
             mouseEvent.screenY = event.screenY / Toolkit.scaleY;
             mouseEvent.buttonDown = event.data;
+            #if mobile
+            mouseEvent.touchEvent = true;
+            #end
             fn(mouseEvent);
         }
     }
