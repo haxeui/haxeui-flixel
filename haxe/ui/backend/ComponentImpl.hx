@@ -295,13 +295,20 @@ class ComponentImpl extends ComponentBase {
     //***********************************************************************************************************
     private override function applyStyle(style:Style) {
         if (style.opacity != null) {
-            _surface.alpha = style.opacity;
-        } else {
-            _surface.alpha = 1;
+            setAlpha(style.opacity);
+        } else if (_surface.alpha != 1) {
+            setAlpha(1);
         }
         
         FlxStyleHelper.applyStyle(_surface, style);
         applyFilters(style);
+    }
+    
+    private function setAlpha(value:Float) {
+        _surface.alpha = value;
+        for (c in childComponents) {
+            c.setAlpha(value);
+        }
     }
     
     private function applyFilters(style:Style) {
