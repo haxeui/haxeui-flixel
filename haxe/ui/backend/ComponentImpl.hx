@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
 import flixel.text.FlxText.FlxTextBorderStyle;
+import haxe.ui.Toolkit;
 import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
@@ -41,6 +42,10 @@ class ComponentImpl extends ComponentBase {
         
         this.pixelPerfectRender = true;
         this.moves = false;
+        
+        #if mobile
+        //cast(this, Component).addClass(":mobile");
+        #end
         
         scrollFactor.set(0, 0); // ui doesn't scroll by default
 
@@ -211,8 +216,8 @@ class ComponentImpl extends ComponentBase {
             return;
         }
         
-        var w:Int = Std.int(width);
-        var h:Int = Std.int(height);
+        var w:Int = Std.int(width * Toolkit.scaleX);
+        var h:Int = Std.int(height * Toolkit.scaleY);
         if (_surface.width != w || _surface.height != h) {
             if (w <= 0 || h <= 0) {
                 _surface.makeGraphic(1, 1, 0x0, true);
@@ -273,11 +278,12 @@ class ComponentImpl extends ComponentBase {
         if (value == null) {
             clipRect = null;
         } else {
+            trace("clip rect: " + value.toString());
             value.top = Std.int(value.top);
-            value.left = Std.int(value.left);
-            clipRect = FlxRect.get(value.left + _surface.x - parentComponent.x,
-                                   value.top + _surface.y - parentComponent.y,
-                                   value.width, value.height);
+            value.left = Std.int(value.left - 1);
+            clipRect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
+                                   (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
+                                   value.width * Toolkit.scaleX, value.height * Toolkit.scaleY);
         }
     }
     

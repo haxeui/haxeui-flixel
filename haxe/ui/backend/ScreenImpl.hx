@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import haxe.ui.Toolkit;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -132,13 +133,21 @@ class ScreenImpl extends ScreenBase {
     }
     
 	private override function get_width():Float {
-		return FlxG.width;
+		return FlxG.width / Toolkit.scaleX;
 	}
 	
 	private override function get_height() {
-		return FlxG.height;
+		return FlxG.height / Toolkit.scaleY;
 	}
 	
+    private override function get_actualWidth():Float {
+        return FlxG.width;
+    }
+    
+    private override function get_actualHeight():Float {
+        return FlxG.height;
+    }
+    
 	private override function get_dpi():Float {
 		return System.getDisplay(0).dpi;
 	}
@@ -230,8 +239,8 @@ class ScreenImpl extends ScreenBase {
         var fn = _mapping.get(MouseEvent.MOUSE_MOVE);
         if (fn != null) {
             var mouseEvent = new MouseEvent(MouseEvent.MOUSE_MOVE);
-            mouseEvent.screenX = event.screenX;
-            mouseEvent.screenY = event.screenY;
+            mouseEvent.screenX = event.screenX / Toolkit.scaleX;
+            mouseEvent.screenY = event.screenY / Toolkit.scaleY;
             mouseEvent.buttonDown = event.data;
             fn(mouseEvent);
         }
@@ -241,8 +250,8 @@ class ScreenImpl extends ScreenBase {
         var fn = _mapping.get(MouseEvent.MOUSE_DOWN);
         if (fn != null) {
             var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
-            mouseEvent.screenX = event.screenX;
-            mouseEvent.screenY = event.screenY;
+            mouseEvent.screenX = event.screenX / Toolkit.scaleX;
+            mouseEvent.screenY = event.screenY / Toolkit.scaleY;
             mouseEvent.buttonDown = event.data;
             fn(mouseEvent);
         }
@@ -252,8 +261,8 @@ class ScreenImpl extends ScreenBase {
         var fn = _mapping.get(MouseEvent.MOUSE_UP);
         if (fn != null) {
             var mouseEvent = new MouseEvent(MouseEvent.MOUSE_UP);
-            mouseEvent.screenX = event.screenX;
-            mouseEvent.screenY = event.screenY;
+            mouseEvent.screenX = event.screenX / Toolkit.scaleX;
+            mouseEvent.screenY = event.screenY / Toolkit.scaleY;
             mouseEvent.buttonDown = event.data;
             fn(mouseEvent);
         }

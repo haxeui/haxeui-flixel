@@ -3,6 +3,7 @@ package haxe.ui.backend.flixel;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.util.FlxColor;
+import haxe.ui.Toolkit;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.geom.Slice9;
 import haxe.ui.styles.Style;
@@ -42,7 +43,7 @@ class FlxStyleHelper {
             && style.borderLeftColor == style.borderRightColor
             && style.borderLeftColor == style.borderBottomColor
             && style.borderLeftColor == style.borderTopColor) {
-                var borderSize = style.borderLeftSize;
+                var borderSize = style.borderLeftSize * Toolkit.scale;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderLeftColor;
                 
@@ -55,7 +56,7 @@ class FlxStyleHelper {
             var org = rc.clone();
             
             if (style.borderTopSize != null && style.borderTopSize > 0) {
-                var borderSize = style.borderTopSize;
+                var borderSize = style.borderTopSize * Toolkit.scale;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderTopColor;
                 pixels.fillRect(new Rectangle(rc.left, rc.top, org.width, borderSize), color); // top
@@ -63,7 +64,7 @@ class FlxStyleHelper {
             }
             
             if (style.borderBottomSize != null && style.borderBottomSize > 0) {
-                var borderSize = style.borderBottomSize;
+                var borderSize = style.borderBottomSize * Toolkit.scale;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderBottomColor;
                 pixels.fillRect(new Rectangle(rc.left, org.height - borderSize, rc.width, borderSize), color); // bottom
@@ -71,7 +72,7 @@ class FlxStyleHelper {
             }
             
             if (style.borderLeftSize != null && style.borderLeftSize > 0) {
-                var borderSize = style.borderLeftSize;
+                var borderSize = style.borderLeftSize * Toolkit.scale;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderLeftColor;
                 pixels.fillRect(new Rectangle(rc.left, rc.top, borderSize, org.height - rc.top), color); // left 
@@ -79,7 +80,7 @@ class FlxStyleHelper {
             }
             
             if (style.borderRightSize != null && style.borderRightSize > 0) {
-                var borderSize = style.borderRightSize;
+                var borderSize = style.borderRightSize * Toolkit.scale;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderRightColor;
                 pixels.fillRect(new Rectangle(org.width - borderSize, rc.top, borderSize, org.height), color); // right 

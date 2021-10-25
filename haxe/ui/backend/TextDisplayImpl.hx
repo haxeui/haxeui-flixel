@@ -1,9 +1,12 @@
 package haxe.ui.backend;
 
 import flixel.text.FlxText;
+import haxe.ui.Toolkit;
 import haxe.ui.util.Color;
 
 class TextDisplayImpl extends TextBase {
+    private static inline var PADDING_X:Int = 2;
+    
 	public var tf:FlxText;
     
 	public function new() {
@@ -39,7 +42,7 @@ class TextDisplayImpl extends TextBase {
             }
 
 			if (_textStyle.fontSize != null) {
-                tf.size = Std.int(_textStyle.fontSize);
+                tf.size = Std.int(_textStyle.fontSize * Toolkit.scale);
                 measureTextRequired = true;
             }
             
@@ -79,16 +82,16 @@ class TextDisplayImpl extends TextBase {
     
     private override function validateDisplay() {
         if (tf.textField.width != _width) {
-            tf.textField.width = _width;
+            tf.textField.width = _width * Toolkit.scaleX;
         }
         if (tf.textField.height != _height) {
-            tf.textField.height = _height;
+            tf.textField.height = _height * Toolkit.scaleY;
         }
     }
     
     private override function measureText() {
-		_textWidth = Math.fround(tf.textField.textWidth) + 2;
-		_textHeight = Math.fround(tf.textField.textHeight);
+		_textWidth = (Math.fround(tf.textField.textWidth) + (PADDING_X * Toolkit.scaleX)) / Toolkit.scaleX;
+		_textHeight = Math.fround(tf.textField.textHeight) / Toolkit.scaleY;
     }
     
     private function normalizeText(text:String):String {
