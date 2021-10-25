@@ -1,6 +1,7 @@
 package haxe.ui.backend.flixel.textinputs;
 
 import flixel.FlxG;
+import haxe.ui.Toolkit;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
@@ -131,8 +132,8 @@ class OpenFLTextInput extends TextBase {
         //_textHeight -= 2;
         #end
         
-        _textWidth = Math.round(_textWidth);
-        _textHeight = Math.round(_textHeight);
+        _textWidth = Math.round(_textWidth) / Toolkit.scaleX;
+        _textHeight = Math.round(_textHeight) / Toolkit.scaleY;
 
         //////////////////////////////////////////////////////////////////////////////
         
@@ -161,7 +162,7 @@ class OpenFLTextInput extends TextBase {
                 //fontSizeValue = 13;
             }
             if (format.size != fontSizeValue) {
-                format.size = fontSizeValue;
+                format.size = Std.int(fontSizeValue * Toolkit.scale);
 
                 measureTextRequired = true;
             }
@@ -226,21 +227,21 @@ class OpenFLTextInput extends TextBase {
     }
     
     private override function validatePosition() {
-        _left = Math.round(_left);
-        _top = Math.round(_top);
+        _left = Math.round(_left * Toolkit.scaleX);
+        _top = Math.round(_top * Toolkit.scaleY);
     }
 
     private override function validateDisplay() {
         if (tf.width != _width) {
-            tf.width = _width;
+            tf.width = _width * Toolkit.scaleX;
         }
 
         if (tf.height != _height) {
             #if flash
-            tf.height = _height;
+            tf.height = _height * Toolkit.scaleY;
             //textField.height = _height + 4;
             #else
-            tf.height = _height;
+            tf.height = _height * Toolkit.scaleY;
             #end
         }
     }
