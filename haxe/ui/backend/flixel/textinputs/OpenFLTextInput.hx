@@ -111,7 +111,7 @@ class OpenFLTextInput extends TextBase {
     }
     
     private override function measureText() {
-        tf.width = _width;
+        tf.width = _width * Toolkit.scaleX;
         
         #if !flash
         _textWidth = tf.textWidth + PADDING_X;
@@ -232,11 +232,11 @@ class OpenFLTextInput extends TextBase {
     }
 
     private override function validateDisplay() {
-        if (tf.width != _width) {
+        if (tf.width != _width * Toolkit.scaleX) {
             tf.width = _width * Toolkit.scaleX;
         }
 
-        if (tf.height != _height) {
+        if (tf.height != _height * Toolkit.scaleY) {
             #if flash
             tf.height = _height * Toolkit.scaleY;
             //textField.height = _height + 4;
