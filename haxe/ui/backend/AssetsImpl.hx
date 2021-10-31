@@ -7,7 +7,6 @@ import haxe.io.Bytes;
 import haxe.ui.assets.FontInfo;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.backend.ImageData;
-import haxe.ui.util.ByteConverter;
 import openfl.Assets;
 import openfl.display.Bitmap;
 import openfl.display.Loader;
@@ -48,7 +47,7 @@ class AssetsImpl extends AssetsBase {
     }
     
     public override function imageFromBytes(bytes:Bytes, callback:ImageInfo->Void):Void {
-		var ba:ByteArray = ByteConverter.fromHaxeBytes(bytes);
+		var ba:ByteArray = ByteArray.fromBytes(bytes);
         var loader:Loader = new Loader();
         loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e) {
             if (loader.content != null) {
@@ -63,6 +62,10 @@ class AssetsImpl extends AssetsBase {
             } else {
                 callback(null);
             }
+        });
+        loader.contentLoaderInfo.addEventListener("ioError", function(e) {
+            trace(e);
+            callback(null);
         });
         
         loader.loadBytes(ba);
