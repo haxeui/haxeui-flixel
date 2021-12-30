@@ -46,7 +46,9 @@ class MouseHelper {
             _callbacks.set(event, list);
         }
         
-        list.push(callback);
+        if (list.indexOf(callback) == -1) {
+            list.push(callback);
+        }
         
         if (_inputManager == null) {
             _inputManager = new InputManager();

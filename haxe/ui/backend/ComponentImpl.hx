@@ -376,6 +376,7 @@ class ComponentImpl extends ComponentBase {
                 if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false) {
                     MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
                     MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
                     _eventMap.set(MouseEvent.MOUSE_DOWN, listener);
                     if (hasTextInput()) {
                         getTextInput().tf.addEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseEvent);
@@ -385,6 +386,7 @@ class ComponentImpl extends ComponentBase {
             case MouseEvent.MOUSE_UP:
                 if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
                     MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
                     _eventMap.set(MouseEvent.MOUSE_UP, listener);
                     if (hasTextInput()) {
                         getTextInput().tf.addEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseEvent);
@@ -401,6 +403,7 @@ class ComponentImpl extends ComponentBase {
             case MouseEvent.CLICK:
                 if (_eventMap.exists(MouseEvent.CLICK) == false) {
                     _eventMap.set(MouseEvent.CLICK, listener);
+                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
 
                     if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false) {
                         MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
@@ -494,6 +497,7 @@ class ComponentImpl extends ComponentBase {
                 if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false
                     && _eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
                     MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
                 }
                 if (hasTextInput()) {
                     getTextInput().tf.removeEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseEvent);
@@ -505,6 +509,7 @@ class ComponentImpl extends ComponentBase {
                 if (_eventMap.exists(MouseEvent.MOUSE_UP) == false
                     && _eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
                     MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
+                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
                 }
                 if (hasTextInput()) {
                     getTextInput().tf.removeEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseEvent);
@@ -521,6 +526,9 @@ class ComponentImpl extends ComponentBase {
                 
             case MouseEvent.CLICK:
                 _eventMap.remove(type);
+                MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
+                MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
                 if (hasTextInput()) {
                     getTextInput().tf.removeEventListener(openfl.events.MouseEvent.CLICK, __onTextInputMouseEvent);
                 }
@@ -667,6 +675,7 @@ class ComponentImpl extends ComponentBase {
             return;
         }
         #end
+        
         
         if (StateHelper.hasMember(_surface) == false) {
             return;
