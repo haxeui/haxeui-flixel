@@ -179,10 +179,16 @@ class ScreenImpl extends ScreenBase {
     }
     
 	public override function removeComponent(component:Component, dispose:Bool = true):Component {
+        if (rootComponents.indexOf(component) == -1) {
+            return component;
+        }
+        rootComponents.remove(component);
+        if (dispose) {
+            component.destroyInternal();
+        }
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.remove(component, true);
         }
-        rootComponents.remove(component);
         onContainerResize();
 		return component;
 	}

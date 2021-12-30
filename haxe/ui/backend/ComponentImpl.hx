@@ -265,6 +265,7 @@ class ComponentImpl extends ComponentBase {
             remove(child, true);
             if (dispose == true) {
                 child._destroy = true;
+                child.destroyInternal();
             }
         }
 		return child;
