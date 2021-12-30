@@ -73,13 +73,15 @@ class OpenFLTextInput extends TextBase {
         
         var components:Array<Component> = [];
         var overlaps:Bool = false;
+        var after = false;
         for (r in Screen.instance.rootComponents) {
             if (parentComponent.rootComponent == r) {
+                after = true;
                 continue;
             }
             
             var rootRect = new Rectangle(r.screenLeft, r.screenTop, r.width, r.height);
-            if (rootRect.intersects(rc)) {
+            if (after == true && rootRect.intersects(rc)) {
                 overlaps = true;
                 break;
             }
