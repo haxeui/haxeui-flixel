@@ -97,6 +97,11 @@ class MouseHelper {
     }
     
     private static function onMouseDown(e:openfl.events.MouseEvent) {
+        if (e != null) {
+            currentMouseX = e.stageX;
+            currentMouseY = e.stageY;
+        }
+        
         var list = _callbacks.get(MouseEvent.MOUSE_DOWN);
         if (list == null || list.length == 0) {
             return;
@@ -119,6 +124,11 @@ class MouseHelper {
     }
     
     private static function onMouseUp(e:openfl.events.MouseEvent) {
+        if (e != null) {
+            currentMouseX = e.stageX;
+            currentMouseY = e.stageY;
+        }
+        
         var list = _callbacks.get(MouseEvent.MOUSE_UP);
         if (list == null || list.length == 0) {
             return;
