@@ -10,6 +10,7 @@ import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
 import haxe.ui.core.ImageDisplay;
+import haxe.ui.core.Platform;
 import haxe.ui.core.Screen;
 import haxe.ui.core.TextDisplay;
 import haxe.ui.core.TextInput;
@@ -43,9 +44,9 @@ class ComponentImpl extends ComponentBase {
         this.pixelPerfectRender = true;
         this.moves = false;
         
-        #if mobile
-        cast(this, Component).addClass(":mobile");
-        #end
+        if (Platform.instance.isMobile) {
+            cast(this, Component).addClass(":mobile");
+        }
         
         scrollFactor.set(0, 0); // ui doesn't scroll by default
 
@@ -587,27 +588,67 @@ class ComponentImpl extends ComponentBase {
             var mouseEvent = new haxe.ui.events.MouseEvent(type);
             mouseEvent.screenX = event.stageX / Toolkit.scaleX;
             mouseEvent.screenY = event.stageY / Toolkit.scaleY;
-            #if mobile
-            mouseEvent.touchEvent = true;
-            #end
+            if (Platform.instance.isMobile) {
+                mouseEvent.touchEvent = true;
+            }
             fn(mouseEvent);
         }
     }
     
-    #if !mobile
     private var _mouseOverFlag:Bool = false;
-    #end
-    
     private function __onMouseMove(event:MouseEvent) {
         var x = event.screenX;
         var y = event.screenY;
         lastMouseX = x;
         lastMouseY = y;
         
-        #if !mobile
-        
-        if (_mouseOverFlag == true) {
-            if (StateHelper.hasMember(_surface) == false) {
+        if (Platform.instance.isMobile == false) {
+            if (_mouseOverFlag == true) {
+                if (StateHelper.hasMember(_surface) == false) {
+                    _mouseOverFlag = false;
+                    var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                    if (fn != null) {
+                        var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                        mouseEvent.screenX = x / Toolkit.scaleX;
+                        mouseEvent.screenY = y / Toolkit.scaleY;
+                        #if mobile
+                        mouseEvent.touchEvent = true;
+                        #end
+                        fn(mouseEvent);
+                    }
+                    return;
+                }
+            }
+            
+            var i = inBounds(x, y);
+            if (i == true) {
+                var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    #if mobile
+                    mouseEvent.touchEvent = true;
+                    #end
+                    fn(mouseEvent);
+                }
+            }
+            
+            if (i == true && _mouseOverFlag == false) {
+                if (isEventRelevant(getComponentsAtPoint(x, y, true), MouseEvent.MOUSE_OVER)) {
+                    _mouseOverFlag = true;
+                    var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
+                    if (fn != null) {
+                        var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
+                        mouseEvent.screenX = x / Toolkit.scaleX;
+                        mouseEvent.screenY = y / Toolkit.scaleY;
+                        #if mobile
+                        mouseEvent.touchEvent = true;
+                        #end
+                        fn(mouseEvent);
+                    }
+                }
+            } else if (i == false && _mouseOverFlag == true) {
                 _mouseOverFlag = false;
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
                 if (fn != null) {
@@ -619,63 +660,18 @@ class ComponentImpl extends ComponentBase {
                     #end
                     fn(mouseEvent);
                 }
-                return;
             }
         }
-        
-        var i = inBounds(x, y);
-        if (i == true) {
-            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
-            if (fn != null) {
-                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
-                mouseEvent.screenX = x / Toolkit.scaleX;
-                mouseEvent.screenY = y / Toolkit.scaleY;
-                #if mobile
-                mouseEvent.touchEvent = true;
-                #end
-                fn(mouseEvent);
-            }
-        }
-        
-        if (i == true && _mouseOverFlag == false) {
-            if (isEventRelevant(getComponentsAtPoint(x, y, true), MouseEvent.MOUSE_OVER)) {
-                _mouseOverFlag = true;
-                var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
-                if (fn != null) {
-                    var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
-                    mouseEvent.screenX = x / Toolkit.scaleX;
-                    mouseEvent.screenY = y / Toolkit.scaleY;
-                    #if mobile
-                    mouseEvent.touchEvent = true;
-                    #end
-                    fn(mouseEvent);
-                }
-            }
-        } else if (i == false && _mouseOverFlag == true) {
-            _mouseOverFlag = false;
-            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
-            if (fn != null) {
-                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
-                mouseEvent.screenX = x / Toolkit.scaleX;
-                mouseEvent.screenY = y / Toolkit.scaleY;
-                #if mobile
-                mouseEvent.touchEvent = true;
-                #end
-                fn(mouseEvent);
-            }
-        }
-        
-        #end
     }
 
     private var _mouseDownFlag:Bool = false;
     private var _mouseDownButton:Int = -1;
     private function __onMouseDown(event:MouseEvent) {
-        #if !mobile
-        if (_mouseOverFlag == false) {
-            return;
+        if (Platform.instance.isMobile == false) {
+            if (_mouseOverFlag == false) {
+                return;
+            }
         }
-        #end
         
         
         if (StateHelper.hasMember(_surface) == false) {
@@ -703,9 +699,9 @@ class ComponentImpl extends ComponentBase {
                     var mouseEvent = new haxe.ui.events.MouseEvent(type);
                     mouseEvent.screenX = x / Toolkit.scaleX;
                     mouseEvent.screenY = y / Toolkit.scaleY;
-                    #if mobile
-                    mouseEvent.touchEvent = true;
-                    #end
+                    if (Platform.instance.isMobile) {
+                        mouseEvent.touchEvent = true;
+                    }
                     fn(mouseEvent);
                 }
             }
@@ -713,11 +709,11 @@ class ComponentImpl extends ComponentBase {
     }
 
     private function __onMouseUp(event:MouseEvent) {
-        #if !mobile
-        if (_mouseOverFlag == false) {
-            return;
+        if (Platform.instance.isMobile == false) {
+            if (_mouseOverFlag == false) {
+                return;
+            }
         }
-        #end
         
         if (StateHelper.hasMember(_surface) == false) {
             return;
@@ -744,9 +740,9 @@ class ComponentImpl extends ComponentBase {
                     var mouseEvent = new haxe.ui.events.MouseEvent(type);
                     mouseEvent.screenX = x / Toolkit.scaleX;
                     mouseEvent.screenY = y / Toolkit.scaleY;
-                    #if mobile
-                    mouseEvent.touchEvent = true;
-                    #end
+                    if (Platform.instance.isMobile) {
+                        mouseEvent.touchEvent = true;
+                    }
                     Toolkit.callLater(function() {
                         fn(mouseEvent);
                     });
@@ -769,9 +765,9 @@ class ComponentImpl extends ComponentBase {
                 var mouseEvent = new haxe.ui.events.MouseEvent(type);
                 mouseEvent.screenX = x / Toolkit.scaleX;
                 mouseEvent.screenY = y / Toolkit.scaleY;
-                #if mobile
-                mouseEvent.touchEvent = true;
-                #end
+                if (Platform.instance.isMobile) {
+                    mouseEvent.touchEvent = true;
+                }
                 fn(mouseEvent);
             }
         }
@@ -806,9 +802,9 @@ class ComponentImpl extends ComponentBase {
 					var mouseEvent = new haxe.ui.events.MouseEvent(type);
 					mouseEvent.screenX = x / Toolkit.scaleX;
 					mouseEvent.screenY = y / Toolkit.scaleY;
-                    #if mobile
-                    mouseEvent.touchEvent = true;
-                    #end
+                    if (Platform.instance.isMobile) {
+                        mouseEvent.touchEvent = true;
+                    }
 					fn(mouseEvent);
 				}
 			}
@@ -836,9 +832,9 @@ class ComponentImpl extends ComponentBase {
         mouseEvent.screenX = lastMouseX / Toolkit.scaleX;
         mouseEvent.screenY = lastMouseY / Toolkit.scaleY;
         mouseEvent.delta = Math.max(-1, Math.min(1, -delta));
-        #if mobile
-        mouseEvent.touchEvent = true;
-        #end
+        if (Platform.instance.isMobile) {
+            mouseEvent.touchEvent = true;
+        }
         fn(mouseEvent);
     }
     
