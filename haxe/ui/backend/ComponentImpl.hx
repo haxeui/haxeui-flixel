@@ -380,26 +380,27 @@ class ComponentImpl extends ComponentBase {
         switch (type) {
             case MouseEvent.MOUSE_MOVE:
                 if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false) {
-                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.MOUSE_MOVE, listener);
                 }
                 
             case MouseEvent.MOUSE_OVER:
                 if (_eventMap.exists(MouseEvent.MOUSE_OVER) == false) {
-                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.MOUSE_OVER, listener);
                 }
                 
             case MouseEvent.MOUSE_OUT:
                 if (_eventMap.exists(MouseEvent.MOUSE_OUT) == false) {
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.MOUSE_OUT, listener);
                 }
 
             case MouseEvent.MOUSE_DOWN:
                 if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false) {
-                    MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
-                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
-                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.MOUSE_DOWN, listener);
                     if (hasTextInput()) {
                         getTextInput().tf.addEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseEvent);
@@ -408,8 +409,9 @@ class ComponentImpl extends ComponentBase {
 
             case MouseEvent.MOUSE_UP:
                 if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
-                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
-                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.MOUSE_UP, listener);
                     if (hasTextInput()) {
                         getTextInput().tf.addEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseEvent);
@@ -418,28 +420,17 @@ class ComponentImpl extends ComponentBase {
                 
             case MouseEvent.MOUSE_WHEEL:
                 if (_eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
-                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
-                    MouseHelper.notify(MouseEvent.MOUSE_WHEEL, __onMouseWheel);
+                    notifyMouseMove(true);
+                    notifyMouseWheel(true);
                     _eventMap.set(MouseEvent.MOUSE_WHEEL, listener);
                 }
                 
             case MouseEvent.CLICK:
                 if (_eventMap.exists(MouseEvent.CLICK) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.CLICK, listener);
-                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
-
-                    if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false) {
-                        MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
-                        _eventMap.set(MouseEvent.MOUSE_DOWN, null);
-                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
-                        _eventMap.set(MouseEvent.MOUSE_UP, null);
-                    }
-
-                    if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
-                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
-                        _eventMap.set(MouseEvent.MOUSE_UP, null);
-                    } 
-                    
                     if (hasTextInput()) {
                         getTextInput().tf.addEventListener(openfl.events.MouseEvent.CLICK, __onTextInputMouseEvent);
                     }
@@ -447,41 +438,34 @@ class ComponentImpl extends ComponentBase {
                 
 			case MouseEvent.DBL_CLICK:
                 if (_eventMap.exists(MouseEvent.DBL_CLICK) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.DBL_CLICK, listener);
-					
-                    if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
-                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onDoubleClick);
-                        _eventMap.set(MouseEvent.MOUSE_UP, listener);
-                    }
                 }
                 
             case MouseEvent.RIGHT_MOUSE_DOWN:
                 if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
-                    MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
-                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.RIGHT_MOUSE_DOWN, listener);
                 }
 
             case MouseEvent.RIGHT_MOUSE_UP:
                 if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
-                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.RIGHT_MOUSE_UP, listener);
                 }
                 
             case MouseEvent.RIGHT_CLICK:
                 if (_eventMap.exists(MouseEvent.RIGHT_CLICK) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
                     _eventMap.set(MouseEvent.RIGHT_CLICK, listener);
-
-                    if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
-                        MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
-                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
-                        _eventMap.set(MouseEvent.RIGHT_MOUSE_DOWN, listener);
-                    }
-
-                    if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
-                        MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
-                        _eventMap.set(MouseEvent.RIGHT_MOUSE_UP, listener);
-                    }
                 }
                 
             case UIEvent.CHANGE:
@@ -498,30 +482,21 @@ class ComponentImpl extends ComponentBase {
         switch (type) {
             case MouseEvent.MOUSE_MOVE:
                 _eventMap.remove(type);
-                if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false
-                    && _eventMap.exists(MouseEvent.MOUSE_OVER) == false
-                    && _eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
-                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
-                }
+                notifyMouseMove(false);
                 
             case MouseEvent.MOUSE_OVER:
                 _eventMap.remove(type);
-                if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false
-                    && _eventMap.exists(MouseEvent.MOUSE_OVER) == false
-                    && _eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
-                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
-                }
+                notifyMouseMove(false);
                 
             case MouseEvent.MOUSE_OUT:
                 _eventMap.remove(type);
+                notifyMouseMove(false);
 
             case MouseEvent.MOUSE_DOWN:
                 _eventMap.remove(type);
-                if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false
-                    && _eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
-                    MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
-                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
-                }
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 if (hasTextInput()) {
                     getTextInput().tf.removeEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseEvent);
                 }
@@ -529,53 +504,50 @@ class ComponentImpl extends ComponentBase {
 
             case MouseEvent.MOUSE_UP:
                 _eventMap.remove(type);
-                if (_eventMap.exists(MouseEvent.MOUSE_UP) == false
-                    && _eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
-                    MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
-                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
-                }
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 if (hasTextInput()) {
                     getTextInput().tf.removeEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseEvent);
                 }
                 
             case MouseEvent.MOUSE_WHEEL:
                 _eventMap.remove(type);
-                MouseHelper.remove(MouseEvent.MOUSE_WHEEL, __onMouseWheel);
-                if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false
-                    && _eventMap.exists(MouseEvent.MOUSE_OVER) == false
-                    && _eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
-                    MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
-                }
+                notifyMouseMove(false);
+                notifyMouseWheel(false);
                 
             case MouseEvent.CLICK:
                 _eventMap.remove(type);
-                MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
-                MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
-                MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 if (hasTextInput()) {
                     getTextInput().tf.removeEventListener(openfl.events.MouseEvent.CLICK, __onTextInputMouseEvent);
                 }
                 
 			case MouseEvent.DBL_CLICK:
                 _eventMap.remove(type);
-                MouseHelper.remove(MouseEvent.MOUSE_UP, __onDoubleClick);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 
             case MouseEvent.RIGHT_MOUSE_DOWN:
                 _eventMap.remove(type);
-                if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false
-                    && _eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
-                    MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
-                }
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
 
             case MouseEvent.RIGHT_MOUSE_UP:
                 _eventMap.remove(type);
-                if (_eventMap.exists(MouseEvent.MOUSE_UP) == false
-                    && _eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
-                    MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
-                }
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 
             case MouseEvent.RIGHT_CLICK:
                 _eventMap.remove(type);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 
             case UIEvent.CHANGE:
                 _eventMap.remove(type);
@@ -585,6 +557,62 @@ class ComponentImpl extends ComponentBase {
         }
     }
 
+    private var _counterNotifyMouseDown:Int = 0;
+    private function notifyMouseDown(notify:Bool) {
+        if (notify == true) {
+            _counterNotifyMouseDown++;
+        } else {
+            _counterNotifyMouseDown--;
+        }
+        if (notify == true && _counterNotifyMouseDown == 1) {
+            MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
+        } else if (notify == false && _counterNotifyMouseDown == 0) {
+            MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
+        }
+    }
+    
+    private var _counterNotifyMouseUp:Int = 0;
+    private function notifyMouseUp(notify:Bool) {
+        if (notify == true) {
+            _counterNotifyMouseUp++;
+        } else {
+            _counterNotifyMouseUp--;
+        }
+        if (notify == true && _counterNotifyMouseUp == 1) {
+            MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+        } else if (notify == false && _counterNotifyMouseUp == 0) {
+            MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
+        }
+    }
+    
+    private var _counterNotifyMouseMove:Int = 0;
+    private function notifyMouseMove(notify:Bool) {
+        if (notify == true) {
+            _counterNotifyMouseMove++;
+        } else {
+            _counterNotifyMouseMove--;
+        }
+        if (notify == true && _counterNotifyMouseMove == 1) {
+            MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+        } else if (notify == false && _counterNotifyMouseMove == 0) {
+            MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
+        }
+    }
+    
+    private var _counterNotifyMouseWheel:Int = 0;
+    private function notifyMouseWheel(notify:Bool) {
+        if (notify == true) {
+            _counterNotifyMouseWheel++;
+        } else {
+            _counterNotifyMouseWheel--;
+        }
+        if (notify == true && _counterNotifyMouseWheel == 1) {
+            MouseHelper.notify(MouseEvent.MOUSE_WHEEL, __onMouseWheel);
+        } else if (notify == false && _counterNotifyMouseWheel == 0) {
+            MouseHelper.remove(MouseEvent.MOUSE_WHEEL, __onMouseWheel);
+        }
+    }
+    
     private function __onTextInputChange(event:Event) {
         var fn:UIEvent->Void = _eventMap.get(UIEvent.CHANGE);
         if (fn != null) {
