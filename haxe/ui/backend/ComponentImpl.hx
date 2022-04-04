@@ -555,6 +555,9 @@ class ComponentImpl extends ComponentBase {
             _counterNotifyMouseDown++;
         } else {
             _counterNotifyMouseDown--;
+            if (_counterNotifyMouseDown < 0) {
+                _counterNotifyMouseDown = 0;
+            }
         }
         if (notify == true && _counterNotifyMouseDown == 1) {
             MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
@@ -569,6 +572,9 @@ class ComponentImpl extends ComponentBase {
             _counterNotifyMouseUp++;
         } else {
             _counterNotifyMouseUp--;
+            if (_counterNotifyMouseUp < 0) {
+                _counterNotifyMouseUp = 0;
+            }
         }
         if (notify == true && _counterNotifyMouseUp == 1) {
             MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
@@ -583,6 +589,9 @@ class ComponentImpl extends ComponentBase {
             _counterNotifyMouseMove++;
         } else {
             _counterNotifyMouseMove--;
+            if (_counterNotifyMouseMove < 0) {
+                _counterNotifyMouseMove = 0;
+            }
         }
         if (notify == true && _counterNotifyMouseMove == 1) {
             MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
@@ -752,7 +761,7 @@ class ComponentImpl extends ComponentBase {
     private function __onMouseUp(event:MouseEvent) {
         if (Platform.instance.isMobile == false) {
             if (_mouseOverFlag == false) {
-                return;
+                //return;
             }
         }
         
