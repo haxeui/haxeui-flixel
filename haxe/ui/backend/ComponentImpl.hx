@@ -226,9 +226,6 @@ class ComponentImpl extends ComponentBase {
             } else {
                 _surface.makeGraphic(w, h, 0x0, true);
                 applyStyle(style);
-                if (clipRect != null && _surface != null) {
-                    this.clipRect = this.clipRect;
-                }
             }
         }
     }
@@ -300,12 +297,6 @@ class ComponentImpl extends ComponentBase {
     private override function handleClipRect(value:Rectangle):Void {
         if (value == null) {
             clipRect = null;
-        } else {
-            value.top = Std.int(value.top);
-            value.left = Std.int(value.left);
-            clipRect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
-                                   (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
-                                   (value.width * Toolkit.scaleX), (value.height * Toolkit.scaleY));
         }
     }
     
@@ -975,16 +966,6 @@ class ComponentImpl extends ComponentBase {
 			_imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
         }
         
-        /*
-        if (group != null && members != null) {
-            for (m in members) {
-                if (isUnsolicitedMember(m) == true) {
-                    m.x = this.screenX;
-                    m.y = this.screenY;
-                }
-            }
-        }
-        */
         if (_unsolicitedMembers != null) {
             for (m in _unsolicitedMembers) {
                 m.x = this.screenX;
@@ -1064,24 +1045,31 @@ class ComponentImpl extends ComponentBase {
 	// Flixel overrides
 	//***********************************************************************************************************
 
-    private var _updates:Int = 0;
     public override function update(elapsed:Float) {
-        super.update(elapsed);
-        
         if (_destroy == true) {
             destroyInternal();
         }
         
         clearCaches();
-        
+        applyClipRect();
         repositionChildren();
-        
-        if (clipRect != null && _updates < 3) { // TODO: all very smelly, seems cliprect doesnt update instantly from handleClipRect - needs more than one pass too - no idea whats going on, this is a very ugly work around
-            _updates++;
-            this.clipRect = this.clipRect;
-        }
+
+        super.update(elapsed);
     }
 
+    private function applyClipRect() {
+        if (this.componentClipRect != null) {
+            var value = this.componentClipRect;
+            value.top = Std.int(value.top);
+            value.left = Std.int(value.left);
+            var rect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
+                                   (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
+                                   (value.width * Toolkit.scaleX), (value.height * Toolkit.scaleY));
+            clipRect = rect;
+            rect.put();
+        }
+    }
+    
     private function destroyInternal() {
         if (_surface != null) {
             _surface.destroy();
