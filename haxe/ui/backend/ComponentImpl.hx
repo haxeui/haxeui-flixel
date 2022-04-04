@@ -43,6 +43,7 @@ class ComponentImpl extends ComponentBase {
         
         this.pixelPerfectRender = true;
         this.moves = false;
+        _skipTransformChildren = true;
         
         if (Platform.instance.isMobile) {
             cast(this, Component).addClass(":mobile");
@@ -259,7 +260,27 @@ class ComponentImpl extends ComponentBase {
 		insert(index + indexOffset, child);
 		return child;
     }
+    
+    private var _unsolicitedMembers:Array<FlxSprite> = null;
+    private override function preAdd(sprite:FlxSprite) {
+        if (isUnsolicitedMember(sprite)) {
+            if (_unsolicitedMembers == null) {
+                _unsolicitedMembers = [];
+            }
+            if (_unsolicitedMembers.indexOf(sprite) == -1) {
+                _unsolicitedMembers.remove(sprite);
+            }
+        }
+        super.preAdd(sprite);
+    }
 
+    public override function remove(sprite:FlxSprite, splice:Bool = false):FlxSprite {
+        if (isUnsolicitedMember(sprite) && _unsolicitedMembers != null) {
+            _unsolicitedMembers.remove(sprite);
+        }
+        return super.remove(sprite, splice);
+    }
+    
     private var _destroy:Bool = false;
     private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
 		if (members.indexOf(child) > -1) {
@@ -887,8 +908,8 @@ class ComponentImpl extends ComponentBase {
     //***********************************************************************************************************
     private function repositionChildren() {
         if (_surface != null) {
-            _surface.x = this.screenLeft;
-            _surface.y = this.screenTop;
+            _surface.x = this.screenX;
+            _surface.y = this.screenY;
         }
         
         if (_textDisplay != null) {
@@ -926,12 +947,20 @@ class ComponentImpl extends ComponentBase {
 			_imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
         }
         
+        /*
         if (group != null && members != null) {
             for (m in members) {
                 if (isUnsolicitedMember(m) == true) {
-                    m.x = this.screenLeft;
-                    m.y = this.screenTop;
+                    m.x = this.screenX;
+                    m.y = this.screenY;
                 }
+            }
+        }
+        */
+        if (_unsolicitedMembers != null) {
+            for (m in _unsolicitedMembers) {
+                m.x = this.screenX;
+                m.y = this.screenY;
             }
         }
     }
@@ -1044,6 +1073,10 @@ class ComponentImpl extends ComponentBase {
         if (_imageDisplay != null) {
             _imageDisplay.destroy();
             _imageDisplay = null;
+        }
+        
+        if (_unsolicitedMembers != null) {
+            _unsolicitedMembers = null;
         }
         
         super.destroy();
