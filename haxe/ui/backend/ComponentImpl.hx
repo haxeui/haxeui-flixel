@@ -44,6 +44,7 @@ class ComponentImpl extends ComponentBase {
         this.pixelPerfectRender = true;
         this.moves = false;
         _skipTransformChildren = true;
+        super.set_visible(false);
         
         if (Platform.instance.isMobile) {
             cast(this, Component).addClass(":mobile");
@@ -301,7 +302,7 @@ class ComponentImpl extends ComponentBase {
     }
     
 	private override function handleVisibility(show:Bool):Void {
-		this.visible = show;
+		super.set_visible(show);
 	}
 
     //***********************************************************************************************************
@@ -1045,6 +1046,7 @@ class ComponentImpl extends ComponentBase {
 	// Flixel overrides
 	//***********************************************************************************************************
 
+    private var _updates:Int = 0;
     public override function update(elapsed:Float) {
         if (_destroy == true) {
             destroyInternal();
@@ -1054,6 +1056,15 @@ class ComponentImpl extends ComponentBase {
         applyClipRect();
         repositionChildren();
 
+        _updates++;
+        if (_updates == 2) {
+            if (cast(this, Component).hidden == false) {
+                super.set_visible(true);
+            } else {
+                super.set_visible(false);
+            }
+        }
+        
         super.update(elapsed);
     }
 
@@ -1125,14 +1136,5 @@ class ComponentImpl extends ComponentBase {
             this.top = value;
         }
         return r;
-    }
-    
-    private override function set_visible(value:Bool):Bool {
-        if (value == this.visible) {
-            return value;
-        }
-        visible = value;
-        cast(this, Component).hidden = !value;
-        return value;
     }
 }
