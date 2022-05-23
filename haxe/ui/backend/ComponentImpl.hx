@@ -281,6 +281,9 @@ class ComponentImpl extends ComponentBase {
     
     private var _destroy:Bool = false;
     private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
+        if (this.exists == false) { // lets make sure this component exists - it could have been destroyed through a variety of different ways already (like switching state for example, or simply manually destroying it)
+            return child;
+        }
 		if (members.indexOf(child) > -1) {
             remove(child, true);
             if (dispose == true) {
