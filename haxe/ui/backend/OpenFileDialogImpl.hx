@@ -85,7 +85,6 @@ class OpenFileDialogImpl extends OpenFileDialogBase {
     private function onSelect(e:Event) {
         var fileList:Array<FileReference> = _fr.fileList;
         destroyFileRef();
-        
         var infos:Array<SelectedFileInfo> = [];
         for (fileRef in fileList) {
             var info:SelectedFileInfo = {
@@ -99,9 +98,7 @@ class OpenFileDialogImpl extends OpenFileDialogBase {
         }
         
         if (options.readContents == false) {
-            if (callback != null) {
-                callback(DialogButton.OK, infos);
-            }
+            dialogConfirmed(infos);
         } else {
             for (fileRef in _refToInfo.keys()) {
                 fileRef.addEventListener(Event.COMPLETE, onFileComplete, false, 0, true);
@@ -129,9 +126,7 @@ class OpenFileDialogImpl extends OpenFileDialogBase {
             var copy = _infos.copy();
             _infos = null;
             _refToInfo = null;
-            if (callback != null) {
-                callback(DialogButton.OK, copy);
-            }
+            dialogConfirmed(copy);
         }
     }
 
@@ -150,9 +145,7 @@ class OpenFileDialogImpl extends OpenFileDialogBase {
     
     private function onCancel(e:Event) {
         destroyFileRef();
-        if (callback != null) {
-            callback(DialogButton.CANCEL, null);
-        }
+        dialogCancelled();
     }
     
     private function destroyFileRef() {
