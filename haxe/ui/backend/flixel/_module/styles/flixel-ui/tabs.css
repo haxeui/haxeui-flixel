@@ -1,3 +1,6 @@
+/************************************************************************
+** TABBAR (TOP)
+*************************************************************************/
 .tabbar {
     horizontal-spacing: 5px;
     padding-left: 0px;
@@ -59,4 +62,37 @@
     border: none;
     padding: 5px;
     background-color: none;
+}
+
+/************************************************************************
+** TABBAR (BOTTOM)
+*************************************************************************/
+.tabbar:bottom {
+    background-image: "haxeui-flixel/styles/flixel-ui/images/tabbar_bg_bottom.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar:bottom .tabbar-button {
+    background-image: "haxeui-flixel/styles/flixel-ui/images/tabbar_bottom.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar:bottom .tabbar-button:hover {
+    background-image: "haxeui-flixel/styles/flixel-ui/images/tabbar_bottom.png";
+    background-image-clip: 18px 0px 36px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabbar:bottom .tabbar-button-selected {
+    background-image: "haxeui-flixel/styles/flixel-ui/images/tabbar_bottom.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
+}
+
+.tabview:bottom > .tabview-content {
+    background-image: "haxeui-flixel/styles/flixel-ui/images/tabview_bg_bottom.png";
+    background-image-clip: 0px 0px 18px 18px;
+    background-image-slice: 5px 5px 13px 13px;
 }
