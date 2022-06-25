@@ -38,6 +38,8 @@ class ScreenImpl extends ScreenBase {
         FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
         onPostStateSwitch();
+        
+        addResizeHandler();
     }
     
     #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
@@ -193,6 +195,19 @@ class ScreenImpl extends ScreenBase {
         onContainerResize();
 		return component;
 	}
+    
+    private var _resizeHandlerAdded:Bool = false;
+    private function addResizeHandler() {
+        if (_resizeHandlerAdded == true) {
+            return;
+        }
+        _resizeHandlerAdded = true;
+        FlxG.signals.gameResized.add(onGameResized);
+    }
+    
+    private function onGameResized(width:Int, height:Int) {
+        onContainerResize();
+    }
     
     private function onContainerResize() {
         for (c in rootComponents) {
