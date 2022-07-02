@@ -27,6 +27,7 @@ class OpenFLTextInput extends TextBase {
         tf.autoSize = TextFieldAutoSize.NONE;
         tf.multiline = true;
         tf.wordWrap = true;
+        tf.tabEnabled = false;
         //tf.stage.focus = null;
         tf.addEventListener(Event.CHANGE, onChange);
     }

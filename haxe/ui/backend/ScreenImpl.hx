@@ -9,6 +9,7 @@ import haxe.ui.Toolkit;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
+import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import lime.system.System;
@@ -229,7 +230,10 @@ class ScreenImpl extends ScreenBase {
         if (type == MouseEvent.MOUSE_MOVE
             || type == MouseEvent.MOUSE_DOWN
             || type == MouseEvent.MOUSE_UP
-            || type == UIEvent.RESIZE) {
+            || type == UIEvent.RESIZE
+            || type == KeyboardEvent.KEY_DOWN
+            || type == KeyboardEvent.KEY_UP
+            || type == KeyboardEvent.KEY_PRESS) {
                 return true;
             }
         return false;
@@ -254,6 +258,18 @@ class ScreenImpl extends ScreenBase {
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
                     MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                }
+                
+            case KeyboardEvent.KEY_DOWN:
+                if (_mapping.exists(type) == false) {
+                    _mapping.set(type, listener);
+                    FlxG.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, __onKeyEvent);
+                }
+                
+            case KeyboardEvent.KEY_UP:
+                if (_mapping.exists(type) == false) {
+                    _mapping.set(type, listener);
+                    FlxG.stage.addEventListener(openfl.events.KeyboardEvent.KEY_UP, __onKeyEvent);
                 }
         }
     }
@@ -297,6 +313,26 @@ class ScreenImpl extends ScreenBase {
             mouseEvent.touchEvent = true;
             #end
             fn(mouseEvent);
+        }
+    }
+    
+    private function __onKeyEvent(event:openfl.events.KeyboardEvent) {
+        var type:String = null;
+        if (event.type == openfl.events.KeyboardEvent.KEY_DOWN) {
+            type = KeyboardEvent.KEY_DOWN;
+        } else if (event.type == openfl.events.KeyboardEvent.KEY_UP) {
+            type = KeyboardEvent.KEY_UP;
+        }
+
+        if (type != null) {
+            var fn = _mapping.get(type);
+            if (fn != null) {
+                var keyboardEvent = new KeyboardEvent(type);
+                keyboardEvent.keyCode = event.keyCode;
+                keyboardEvent.ctrlKey = event.ctrlKey;
+                keyboardEvent.shiftKey = event.shiftKey;
+                fn(keyboardEvent);
+            }
         }
     }
 }
