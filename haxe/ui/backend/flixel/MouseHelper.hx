@@ -111,11 +111,11 @@ class MouseHelper {
         
         var event = new MouseEvent(MouseEvent.MOUSE_DOWN);
         if (e != null) {
-            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * FlxG.initialZoom);
-            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * FlxG.initialZoom);
+            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         } else {
-            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * FlxG.initialZoom);
-            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * FlxG.initialZoom);
+            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
         event.data = buttonPressed;
         for (l in list) {
@@ -138,11 +138,11 @@ class MouseHelper {
         
         var event = new MouseEvent(MouseEvent.MOUSE_UP);
         if (e != null) {
-            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * FlxG.initialZoom);
-            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * FlxG.initialZoom);
+            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         } else {
-            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * FlxG.initialZoom);
-            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * FlxG.initialZoom);
+            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
         event.data = buttonPressed;
         for (l in list) {
@@ -164,11 +164,11 @@ class MouseHelper {
         list = list.copy();
         var event = new MouseEvent(MouseEvent.MOUSE_MOVE);
         if (e != null) {
-            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * FlxG.initialZoom);
-            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * FlxG.initialZoom);
+            event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+            event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         } else {
-            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * FlxG.initialZoom);
-            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * FlxG.initialZoom);
+            event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+            event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
         for (l in list) {
             l(event);
@@ -209,5 +209,17 @@ class MouseHelper {
         #end
         
         return n;
+    }
+    
+    private static inline function initialZoom():Float {
+        #if (flixel <= "4.11.0") // FlxG.initialZoom removed in later versions of flixel
+        
+        return FlxG.initialZoom;
+        
+        #else
+        
+        return 1;
+        
+        #end
     }
 }
