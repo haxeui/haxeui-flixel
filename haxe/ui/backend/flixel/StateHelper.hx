@@ -94,7 +94,7 @@ class StateHelper {
         }
         
         for (m in group.members) {
-            if (m.cameras != null && m.cameras.length > 0) {
+            if (m != null && m.cameras != null && m.cameras.length > 0) {
                 if (m == member || ((m is FlxTypedGroup) && hasMember(member, cast m))) {
                     return m.cameras;
                 }
