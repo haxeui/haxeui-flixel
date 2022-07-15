@@ -889,6 +889,7 @@ class ComponentImpl extends ComponentBase {
             mouseEvent.touchEvent = true;
         }
         fn(mouseEvent);
+        event.canceled = mouseEvent.canceled;
     }
     
     private function isEventRelevant(children:Array<Component>, eventType:String):Bool {

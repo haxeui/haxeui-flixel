@@ -182,11 +182,15 @@ class MouseHelper {
         }
         
         list = list.copy();
+        list.reverse();
         
         var event = new MouseEvent(MouseEvent.MOUSE_WHEEL);
         event.delta = -e.delta;
         for (l in list) {
             l(event);
+            if (event.canceled == true) {
+                break;
+            }
         }
     }
     
