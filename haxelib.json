@@ -14,5 +14,9 @@
     ],
     "license": "MIT",
     "name": "haxeui-flixel",
-    "url": "https://github.com/haxeui/haxeui-flixel"
+    "url": "https://github.com/haxeui/haxeui-flixel",
+    "dependencies": {
+        "flixel": "",
+        "haxeui-core": ""
+    }
 }
