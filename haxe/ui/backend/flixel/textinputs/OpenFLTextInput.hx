@@ -207,6 +207,10 @@ class OpenFLTextInput extends TextBase {
             measureTextRequired = true;
         }
 
+        if (tf.displayAsPassword != _inputData.password) {
+            tf.displayAsPassword = _inputData.password;
+        }
+        
         return measureTextRequired;
     }
     
