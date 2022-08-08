@@ -92,6 +92,12 @@ class TextDisplayImpl extends TextBase {
     private override function measureText() {
 		_textWidth = (Math.fround(tf.textField.textWidth) + (PADDING_X * Toolkit.scaleX)) / Toolkit.scaleX;
 		_textHeight = Math.fround(tf.textField.textHeight) / Toolkit.scaleY;
+        if (_textHeight == 0) {
+            var tmpText:String = tf.text;
+            tf.text = "|";
+            _textHeight = tf.textField.textHeight;
+            tf.text = tmpText;
+        }
     }
     
     private function normalizeText(text:String):String {
