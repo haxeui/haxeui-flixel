@@ -1,6 +1,12 @@
 package haxe.ui.backend.flixel;
+
 import flixel.FlxG;
 import haxe.ui.events.MouseEvent;
+
+typedef Callback = {
+    var fn:MouseEvent->Void;
+    var priority:Int;
+}
 
 class MouseHelper {
     public static var currentMouseX:Float = 0;
@@ -11,11 +17,11 @@ class MouseHelper {
     private static var _hasOnMouseMove:Bool = false;
     private static var _hasOnMouseWheel:Bool = false;
     
-    private static var _callbacks:Map<String, Array<MouseEvent->Void>> = new Map<String, Array<MouseEvent->Void>>();
+    private static var _callbacks:Map<String, Array<Callback>> = new Map<String, Array<Callback>>();
     
     private static var _inputManager:InputManager = null;
     
-    public static function notify(event:String, callback:MouseEvent->Void) {
+    public static function notify(event:String, callback:MouseEvent->Void, priority:Int = 5) {
         switch (event) {
             case MouseEvent.MOUSE_DOWN:
                 if (_hasOnMouseDown == false) {
@@ -42,12 +48,19 @@ class MouseHelper {
         
         var list = _callbacks.get(event);
         if (list == null) {
-            list = new Array<MouseEvent->Void>();
+            list = new Array<Callback>();
             _callbacks.set(event, list);
         }
         
-        if (list.indexOf(callback) == -1) {
-            list.push(callback);
+        if (!hasCallback(list, callback)) {
+            list.insert(0, {
+                fn: callback,
+                priority: priority
+            });
+            
+            list.sort(function(a, b) {
+                return a.priority - b.priority;
+            });
         }
         
         if (_inputManager == null) {
@@ -60,7 +73,7 @@ class MouseHelper {
     public static function remove(event:String, callback:MouseEvent->Void) {
         var list = _callbacks.get(event);
         if (list != null) {
-            list.remove(callback);
+            removeCallback(list, callback);
             if (list.length == 0) {
                 _callbacks.remove(event);
                 
@@ -119,7 +132,10 @@ class MouseHelper {
         }
         event.data = buttonPressed;
         for (l in list) {
-            l(event);
+            l.fn(event);
+            if (event.canceled == true) {
+                break;
+            }
         }
     }
     
@@ -146,7 +162,10 @@ class MouseHelper {
         }
         event.data = buttonPressed;
         for (l in list) {
-            l(event);
+            l.fn(event);
+            if (event.canceled == true) {
+                break;
+            }
         }
     }
     
@@ -171,7 +190,10 @@ class MouseHelper {
             event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
         for (l in list) {
-            l(event);
+            l.fn(event);
+            if (event.canceled == true) {
+                break;
+            }
         }
     }
     
@@ -182,12 +204,11 @@ class MouseHelper {
         }
         
         list = list.copy();
-        list.reverse();
         
         var event = new MouseEvent(MouseEvent.MOUSE_WHEEL);
         event.delta = -e.delta;
         for (l in list) {
-            l(event);
+            l.fn(event);
             if (event.canceled == true) {
                 break;
             }
@@ -225,5 +246,29 @@ class MouseHelper {
         return 1;
         
         #end
+    }
+    
+    private static function hasCallback(list:Array<Callback>, fn:MouseEvent->Void):Bool {
+        var has = false;
+        for (item in list) {
+            if (item.fn == fn) {
+                has = true;
+                break;
+            }
+        }
+        return has;
+    }
+    
+    private static function removeCallback(list:Array<Callback>, fn:MouseEvent->Void) {
+        var itemToRemove:Callback = null;
+        for (item in list) {
+            if (item.fn == fn) {
+                itemToRemove = item;
+                break;
+            }
+        }
+        if (itemToRemove != null) {
+            list.remove(itemToRemove);
+        }
     }
 }

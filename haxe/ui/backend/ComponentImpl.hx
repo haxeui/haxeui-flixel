@@ -668,6 +668,7 @@ class ComponentImpl extends ComponentBase {
                         mouseEvent.touchEvent = true;
                         #end
                         fn(mouseEvent);
+                        event.canceled = mouseEvent.canceled;
                     }
                     return;
                 }
@@ -684,6 +685,7 @@ class ComponentImpl extends ComponentBase {
                     mouseEvent.touchEvent = true;
                     #end
                     fn(mouseEvent);
+                    event.canceled = mouseEvent.canceled;
                 }
             }
             
@@ -699,6 +701,7 @@ class ComponentImpl extends ComponentBase {
                         mouseEvent.touchEvent = true;
                         #end
                         fn(mouseEvent);
+                        event.canceled = mouseEvent.canceled;
                     }
                 }
             } else if (i == false && _mouseOverFlag == true) {
@@ -712,6 +715,7 @@ class ComponentImpl extends ComponentBase {
                     mouseEvent.touchEvent = true;
                     #end
                     fn(mouseEvent);
+                    event.canceled = mouseEvent.canceled;
                 }
             }
         }
@@ -756,6 +760,7 @@ class ComponentImpl extends ComponentBase {
                         mouseEvent.touchEvent = true;
                     }
                     fn(mouseEvent);
+                    event.canceled = mouseEvent.canceled;
                 }
             }
         }
@@ -798,6 +803,7 @@ class ComponentImpl extends ComponentBase {
                     }
                     Toolkit.callLater(function() {
                         fn(mouseEvent);
+                        event.canceled = mouseEvent.canceled;
                     });
                 }
 				
@@ -822,6 +828,7 @@ class ComponentImpl extends ComponentBase {
                     mouseEvent.touchEvent = true;
                 }
                 fn(mouseEvent);
+                event.canceled = mouseEvent.canceled;
             }
         }
         _mouseDownFlag = false;
@@ -859,6 +866,7 @@ class ComponentImpl extends ComponentBase {
                         mouseEvent.touchEvent = true;
                     }
 					fn(mouseEvent);
+                    event.canceled = mouseEvent.canceled;
 				}
 			}
         }
@@ -951,7 +959,7 @@ class ComponentImpl extends ComponentBase {
             var offsetY = 1;
             #else
             var offsetX = 2;
-            var offsetY = 2;
+            var offsetY = 3;
             #end
 			_textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
 			_textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;

@@ -245,19 +245,19 @@ class ScreenImpl extends ScreenBase {
             case MouseEvent.MOUSE_MOVE:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove, 10);
                 }
                 
             case MouseEvent.MOUSE_DOWN:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
+                    MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown, 10);
                 }
                 
             case MouseEvent.MOUSE_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp, 10);
                 }
                 
             case KeyboardEvent.KEY_DOWN:
@@ -285,6 +285,7 @@ class ScreenImpl extends ScreenBase {
             mouseEvent.touchEvent = true;
             #end
             fn(mouseEvent);
+            event.canceled = mouseEvent.canceled;
         }
     }
     
@@ -299,6 +300,7 @@ class ScreenImpl extends ScreenBase {
             mouseEvent.touchEvent = true;
             #end
             fn(mouseEvent);
+            event.canceled = mouseEvent.canceled;
         }
     }
     
@@ -313,6 +315,7 @@ class ScreenImpl extends ScreenBase {
             mouseEvent.touchEvent = true;
             #end
             fn(mouseEvent);
+            event.canceled = mouseEvent.canceled;
         }
     }
     
