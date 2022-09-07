@@ -961,7 +961,7 @@ class ComponentImpl extends ComponentBase {
             var offsetY = 1;
             #else
             var offsetX = 2;
-            var offsetY = 3;
+            var offsetY = 2;
             #end
 			_textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
 			_textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
