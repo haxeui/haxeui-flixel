@@ -938,7 +938,9 @@ class ComponentImpl extends ComponentBase {
             _textInput.tf.visible = false;
             FlxG.addChildBelowMouse(_textInput.tf);
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
-                _textInput.tf.visible = true;
+                if (_textInput != null) {
+                    _textInput.tf.visible = true;
+                }
             });
 		}
 		
