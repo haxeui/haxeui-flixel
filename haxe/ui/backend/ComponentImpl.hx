@@ -59,6 +59,7 @@ class ComponentImpl extends ComponentBase {
 		add(_surface);
         
         //recursiveReady();
+	_skipTransformChildren = false;
     }
     
     private function recursiveReady() {
