@@ -43,7 +43,6 @@ class ComponentImpl extends ComponentBase {
         
         this.pixelPerfectRender = true;
         this.moves = false;
-        _skipTransformChildren = true;
         super.set_visible(false);
         
         if (Platform.instance.isMobile) {
