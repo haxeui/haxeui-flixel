@@ -1,8 +1,7 @@
 package haxe.ui.backend;
-import flixel.FlxG;
 
-class CallLaterImpl extends TimerImpl {
-	public function new(callback:Void->Void) {
-		super(0, callback);
-	}
+class CallLaterImpl {
+    public function new(fn:Void->Void) {
+        haxe.ui.util.Timer.delay(fn, 0);
+    }
 }
