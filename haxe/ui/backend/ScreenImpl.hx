@@ -230,6 +230,8 @@ class ScreenImpl extends ScreenBase {
         if (type == MouseEvent.MOUSE_MOVE
             || type == MouseEvent.MOUSE_DOWN
             || type == MouseEvent.MOUSE_UP
+            || type == MouseEvent.RIGHT_MOUSE_DOWN
+            || type == MouseEvent.RIGHT_MOUSE_UP
             || type == UIEvent.RESIZE
             || type == KeyboardEvent.KEY_DOWN
             || type == KeyboardEvent.KEY_UP
@@ -248,13 +250,13 @@ class ScreenImpl extends ScreenBase {
                     MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove, 10);
                 }
                 
-            case MouseEvent.MOUSE_DOWN:
+            case MouseEvent.MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_DOWN:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
                     MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown, 10);
                 }
                 
-            case MouseEvent.MOUSE_UP:
+            case MouseEvent.MOUSE_UP | MouseEvent.RIGHT_MOUSE_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
                     MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp, 10);
@@ -292,7 +294,9 @@ class ScreenImpl extends ScreenBase {
     private function __onMouseDown(event:MouseEvent) {
         var fn = _mapping.get(MouseEvent.MOUSE_DOWN);
         if (fn != null) {
-            var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
+            var button:Int = event.data;
+            var type = button == 0 ? MouseEvent.MOUSE_DOWN: MouseEvent.RIGHT_MOUSE_DOWN;
+            var mouseEvent = new MouseEvent(type);
             mouseEvent.screenX = event.screenX / Toolkit.scaleX;
             mouseEvent.screenY = event.screenY / Toolkit.scaleY;
             mouseEvent.buttonDown = event.data;
@@ -307,7 +311,9 @@ class ScreenImpl extends ScreenBase {
     private function __onMouseUp(event:MouseEvent) {
         var fn = _mapping.get(MouseEvent.MOUSE_UP);
         if (fn != null) {
-            var mouseEvent = new MouseEvent(MouseEvent.MOUSE_UP);
+            var button:Int = event.data;
+            var type = button == 0 ? MouseEvent.MOUSE_UP: MouseEvent.RIGHT_MOUSE_UP;
+            var mouseEvent = new MouseEvent(type);
             mouseEvent.screenX = event.screenX / Toolkit.scaleX;
             mouseEvent.screenY = event.screenY / Toolkit.scaleY;
             mouseEvent.buttonDown = event.data;

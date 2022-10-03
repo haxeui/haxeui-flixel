@@ -26,11 +26,20 @@ class MouseHelper {
             case MouseEvent.MOUSE_DOWN:
                 if (_hasOnMouseDown == false) {
                     FlxG.stage.addEventListener(openfl.events.MouseEvent.MOUSE_DOWN, onMouseDown);
+                    FlxG.stage.addEventListener(openfl.events.MouseEvent.RIGHT_MOUSE_DOWN, onMouseDown);
+
+
+                    FlxG.stage.addEventListener(openfl.events.MouseEvent.MOUSE_DOWN, onStageDown);
+                    FlxG.stage.addEventListener(openfl.events.MouseEvent.RIGHT_MOUSE_DOWN, onStageRightDown);
                     _hasOnMouseDown = true;
                 }
             case MouseEvent.MOUSE_UP:
                 if (_hasOnMouseUp == false) {
                     FlxG.stage.addEventListener(openfl.events.MouseEvent.MOUSE_UP, onMouseUp);
+                    FlxG.stage.addEventListener(openfl.events.MouseEvent.RIGHT_MOUSE_UP, onMouseUp);
+
+                    FlxG.stage.addEventListener(openfl.events.MouseEvent.MOUSE_UP, onStageUp);
+                    FlxG.stage.addEventListener(openfl.events.MouseEvent.RIGHT_MOUSE_UP, onStageRightUp);
                     _hasOnMouseUp = true;
                     FlxG.signals.preStateSwitch.add(onPreStateSwitched);
                 }
@@ -81,11 +90,19 @@ class MouseHelper {
                     case MouseEvent.MOUSE_DOWN:
                         if (_hasOnMouseDown == true) {
                             FlxG.stage.removeEventListener(openfl.events.MouseEvent.MOUSE_DOWN, onMouseDown);
+                            FlxG.stage.removeEventListener(openfl.events.MouseEvent.RIGHT_MOUSE_DOWN, onMouseDown);
+
+                            FlxG.stage.removeEventListener(openfl.events.MouseEvent.MOUSE_DOWN, onStageDown);
+                            FlxG.stage.removeEventListener(openfl.events.MouseEvent.RIGHT_MOUSE_DOWN, onStageRightDown);
                             _hasOnMouseDown = false;
                         }
                     case MouseEvent.MOUSE_UP:
                         if (_hasOnMouseUp == true) {
                             FlxG.stage.removeEventListener(openfl.events.MouseEvent.MOUSE_UP, onMouseUp);
+                            FlxG.stage.removeEventListener(openfl.events.MouseEvent.RIGHT_MOUSE_UP, onMouseUp);
+
+                            FlxG.stage.removeEventListener(openfl.events.MouseEvent.MOUSE_UP, onStageUp);
+                            FlxG.stage.removeEventListener(openfl.events.MouseEvent.RIGHT_MOUSE_UP, onStageRightUp);
                             _hasOnMouseUp = false;
                             FlxG.signals.preStateSwitch.remove(onPreStateSwitched);
                         }
@@ -215,9 +232,26 @@ class MouseHelper {
         }
     }
     
+    private static function onStageDown(_) {
+        _buttonPressed = 0;
+    }
+
+    private static function onStageUp(_) {
+        _buttonPressed = -1;
+    }
+
+    private static function onStageRightDown(_) {
+        _buttonPressed = 1;
+    }
+
+    private static function onStageRightUp(_) {
+        _buttonPressed = -1;
+    }
+
+    private static var _buttonPressed:Int = -1;
     private static var buttonPressed(get, null):Int;
     private static function get_buttonPressed():Int {
-        var n = -1;
+        var n = _buttonPressed;
         
         #if FLX_NO_MOUSE
         
