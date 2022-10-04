@@ -304,7 +304,9 @@ class ComponentImpl extends ComponentBase {
     }
     
 	private override function handleVisibility(show:Bool):Void {
+        _skipTransformChildren = true;
 		super.set_visible(show);
+        _skipTransformChildren = false;
 	}
 
     //***********************************************************************************************************
