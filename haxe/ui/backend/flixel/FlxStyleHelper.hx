@@ -1,5 +1,6 @@
 package haxe.ui.backend.flixel;
 
+import flixel.util.FlxSpriteUtil;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.util.FlxColor;
@@ -31,9 +32,29 @@ class FlxStyleHelper {
         }
         
         var rc:Rectangle = new Rectangle(top, left, width, height);
-        
         pixels.fillRect(rc, 0x0);
         
+		#if !no_openfl_drawing
+		var useOpenFLDrawing = false;
+		if (width > 1 && height > 1) {
+			if ((style.borderRadius != null && (style.borderRadius > 0))
+				|| (style.borderRadiusTopLeft != null && (style.borderRadiusTopLeft > 0))
+				|| (style.borderRadiusTopRight != null && (style.borderRadiusTopRight > 0))
+				|| (style.borderRadiusBottomLeft != null && (style.borderRadiusBottomLeft > 0))
+				|| (style.borderRadiusBottomRight != null && (style.borderRadiusBottomRight > 0))
+			) {
+				useOpenFLDrawing = true;
+			}
+		}
+
+		if (useOpenFLDrawing) {
+			var g = FlxSpriteUtil.flashGfx;
+			OpenFLStyleHelper.paintStyleSection(g, style, width, height, left, top);
+			FlxSpriteUtil.updateSpriteGraphic(sprite);
+			return;
+		}
+		#end
+
         if (style.borderLeftSize != null && style.borderLeftSize != 0
             && style.borderLeftSize == style.borderRightSize
             && style.borderLeftSize == style.borderBottomSize
