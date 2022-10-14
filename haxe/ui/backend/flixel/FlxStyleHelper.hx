@@ -36,7 +36,7 @@ class FlxStyleHelper {
         
 		#if !no_openfl_drawing
 		var useOpenFLDrawing = false;
-		if (width > 1 && height > 1) {
+		if (width > 1 && height > 1 && style.backgroundImage == null) {
 			if ((style.borderRadius != null && (style.borderRadius > 0))
 				|| (style.borderRadiusTopLeft != null && (style.borderRadiusTopLeft > 0))
 				|| (style.borderRadiusTopRight != null && (style.borderRadiusTopRight > 0))
