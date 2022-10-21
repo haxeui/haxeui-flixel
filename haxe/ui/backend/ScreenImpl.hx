@@ -145,14 +145,14 @@ class ScreenImpl extends ScreenBase {
         return found;
     }
     
-	private override function get_width():Float {
-		return FlxG.width / Toolkit.scaleX;
-	}
-	
-	private override function get_height() {
-		return FlxG.height / Toolkit.scaleY;
-	}
-	
+    private override function get_width():Float {
+        return FlxG.width / Toolkit.scaleX;
+    }
+    
+    private override function get_height() {
+        return FlxG.height / Toolkit.scaleY;
+    }
+    
     private override function get_actualWidth():Float {
         return FlxG.width;
     }
@@ -161,18 +161,18 @@ class ScreenImpl extends ScreenBase {
         return FlxG.height;
     }
     
-	private override function get_dpi():Float {
-		return System.getDisplay(0).dpi;
-	}
-	
-	private override function get_title():String {
-		return Lib.current.stage.window.title;
-	}
+    private override function get_dpi():Float {
+        return System.getDisplay(0).dpi;
+    }
     
-	private override function set_title(s:String):String {
-		Lib.current.stage.window.title = s;
-		return s;
-	}
+    private override function get_title():String {
+        return Lib.current.stage.window.title;
+    }
+    
+    private override function set_title(s:String):String {
+        Lib.current.stage.window.title = s;
+        return s;
+    }
     
     public override function addComponent(component:Component):Component {
         if (rootComponents.length > 0) {
@@ -191,7 +191,7 @@ class ScreenImpl extends ScreenBase {
         return component;
     }
     
-	public override function removeComponent(component:Component, dispose:Bool = true):Component {
+    public override function removeComponent(component:Component, dispose:Bool = true):Component {
         if (rootComponents.indexOf(component) == -1) {
             return component;
         }
@@ -203,8 +203,8 @@ class ScreenImpl extends ScreenBase {
             StateHelper.currentState.remove(component, true);
         }
         onContainerResize();
-		return component;
-	}
+        return component;
+    }
     
     private var _resizeHandlerAdded:Bool = false;
     private function addResizeHandler() {

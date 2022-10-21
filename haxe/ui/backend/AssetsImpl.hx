@@ -16,8 +16,8 @@ import openfl.utils.ByteArray;
 
 class AssetsImpl extends AssetsBase {
     private override function getImageInternal(resourceId:String, callback:ImageInfo->Void):Void {
-		var graphic:FlxGraphic = null;
-		var frame:FlxFrame = null;
+        var graphic:FlxGraphic = null;
+        var frame:FlxFrame = null;
         
         if (Assets.exists(resourceId)) {
             graphic = FlxGraphic.fromAssetKey(resourceId);
@@ -25,8 +25,8 @@ class AssetsImpl extends AssetsBase {
         }
         
         if (frame != null) {
-			frame.parent.persist = true;
-			frame.parent.destroyOnNoUse = false;
+            frame.parent.persist = true;
+            frame.parent.destroyOnNoUse = false;
             callback({
                 data : frame,
                 width : Std.int(frame.sourceSize.x),
@@ -47,7 +47,7 @@ class AssetsImpl extends AssetsBase {
     }
     
     public override function imageFromBytes(bytes:Bytes, callback:ImageInfo->Void):Void {
-		var ba:ByteArray = ByteArray.fromBytes(bytes);
+        var ba:ByteArray = ByteArray.fromBytes(bytes);
         var loader:Loader = new Loader();
         loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e) {
             if (loader.content != null) {
@@ -71,24 +71,24 @@ class AssetsImpl extends AssetsBase {
         loader.loadBytes(ba);
     }
     
-	private override function getFontInternal(resourceId:String, callback:FontInfo->Void):Void {
-		var fontName:String = null;
-		if (isEmbeddedFont(resourceId) && Assets.exists(resourceId, AssetType.FONT)) {
-			fontName = Assets.getFont(resourceId).fontName;
-		} else {
-			fontName = resourceId;
-		}
-		callback({
+    private override function getFontInternal(resourceId:String, callback:FontInfo->Void):Void {
+        var fontName:String = null;
+        if (isEmbeddedFont(resourceId) && Assets.exists(resourceId, AssetType.FONT)) {
+            fontName = Assets.getFont(resourceId).fontName;
+        } else {
+            fontName = resourceId;
+        }
+        callback({
             data : fontName
         });
-	}
+    }
     
-	private override function getTextDelegate(resourceId:String):String {
-		if (Assets.exists(resourceId)) {
-			return Assets.getText(resourceId);
-		}
-		return null;
-	}
+    private override function getTextDelegate(resourceId:String):String {
+        if (Assets.exists(resourceId)) {
+            return Assets.getText(resourceId);
+        }
+        return null;
+    }
     
     public override function imageInfoFromImageData(imageData:ImageData):ImageInfo {
         return {
@@ -98,7 +98,7 @@ class AssetsImpl extends AssetsBase {
         }
     }
     
-	private static inline function isEmbeddedFont(fontName:String):Bool {
-		return fontName != "_sans" && fontName != "_serif" && fontName != "_typewriter";
-	}
+    private static inline function isEmbeddedFont(fontName:String):Bool {
+        return fontName != "_sans" && fontName != "_serif" && fontName != "_typewriter";
+    }
 }

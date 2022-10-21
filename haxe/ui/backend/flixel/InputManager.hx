@@ -7,21 +7,21 @@ class InputManager implements IFlxInputManager {
     public function new() {
     }
     
-	public function reset():Void {
+    public function reset():Void {
         if (onResetCb != null) {
             onResetCb();
         }
     }
-	private function update():Void {
+    private function update():Void {
         
     }
-	private function onFocus():Void {
+    private function onFocus():Void {
         
     }
-	private function onFocusLost():Void {
+    private function onFocusLost():Void {
         
     }
-	public function destroy():Void {
+    public function destroy():Void {
         
     }
 }
