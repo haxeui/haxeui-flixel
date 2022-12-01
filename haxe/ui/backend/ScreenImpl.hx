@@ -38,9 +38,16 @@ class ScreenImpl extends ScreenBase {
         
         FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
+        FlxG.signals.preStateCreate.add(onPreStateCreate);
         onPostStateSwitch();
         
         addResizeHandler();
+    }
+
+    private function onPreStateCreate(state:flixel.FlxState) {
+        state.memberAdded.addOnce(onMemberAdded);
+        checkMembers(state);
+        state.memberRemoved.addOnce(onMemberRemoved);
     }
     
     #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
@@ -70,13 +77,13 @@ class ScreenImpl extends ScreenBase {
         rootComponents = [];
         
         #if (flixel >= "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
-        FlxG.state.subStateOpened.add(onMemberAdded);
+        FlxG.state.subStateOpened.addOnce(onMemberAdded);
         #end
         
-        FlxG.state.memberAdded.add(onMemberAdded);
+        FlxG.state.memberAdded.addOnce(onMemberAdded);
         checkMembers(FlxG.state);
         
-        FlxG.state.memberRemoved.add(onMemberRemoved);
+        FlxG.state.memberRemoved.addOnce(onMemberRemoved);
 
         #if !haxeui_no_mouse_reset
         var screen = cast(this, haxe.ui.core.Screen);
@@ -87,7 +94,7 @@ class ScreenImpl extends ScreenBase {
         });
         #end
     }
-    
+
     private function onMemberAdded(m:FlxBasic) {
         if ((m is Component) && rootComponents.indexOf(cast(m, Component)) == -1) {
             var c = cast(m, Component);
@@ -99,6 +106,7 @@ class ScreenImpl extends ScreenBase {
             }
             rootComponents.push(c);
             c.recursiveReady();
+            c.syncComponentValidation();
         } else if ((m is FlxTypedGroup)) {
             var group:FlxTypedGroup<FlxBasic> = cast m;
             checkMembers(group);
@@ -125,6 +133,7 @@ class ScreenImpl extends ScreenBase {
                 }
                 rootComponents.push(c);
                 c.recursiveReady();
+                c.syncComponentValidation();
                 found = true;
             } else if ((m is FlxTypedGroup)) {
                 var group:FlxTypedGroup<FlxBasic> = cast m;
