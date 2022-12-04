@@ -45,9 +45,9 @@ class ScreenImpl extends ScreenBase {
     }
 
     private function onPreStateCreate(state:flixel.FlxState) {
-        state.memberAdded.addOnce(onMemberAdded);
+        state.memberAdded.add(onMemberAdded);
         checkMembers(state);
-        state.memberRemoved.addOnce(onMemberRemoved);
+        state.memberRemoved.add(onMemberRemoved);
     }
     
     #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
@@ -77,13 +77,13 @@ class ScreenImpl extends ScreenBase {
         rootComponents = [];
         
         #if (flixel >= "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
-        FlxG.state.subStateOpened.addOnce(onMemberAdded);
+        FlxG.state.subStateOpened.add(onMemberAdded);
         #end
         
-        FlxG.state.memberAdded.addOnce(onMemberAdded);
+        FlxG.state.memberAdded.add(onMemberAdded);
         checkMembers(FlxG.state);
         
-        FlxG.state.memberRemoved.addOnce(onMemberRemoved);
+        FlxG.state.memberRemoved.add(onMemberRemoved);
 
         #if !haxeui_no_mouse_reset
         var screen = cast(this, haxe.ui.core.Screen);
