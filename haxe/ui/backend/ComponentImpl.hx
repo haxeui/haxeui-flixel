@@ -302,11 +302,16 @@ class ComponentImpl extends ComponentBase {
             clipRect = null;
         }
     }
-    
+
+    private var _overrideSkipTransformChildren:Bool = true;
     private override function handleVisibility(show:Bool):Void {
-        _skipTransformChildren = true;
+        if (_overrideSkipTransformChildren) {
+            _skipTransformChildren = true;
+        }
         super.set_visible(show);
-        _skipTransformChildren = false;
+        if (_overrideSkipTransformChildren) {
+            _skipTransformChildren = false;
+        }
     }
 
     //***********************************************************************************************************
