@@ -101,8 +101,8 @@ class ComponentImpl extends ComponentBase {
             c = c.parentComponent;
         }
         
-        _cachedScreenX = xpos;
-        _cachedScreenY = ypos;
+        _cachedScreenX = xpos * Toolkit.scaleX;
+        _cachedScreenY = ypos * Toolkit.scaleY;
     }
     
     private var screenX(get, null):Float;
@@ -168,8 +168,8 @@ class ComponentImpl extends ComponentBase {
         }
 
         var b:Bool = false;
-        var sx = screenX * Toolkit.scaleX;
-        var sy = screenY * Toolkit.scaleY;
+        var sx = screenX;
+        var sy = screenY;
         var cx = cast(this, Component).componentWidth * Toolkit.scaleX;
         var cy = cast(this, Component).componentHeight * Toolkit.scaleY;
 
@@ -182,8 +182,8 @@ class ComponentImpl extends ComponentBase {
             var clip:Component = findClipComponent();
             if (clip != null) {
                 b = false;
-                var sx = (clip.screenX + clip.componentClipRect.left) * Toolkit.scaleX;
-                var sy = (clip.screenY + clip.componentClipRect.top) * Toolkit.scaleY;
+                var sx = (clip.screenX + (clip.componentClipRect.left * Toolkit.scaleX));
+                var sy = (clip.screenY + (clip.componentClipRect.top * Toolkit.scaleY));
                 var cx = clip.componentClipRect.width * Toolkit.scaleX;
                 var cy = clip.componentClipRect.height * Toolkit.scaleY;
                 if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
@@ -963,11 +963,11 @@ class ComponentImpl extends ComponentBase {
         
         if (_textDisplay != null) {
             #if html5
-            var offsetX = 1;
-            var offsetY = 1;
+            var offsetX = 1 / Toolkit.scaleX;
+            var offsetY = 1 / Toolkit.scaleY;
             #else
-            var offsetX = 2;
-            var offsetY = 2;
+            var offsetX = 2 / Toolkit.scaleX;
+            var offsetY = 2 / Toolkit.scaleY;
             #end
             _textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
             _textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
@@ -975,11 +975,11 @@ class ComponentImpl extends ComponentBase {
         
         if (_textInput != null) {
             #if html5
-            var offsetX = 1;
-            var offsetY = 1;
+            var offsetX = 1 / Toolkit.scaleX;
+            var offsetY = 1 / Toolkit.scaleY;
             #else
-            var offsetX = 2;
-            var offsetY = 2;
+            var offsetX = 2 / Toolkit.scaleX;
+            var offsetY = 2 / Toolkit.scaleY;
             #end
             
             _textInput.tf.x = (_surface.x + _textInput.left - offsetX) * FlxG.scaleMode.scale.x;

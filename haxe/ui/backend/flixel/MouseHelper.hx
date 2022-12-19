@@ -206,6 +206,7 @@ class MouseHelper {
             event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
             event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
+
         for (l in list) {
             l.fn(event);
             if (event.canceled == true) {

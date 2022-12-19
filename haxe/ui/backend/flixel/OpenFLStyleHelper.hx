@@ -42,7 +42,7 @@ class OpenFLStyleHelper {
         var rc:Rectangle = new Rectangle(top, left, width, height);
         var borderRadius:Float = 0;
         if (style.borderRadius != null) {
-            borderRadius = style.borderRadius;
+            borderRadius = style.borderRadius * Toolkit.scale;
         }
 
         if (style.borderLeftSize != null && style.borderLeftSize != 0
@@ -55,11 +55,11 @@ class OpenFLStyleHelper {
             && style.borderLeftColor == style.borderBottomColor
             && style.borderLeftColor == style.borderTopColor) { // full border
             
-            graphics.lineStyle(style.borderLeftSize, style.borderLeftColor);
-            rc.left += style.borderLeftSize / 2;
-            rc.top += style.borderLeftSize / 2;
-            rc.bottom -= style.borderLeftSize / 2;
-            rc.right -= style.borderLeftSize / 2;
+            graphics.lineStyle(style.borderLeftSize * Toolkit.scale, style.borderLeftColor);
+            rc.left += (style.borderLeftSize * Toolkit.scale) / 2;
+            rc.top += (style.borderLeftSize * Toolkit.scale) / 2;
+            rc.bottom -= (style.borderLeftSize * Toolkit.scale) / 2;
+            rc.right -= (style.borderLeftSize * Toolkit.scale) / 2;
             //rc.inflate( -(style.borderLeftSize / 2), -(style.borderLeftSize / 2));
         } else { // compound border
             if ((style.borderTopSize != null && style.borderTopSize > 0)
@@ -71,34 +71,34 @@ class OpenFLStyleHelper {
                     
                     if (style.borderTopSize != null && style.borderTopSize > 0) {
                         graphics.beginFill(style.borderTopColor);
-                        graphics.drawRect(0, 0, org.width, style.borderTopSize);
+                        graphics.drawRect(0, 0, org.width, (style.borderTopSize * Toolkit.scale));
                         graphics.endFill();
 
-                        rc.top += style.borderTopSize;
+                        rc.top += (style.borderTopSize * Toolkit.scale);
                     }
 
                     if (style.borderBottomSize != null && style.borderBottomSize > 0) {
                         graphics.beginFill(style.borderBottomColor);
-                        graphics.drawRect(0, org.height - style.borderBottomSize, org.width, style.borderBottomSize);
+                        graphics.drawRect(0, org.height - (style.borderBottomSize * Toolkit.scale), org.width, (style.borderBottomSize * Toolkit.scale));
                         graphics.endFill();
 
-                        rc.bottom -= style.borderBottomSize;
+                        rc.bottom -= (style.borderBottomSize * Toolkit.scale);
                     }
 
                     if (style.borderLeftSize != null && style.borderLeftSize > 0) {
                         graphics.beginFill(style.borderLeftColor);
-                        graphics.drawRect(0, rc.top, style.borderLeftSize, org.height - rc.top);
+                        graphics.drawRect(0, rc.top, (style.borderLeftSize * Toolkit.scale), org.height - rc.top);
                         graphics.endFill();
 
-                        rc.left += style.borderLeftSize;
+                        rc.left += (style.borderLeftSize * Toolkit.scale);
                     }
 
                     if (style.borderRightSize != null && style.borderRightSize > 0) {
                         graphics.beginFill(style.borderRightColor);
-                        graphics.drawRect(org.width - style.borderRightSize, rc.top, style.borderRightSize, org.height - rc.top);
+                        graphics.drawRect(org.width - (style.borderRightSize * Toolkit.scale), rc.top, (style.borderRightSize * Toolkit.scale), org.height - rc.top);
                         graphics.endFill();
 
-                        rc.right -= style.borderRightSize;
+                        rc.right -= (style.borderRightSize * Toolkit.scale);
                     }
             }
         }
