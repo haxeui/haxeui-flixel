@@ -85,7 +85,7 @@ class ScreenImpl extends ScreenBase {
         
         FlxG.state.memberRemoved.add(onMemberRemoved);
 
-        #if !haxeui_no_mouse_reset
+		#if (!FLX_NO_MOUSE && !haxeui_no_mouse_reset)
         var screen = cast(this, haxe.ui.core.Screen);
         screen.registerEvent(MouseEvent.MOUSE_DOWN, function(e:MouseEvent) {
             if (screen.hasSolidComponentUnderPoint(e.screenX, e.screenY)) {
