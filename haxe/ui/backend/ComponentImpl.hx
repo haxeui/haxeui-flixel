@@ -265,7 +265,7 @@ class ComponentImpl extends ComponentBase {
                 _unsolicitedMembers = [];
             }
             if (_unsolicitedMembers.indexOf(sprite) == -1) {
-                _unsolicitedMembers.remove(sprite);
+                _unsolicitedMembers.push(sprite);
             }
         }
         super.preAdd(sprite);
