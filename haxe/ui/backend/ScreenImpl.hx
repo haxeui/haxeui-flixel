@@ -374,7 +374,7 @@ class ScreenImpl extends ScreenBase {
         }
 
         for (m in state.members) {
-            if (m is Component) {
+            if ((m is Component)) {
                 var c:Component = cast m;
                 if (c.hidden) {
                     continue;
