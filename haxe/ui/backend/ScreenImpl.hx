@@ -310,6 +310,11 @@ class ScreenImpl extends ScreenBase {
     }
     
     private function __onMouseDown(event:MouseEvent) {
+        var contains = containsUnsolicitedMemberAt(event.screenX, event.screenY, FlxG.state);
+        if (contains) { // lets attempt not in intercept unsolicated member events
+            return;
+        }
+
         var fn = _mapping.get(MouseEvent.MOUSE_DOWN);
         if (fn != null) {
             var button:Int = event.data;
@@ -361,5 +366,45 @@ class ScreenImpl extends ScreenBase {
                 fn(keyboardEvent);
             }
         }
+    }
+
+    private function containsUnsolicitedMemberAt(x:Float, y:Float, state:FlxTypedGroup<FlxBasic>):Bool {
+        if (state == null) {
+            return false;
+        }
+
+        for (m in state.members) {
+            if (m is Component) {
+                var c:Component = cast m;
+                if (c.hidden) {
+                    continue;
+                }
+                if (c._unsolicitedMembers != null && c._unsolicitedMembers.length > 0) {
+                    for (um in c._unsolicitedMembers) {
+                        var umx = um.sprite.x;
+                        var umy = um.sprite.y;
+                        var umw = um.sprite.width;
+                        var umh = um.sprite.height;
+                        if (x >= umx && y >= umy && x <= umx + umw && y <= umy + umh) {
+                            return true;
+                        }
+                    }
+                }
+                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
+                if (containsUnsolicitedMemberAt(x, y, cast spriteGroup.group) == true) {
+                    return true;
+                }
+            } else if ((m is FlxTypedSpriteGroup)) {
+                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
+                if (!spriteGroup.visible) {
+                    continue;
+                }
+                if (containsUnsolicitedMemberAt(x, y, cast spriteGroup.group) == true) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
