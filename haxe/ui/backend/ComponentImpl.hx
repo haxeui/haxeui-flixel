@@ -258,14 +258,18 @@ class ComponentImpl extends ComponentBase {
         return child;
     }
     
-    private var _unsolicitedMembers:Array<FlxSprite> = null;
+    private var _unsolicitedMembers:Array<{sprite: FlxSprite, originalX:Float, originalY:Float}> = null;
     private override function preAdd(sprite:FlxSprite) {
         if (isUnsolicitedMember(sprite)) {
             if (_unsolicitedMembers == null) {
                 _unsolicitedMembers = [];
             }
-            if (_unsolicitedMembers.indexOf(sprite) == -1) {
-                _unsolicitedMembers.push(sprite);
+            if (findUnsolictedEntryFromSprite(sprite) == null) {
+                _unsolicitedMembers.push({
+                    sprite: sprite,
+                    originalX: sprite.x,
+                    originalY: sprite.y
+                });
             }
         }
         super.preAdd(sprite);
@@ -273,11 +277,24 @@ class ComponentImpl extends ComponentBase {
 
     public override function remove(sprite:FlxSprite, splice:Bool = false):FlxSprite {
         if (isUnsolicitedMember(sprite) && _unsolicitedMembers != null) {
-            _unsolicitedMembers.remove(sprite);
+            var um = findUnsolictedEntryFromSprite(sprite);
+            _unsolicitedMembers.remove(um);
         }
         return super.remove(sprite, splice);
     }
     
+    private function findUnsolictedEntryFromSprite(sprite:FlxSprite):{sprite: FlxSprite, originalX:Float, originalY:Float} {
+        if (_unsolicitedMembers == null) {
+            return null;
+        }
+        for (um in _unsolicitedMembers) {
+            if (um.sprite == sprite) {
+                return um;
+            }
+        }
+        return null;
+    }
+
     private var _destroy:Bool = false;
     private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
         if (this.exists == false) { // lets make sure this component exists - it could have been destroyed through a variety of different ways already (like switching state for example, or simply manually destroying it)
@@ -998,8 +1015,8 @@ class ComponentImpl extends ComponentBase {
         
         if (_unsolicitedMembers != null) {
             for (m in _unsolicitedMembers) {
-                m.x = this.screenX;
-                m.y = this.screenY;
+                m.sprite.x = m.originalX + this.screenX;
+                m.sprite.y = m.originalY + this.screenY;
             }
         }
     }
