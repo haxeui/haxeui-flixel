@@ -678,9 +678,11 @@ class ComponentImpl extends ComponentBase {
         lastMouseX = x;
         lastMouseY = y;
         
+        var hasMember = StateHelper.hasMember(_surface);
+
         if (Platform.instance.isMobile == false) {
             if (_mouseOverFlag == true) {
-                if (StateHelper.hasMember(_surface) == false) {
+                if (hasMember == false) {
                     _mouseOverFlag = false;
                     var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
                     if (fn != null) {
@@ -697,6 +699,10 @@ class ComponentImpl extends ComponentBase {
                 }
             }
             
+            if (hasMember == false) {
+                return;
+            }
+
             var i = inBounds(x, y);
             if (i == true) {
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
