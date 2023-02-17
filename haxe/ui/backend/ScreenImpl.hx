@@ -383,6 +383,9 @@ class ScreenImpl extends ScreenBase {
                 if (c.hidden) {
                     continue;
                 }
+                if (!c.hitTest(x, y, true)) {
+                    continue;
+                }
                 if (c._unsolicitedMembers != null && c._unsolicitedMembers.length > 0) {
                     for (um in c._unsolicitedMembers) {
                         var umx = um.sprite.x;
@@ -404,6 +407,15 @@ class ScreenImpl extends ScreenBase {
                     continue;
                 }
                 if (containsUnsolicitedMemberAt(x, y, cast spriteGroup.group) == true) {
+                    return true;
+                }
+            } else if ((m is FlxSprite)) {
+                var sprite:FlxSprite = cast m;
+                var umx = sprite.x;
+                var umy = sprite.y;
+                var umw = sprite.width;
+                var umh = sprite.height;
+                if (x >= umx && y >= umy && x <= umx + umw && y <= umy + umh) {
                     return true;
                 }
             }
