@@ -21,6 +21,17 @@ private typedef AnimationInfo = {
     var flipY:Null<Bool>; // default false
 }
 
+/*
+<sparrow-player id="player1" xmlFile="assets/sparrow/test01/BOYFRIEND.xml" pngFile="assets/sparrow/test01/BOYFRIEND.png" animationName="idle">
+    <data>
+        <set name="note up" prefix="BF NOTE UP" frameRate="24" looped="true" />
+        <set name="dies" prefix="BF dies" frameRate="24" looped="true" />
+        <set name="dead loop" prefix="BF Dead Loop" frameRate="24" looped="true" />
+        <set name="dead confirm" prefix="BF Dead confirm" frameRate="24" looped="true" />
+    </data>
+</sparrow-player>
+*/
+
 @:composite(Layout)
 class SparrowPlayer extends Box implements IDataComponent {
     private var sprite:FlxSprite;
