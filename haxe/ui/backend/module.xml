@@ -4,6 +4,10 @@
         <resource path="/haxe/ui/backend/flixel/_module/styles" prefix="haxeui-flixel/styles" />
     </resources>
     
+    <components>
+        <class package="haxe.ui.backend.flixel.components" />
+    </components>
+
     <themes>
         <default>
             <style resource="haxeui-flixel/styles/default/main.css" />
