@@ -253,22 +253,24 @@ class SparrowPlayer extends Box implements IDataComponent {
 
     private override function repositionChildren() {
         super.repositionChildren();
-        sprite.x = this.screenX + ((this.width / 2) - (sprite.frameWidth / 2));
-        sprite.y = this.screenY + ((this.height / 2) - (sprite.frameHeight / 2));
+        sprite.x = this.screenX;
+        sprite.y = this.screenY;
     }
 }
 
 @:access(haxe.ui.backend.flixel.components.SparrowPlayer)
 private class Layout extends DefaultLayout {
-    public override function repositionChildren() {
+    public override function resizeChildren() {
+        super.resizeChildren();
+
         var player = cast(_component, SparrowPlayer);
         var sprite = player.sprite;
         if (sprite == null) {
-            return super.repositionChildren();
+            return super.resizeChildren();
         }
 
-        sprite.x = _component.screenLeft + ((_component.width / 2) - (sprite.frameWidth / 2));
-        sprite.y = _component.screenTop + ((_component.height / 2) - (sprite.frameHeight / 2));
+        sprite.origin.set(0, 0);
+        sprite.setGraphicSize(Std.int(innerWidth), Std.int(innerHeight));
     }
 
     public override function calcAutoSize(exclusions:Array<Component> = null):Size {
