@@ -966,11 +966,13 @@ class ComponentImpl extends ComponentBase {
             _textInput.attach();
             _textInput.tf.visible = false;
             FlxG.addChildBelowMouse(_textInput.tf);
+            /*
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
                 if (_textInput != null) {
                     _textInput.tf.visible = true;
                 }
             });
+            */
         }
         
         return _textInput;
@@ -1133,6 +1135,29 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
+    // these functions (applyAddInternal / applyRemoveInternal) are called when a component is added / removed
+    // from the screen - the main (only) reason this is important is because of textinputs:
+    // textinputs are using openfl textfields, which means they are effectively floating over the top of the 
+    // application, this means that when things are removed from the screen (and not destroyed) it can leave them
+    // behind
+    private function applyAddInternal() {
+        if (hasTextInput() && cast(this, Component).hidden == false) {
+            getTextInput().tf.visible = true;
+        }
+        for (c in childComponents) {
+            c.applyAddInternal();
+        }
+    }
+
+    private function applyRemoveInternal() {
+        if (hasTextInput()) {
+            getTextInput().tf.visible = false;
+        }
+        for (c in childComponents) {
+            c.applyRemoveInternal();
+        }
+    }
+
     private function destroyInternal() {
         if (_surface != null) {
             _surface.destroy();

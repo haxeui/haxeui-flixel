@@ -196,6 +196,7 @@ class ScreenImpl extends ScreenBase {
             rootComponents.push(component);
             component.recursiveReady();
             onContainerResize();
+            component.applyAddInternal();
         }
         return component;
     }
@@ -207,6 +208,8 @@ class ScreenImpl extends ScreenBase {
         rootComponents.remove(component);
         if (dispose) {
             component.destroyInternal();
+        } else {
+            component.applyRemoveInternal();
         }
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.remove(component, true);
