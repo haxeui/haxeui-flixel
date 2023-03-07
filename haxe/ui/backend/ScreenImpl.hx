@@ -193,7 +193,9 @@ class ScreenImpl extends ScreenBase {
         
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.add(component);
-            rootComponents.push(component);
+            if (rootComponents.indexOf(component) == -1) {
+                rootComponents.push(component);
+            }
             component.recursiveReady();
             onContainerResize();
             component.applyAddInternal();
@@ -206,6 +208,9 @@ class ScreenImpl extends ScreenBase {
             return component;
         }
         rootComponents.remove(component);
+        if (rootComponents.indexOf(component) != -1) {
+            throw "component wasnt actually removed from array, or there is a duplicate in the array";
+        }
         if (dispose) {
             component.destroyInternal();
         } else {
