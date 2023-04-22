@@ -30,12 +30,12 @@ class ComponentImpl extends ComponentBase {
     
     private var lastMouseX:Float = -1;
     private var lastMouseY:Float = -1;
-	
-	// For doubleclick detection
-	private var _lastClickTime:Float = 0;
-	private var _lastClickTimeDiff:Float = MathUtil.MAX_INT;
-	private var _lastClickX:Float = -1;
-	private var _lastClickY:Float = -1;
+    
+    // For doubleclick detection
+    private var _lastClickTime:Float = 0;
+    private var _lastClickTimeDiff:Float = MathUtil.MAX_INT;
+    private var _lastClickX:Float = -1;
+    private var _lastClickY:Float = -1;
     
     public function new() {
         super();
@@ -43,7 +43,6 @@ class ComponentImpl extends ComponentBase {
         
         this.pixelPerfectRender = true;
         this.moves = false;
-        _skipTransformChildren = true;
         super.set_visible(false);
         
         if (Platform.instance.isMobile) {
@@ -52,11 +51,11 @@ class ComponentImpl extends ComponentBase {
         
         scrollFactor.set(0, 0); // ui doesn't scroll by default
 
-		_surface = new FlxSprite();
-		_surface.makeGraphic(1, 1, 0x0, true);
+        _surface = new FlxSprite();
+        _surface.makeGraphic(1, 1, 0x0, true);
         _surface.pixelPerfectRender = true;
         _surface.moves = false;
-		add(_surface);
+        add(_surface);
         
         //recursiveReady();
     }
@@ -102,8 +101,8 @@ class ComponentImpl extends ComponentBase {
             c = c.parentComponent;
         }
         
-        _cachedScreenX = xpos;
-        _cachedScreenY = ypos;
+        _cachedScreenX = xpos * Toolkit.scaleX;
+        _cachedScreenY = ypos * Toolkit.scaleY;
     }
     
     private var screenX(get, null):Float;
@@ -169,8 +168,8 @@ class ComponentImpl extends ComponentBase {
         }
 
         var b:Bool = false;
-        var sx = screenX * Toolkit.scaleX;
-        var sy = screenY * Toolkit.scaleY;
+        var sx = screenX;
+        var sy = screenY;
         var cx = cast(this, Component).componentWidth * Toolkit.scaleX;
         var cy = cast(this, Component).componentHeight * Toolkit.scaleY;
 
@@ -183,8 +182,8 @@ class ComponentImpl extends ComponentBase {
             var clip:Component = findClipComponent();
             if (clip != null) {
                 b = false;
-                var sx = (clip.screenX + clip.componentClipRect.left) * Toolkit.scaleX;
-                var sy = (clip.screenY + clip.componentClipRect.top) * Toolkit.scaleY;
+                var sx = (clip.screenX + (clip.componentClipRect.left * Toolkit.scaleX));
+                var sy = (clip.screenY + (clip.componentClipRect.top * Toolkit.scaleY));
                 var cx = clip.componentClipRect.width * Toolkit.scaleX;
                 var cy = clip.componentClipRect.height * Toolkit.scaleY;
                 if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
@@ -236,37 +235,41 @@ class ComponentImpl extends ComponentBase {
     //***********************************************************************************************************
     
     private override function handleSetComponentIndex(child:Component, index:Int) {
-		handleAddComponentAt(child, index);
+        handleAddComponentAt(child, index);
     }
 
     private override function handleAddComponent(child:Component):Component {
-		handleAddComponentAt(child, childComponents.length - 1);
-		return child;
+        handleAddComponentAt(child, childComponents.length - 1);
+        return child;
     }
 
     private override function handleAddComponentAt(child:Component, index:Int):Component {
-		// index is in terms of haxeui components, not flixel children
-		var indexOffset = 0;
-		while (indexOffset < members.length) {
-			if (!(members[indexOffset] is Component)) {
+        // index is in terms of haxeui components, not flixel children
+        var indexOffset = 0;
+        while (indexOffset < members.length) {
+            if (!(members[indexOffset] is Component)) {
                 indexOffset++;
             } else{
                 break;
             }
-		}
-		
-		insert(index + indexOffset, child);
-		return child;
+        }
+        
+        insert(index + indexOffset, child);
+        return child;
     }
     
-    private var _unsolicitedMembers:Array<FlxSprite> = null;
+    private var _unsolicitedMembers:Array<{sprite: FlxSprite, originalX:Float, originalY:Float}> = null;
     private override function preAdd(sprite:FlxSprite) {
         if (isUnsolicitedMember(sprite)) {
             if (_unsolicitedMembers == null) {
                 _unsolicitedMembers = [];
             }
-            if (_unsolicitedMembers.indexOf(sprite) == -1) {
-                _unsolicitedMembers.remove(sprite);
+            if (findUnsolictedEntryFromSprite(sprite) == null) {
+                _unsolicitedMembers.push({
+                    sprite: sprite,
+                    originalX: sprite.x,
+                    originalY: sprite.y
+                });
             }
         }
         super.preAdd(sprite);
@@ -274,28 +277,41 @@ class ComponentImpl extends ComponentBase {
 
     public override function remove(sprite:FlxSprite, splice:Bool = false):FlxSprite {
         if (isUnsolicitedMember(sprite) && _unsolicitedMembers != null) {
-            _unsolicitedMembers.remove(sprite);
+            var um = findUnsolictedEntryFromSprite(sprite);
+            _unsolicitedMembers.remove(um);
         }
         return super.remove(sprite, splice);
     }
     
+    private function findUnsolictedEntryFromSprite(sprite:FlxSprite):{sprite: FlxSprite, originalX:Float, originalY:Float} {
+        if (_unsolicitedMembers == null) {
+            return null;
+        }
+        for (um in _unsolicitedMembers) {
+            if (um.sprite == sprite) {
+                return um;
+            }
+        }
+        return null;
+    }
+
     private var _destroy:Bool = false;
     private override function handleRemoveComponent(child:Component, dispose:Bool = true):Component {
         if (this.exists == false) { // lets make sure this component exists - it could have been destroyed through a variety of different ways already (like switching state for example, or simply manually destroying it)
             return child;
         }
-		if (members.indexOf(child) > -1) {
+        if (members.indexOf(child) > -1) {
             remove(child, true);
             if (dispose == true) {
                 child._destroy = true;
                 child.destroyInternal();
             }
         }
-		return child;
+        return child;
     }
 
     private override function handleRemoveComponentAt(index:Int, dispose:Bool = true):Component {
-		return handleRemoveComponent(this.childComponents[index], dispose);
+        return handleRemoveComponent(this.childComponents[index], dispose);
     }
     
     private override function handleClipRect(value:Rectangle):Void {
@@ -303,10 +319,19 @@ class ComponentImpl extends ComponentBase {
             clipRect = null;
         }
     }
-    
-	private override function handleVisibility(show:Bool):Void {
-		super.set_visible(show);
-	}
+
+    // TODO: really need revision on if this is still needed, or what purpose it was originally supposed
+    // to serve, maybe its no longer needed in flixel 5.0? 
+    private var _overrideSkipTransformChildren:Bool = false;
+    private override function handleVisibility(show:Bool):Void {
+        if (_overrideSkipTransformChildren) {
+            _skipTransformChildren = true;
+        }
+        super.set_visible(show);
+        if (_overrideSkipTransformChildren) {
+            _skipTransformChildren = false;
+        }
+    }
 
     //***********************************************************************************************************
     // Style
@@ -344,10 +369,10 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
-	//***********************************************************************************************************
-	// Image
-	//***********************************************************************************************************
-	public override function createImageDisplay():ImageDisplay {
+    //***********************************************************************************************************
+    // Image
+    //***********************************************************************************************************
+    public override function createImageDisplay():ImageDisplay {
         if (_imageDisplay == null) {
             super.createImageDisplay();
             _imageDisplay.visible = false;
@@ -356,17 +381,17 @@ class ComponentImpl extends ComponentBase {
                 _imageDisplay.visible = true;
             });
         }
-		
-		return _imageDisplay;
-	}
-	
-	public override function removeImageDisplay():Void {
-		if (_imageDisplay != null) {
-			remove(_imageDisplay, true);
-			_imageDisplay.destroy();
-			_imageDisplay = null;
-		}
-	}
+        
+        return _imageDisplay;
+    }
+    
+    public override function removeImageDisplay():Void {
+        if (_imageDisplay != null) {
+            remove(_imageDisplay, true);
+            _imageDisplay.destroy();
+            _imageDisplay = null;
+        }
+    }
     
     //***********************************************************************************************************
     // Events
@@ -431,7 +456,7 @@ class ComponentImpl extends ComponentBase {
                     }
                 }
                 
-			case MouseEvent.DBL_CLICK:
+            case MouseEvent.DBL_CLICK:
                 if (_eventMap.exists(MouseEvent.DBL_CLICK) == false) {
                     notifyMouseDown(true);
                     notifyMouseUp(true);
@@ -520,7 +545,7 @@ class ComponentImpl extends ComponentBase {
                     getTextInput().tf.removeEventListener(openfl.events.MouseEvent.CLICK, __onTextInputMouseEvent);
                 }
                 
-			case MouseEvent.DBL_CLICK:
+            case MouseEvent.DBL_CLICK:
                 _eventMap.remove(type);
                 notifyMouseDown(false);
                 notifyMouseUp(false);
@@ -655,9 +680,11 @@ class ComponentImpl extends ComponentBase {
         lastMouseX = x;
         lastMouseY = y;
         
+        var hasMember = StateHelper.hasMember(_surface);
+
         if (Platform.instance.isMobile == false) {
             if (_mouseOverFlag == true) {
-                if (StateHelper.hasMember(_surface) == false) {
+                if (hasMember == false) {
                     _mouseOverFlag = false;
                     var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
                     if (fn != null) {
@@ -674,6 +701,10 @@ class ComponentImpl extends ComponentBase {
                 }
             }
             
+            if (hasMember == false) {
+                return;
+            }
+
             var i = inBounds(x, y);
             if (i == true) {
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
@@ -790,7 +821,7 @@ class ComponentImpl extends ComponentBase {
                 return;
             }
             */
-			
+            
             if (_mouseDownFlag == true) {
                 var type = button == 0 ? haxe.ui.events.MouseEvent.CLICK: haxe.ui.events.MouseEvent.RIGHT_CLICK;
                 var fn:UIEvent->Void = _eventMap.get(type);
@@ -806,15 +837,15 @@ class ComponentImpl extends ComponentBase {
                         event.canceled = mouseEvent.canceled;
                     });
                 }
-				
-				if (type == haxe.ui.events.MouseEvent.CLICK) {
-					_lastClickTimeDiff = Timer.stamp() - _lastClickTime;
-					_lastClickTime = Timer.stamp();
-					if (_lastClickTimeDiff >= 0.5) { // 0.5 seconds
-						_lastClickX = x;
-						_lastClickY = y;
-					}
-				}
+                
+                if (type == haxe.ui.events.MouseEvent.CLICK) {
+                    _lastClickTimeDiff = Timer.stamp() - _lastClickTime;
+                    _lastClickTime = Timer.stamp();
+                    if (_lastClickTimeDiff >= 0.5) { // 0.5 seconds
+                        _lastClickX = x;
+                        _lastClickY = y;
+                    }
+                }
             }
 
             _mouseDownFlag = false;
@@ -833,8 +864,8 @@ class ComponentImpl extends ComponentBase {
         }
         _mouseDownFlag = false;
     }
-	
-	private function __onDoubleClick(event:MouseEvent) {
+    
+    private function __onDoubleClick(event:MouseEvent) {
         if (StateHelper.hasMember(_surface) == false) {
             return;
         }
@@ -852,23 +883,23 @@ class ComponentImpl extends ComponentBase {
                 return;
             }
             */
-			
+            
             _mouseDownFlag = false;
-			var mouseDelta:Float = MathUtil.distance(x, y, _lastClickX, _lastClickY);
-			if (_lastClickTimeDiff < 0.5 && mouseDelta < 5) { // 0.5 seconds
-				var type = haxe.ui.events.MouseEvent.DBL_CLICK;
-				var fn:UIEvent->Void = _eventMap.get(type);
-				if (fn != null) {
-					var mouseEvent = new haxe.ui.events.MouseEvent(type);
-					mouseEvent.screenX = x / Toolkit.scaleX;
-					mouseEvent.screenY = y / Toolkit.scaleY;
+            var mouseDelta:Float = MathUtil.distance(x, y, _lastClickX, _lastClickY);
+            if (_lastClickTimeDiff < 0.5 && mouseDelta < 5) { // 0.5 seconds
+                var type = haxe.ui.events.MouseEvent.DBL_CLICK;
+                var fn:UIEvent->Void = _eventMap.get(type);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
                     if (Platform.instance.isMobile) {
                         mouseEvent.touchEvent = true;
                     }
-					fn(mouseEvent);
+                    fn(mouseEvent);
                     event.canceled = mouseEvent.canceled;
-				}
-			}
+                }
+            }
         }
         _mouseDownFlag = false;
     }
@@ -917,8 +948,8 @@ class ComponentImpl extends ComponentBase {
     //***********************************************************************************************************
     // Text related
     //***********************************************************************************************************
-	public override function createTextDisplay(text:String = null):TextDisplay {
-		if (_textDisplay == null) {
+    public override function createTextDisplay(text:String = null):TextDisplay {
+        if (_textDisplay == null) {
             super.createTextDisplay(text);
             _textDisplay.tf.visible = false;
             add(_textDisplay.tf);
@@ -926,26 +957,28 @@ class ComponentImpl extends ComponentBase {
                 _textDisplay.tf.visible = true;
                 applyFilters(style);
             });
-		}
-		
-		return _textDisplay;
-	}
+        }
+        
+        return _textDisplay;
+    }
     
-	public override function createTextInput(text:String = null):TextInput {
-		if (_textInput == null) {
+    public override function createTextInput(text:String = null):TextInput {
+        if (_textInput == null) {
             super.createTextInput(text);
             _textInput.attach();
             _textInput.tf.visible = false;
             FlxG.addChildBelowMouse(_textInput.tf);
+            /*
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
                 if (_textInput != null) {
                     _textInput.tf.visible = true;
                 }
             });
-		}
-		
-		return _textInput;
-	}
+            */
+        }
+        
+        return _textInput;
+    }
     //***********************************************************************************************************
     // Util
     //***********************************************************************************************************
@@ -957,27 +990,27 @@ class ComponentImpl extends ComponentBase {
         
         if (_textDisplay != null) {
             #if html5
-            var offsetX = 1;
-            var offsetY = 1;
+            var offsetX = 1 / Toolkit.scaleX;
+            var offsetY = 1 / Toolkit.scaleY;
             #else
-            var offsetX = 2;
-            var offsetY = 2;
+            var offsetX = 2 / Toolkit.scaleX;
+            var offsetY = 2 / Toolkit.scaleY;
             #end
-			_textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
-			_textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
+            _textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
+            _textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
         }
         
         if (_textInput != null) {
             #if html5
-            var offsetX = 1;
-            var offsetY = 1;
+            var offsetX = 1 / Toolkit.scaleX;
+            var offsetY = 1 / Toolkit.scaleY;
             #else
-            var offsetX = 2;
-            var offsetY = 2;
+            var offsetX = 2 / Toolkit.scaleX;
+            var offsetY = 2 / Toolkit.scaleY;
             #end
             
-			_textInput.tf.x = (_surface.x + _textInput.left - offsetX) * FlxG.scaleMode.scale.x;
-			_textInput.tf.y = (_surface.y + _textInput.top - offsetY) * FlxG.scaleMode.scale.y;
+            _textInput.tf.x = (_surface.x + _textInput.left - offsetX) * FlxG.scaleMode.scale.x;
+            _textInput.tf.y = (_surface.y + _textInput.top - offsetY) * FlxG.scaleMode.scale.y;
             _textInput.tf.scaleX = FlxG.scaleMode.scale.x;
             _textInput.tf.scaleY = FlxG.scaleMode.scale.y;
             _textInput.update();
@@ -986,14 +1019,14 @@ class ComponentImpl extends ComponentBase {
         if (_imageDisplay != null) {
             var offsetX = 0;
             var offsetY = 0;
-			_imageDisplay.x = _surface.x + _imageDisplay.left - offsetX;
-			_imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
+            _imageDisplay.x = _surface.x + _imageDisplay.left - offsetX;
+            _imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
         }
         
         if (_unsolicitedMembers != null) {
             for (m in _unsolicitedMembers) {
-                m.x = this.screenX;
-                m.y = this.screenY;
+                m.sprite.x = m.originalX + this.screenX;
+                m.sprite.y = m.originalY + this.screenY;
             }
         }
     }
@@ -1065,9 +1098,9 @@ class ComponentImpl extends ComponentBase {
         return r;
     }
     
-	//***********************************************************************************************************
-	// Flixel overrides
-	//***********************************************************************************************************
+    //***********************************************************************************************************
+    // Flixel overrides
+    //***********************************************************************************************************
 
     private var _updates:Int = 0;
     public override function update(elapsed:Float) {
@@ -1104,6 +1137,29 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
+    // these functions (applyAddInternal / applyRemoveInternal) are called when a component is added / removed
+    // from the screen - the main (only) reason this is important is because of textinputs:
+    // textinputs are using openfl textfields, which means they are effectively floating over the top of the 
+    // application, this means that when things are removed from the screen (and not destroyed) it can leave them
+    // behind
+    private function applyAddInternal() {
+        if (hasTextInput() && cast(this, Component).hidden == false) {
+            getTextInput().tf.visible = true;
+        }
+        for (c in childComponents) {
+            c.applyAddInternal();
+        }
+    }
+
+    private function applyRemoveInternal() {
+        if (hasTextInput()) {
+            getTextInput().tf.visible = false;
+        }
+        for (c in childComponents) {
+            c.applyRemoveInternal();
+        }
+    }
+
     private function destroyInternal() {
         if (_surface != null) {
             _surface.destroy();

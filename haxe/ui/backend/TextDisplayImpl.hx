@@ -7,14 +7,14 @@ import haxe.ui.util.Color;
 class TextDisplayImpl extends TextBase {
     private static inline var PADDING_X:Int = 2;
     
-	public var tf:FlxText;
+    public var tf:FlxText;
     
-	public function new() {
-		super();
-		tf = new FlxText();
+    public function new() {
+        super();
+        tf = new FlxText();
         tf.pixelPerfectPosition = true;
-		tf.autoSize = true;
-	}
+        tf.autoSize = true;
+    }
     
     private override function validateData() {
         if (_text != null) {
@@ -34,50 +34,50 @@ class TextDisplayImpl extends TextBase {
     
     private override function validateStyle():Bool {
         var measureTextRequired:Bool = false;
-		if (_textStyle != null) {
-			if (_textStyle.textAlign != null) {
+        if (_textStyle != null) {
+            if (_textStyle.textAlign != null) {
                 //tf.autoSize = false;
                 tf.alignment = _textStyle.textAlign;
                 measureTextRequired = true;
             }
 
-			if (_textStyle.fontSize != null) {
+            if (_textStyle.fontSize != null) {
                 tf.size = Std.int(_textStyle.fontSize * Toolkit.scale);
                 measureTextRequired = true;
             }
             
-			if (_fontInfo != null) {
+            if (_fontInfo != null) {
                 tf.font = _fontInfo.data;
                 measureTextRequired = true;
             }
             
-			if (_textStyle.fontBold != null) {
+            if (_textStyle.fontBold != null) {
                 tf.bold = _textStyle.fontBold;
                 measureTextRequired = true;
             }
-			if (_textStyle.fontItalic != null) {
+            if (_textStyle.fontItalic != null) {
                 tf.italic = _textStyle.fontItalic;
                 measureTextRequired = true;
             }
 
-			if (_textStyle.color != null) {
+            if (_textStyle.color != null) {
                 tf.color = _textStyle.color;
             }
-			
-			if (tf.wordWrap != _displayData.wordWrap) {
+            
+            if (tf.wordWrap != _displayData.wordWrap) {
                 tf.wordWrap = _displayData.wordWrap;
                 //tf.autoSize = !_displayData.wordWrap;
                 measureTextRequired = true;
             }
 
-			if (tf.textField.multiline != _displayData.multiline) {
+            if (tf.textField.multiline != _displayData.multiline) {
                 tf.textField.multiline = _displayData.multiline;
                 //tf.autoSize = !_displayData.multiline;
                 measureTextRequired = true;
             }
-		}
-		
-		return measureTextRequired;
+        }
+        
+        return measureTextRequired;
     }
     
     private override function validateDisplay() {
@@ -90,8 +90,8 @@ class TextDisplayImpl extends TextBase {
     }
     
     private override function measureText() {
-		_textWidth = (Math.fround(tf.textField.textWidth) + (PADDING_X * Toolkit.scaleX)) / Toolkit.scaleX;
-		_textHeight = Math.fround(tf.textField.textHeight) / Toolkit.scaleY;
+        _textWidth = (Math.fround(tf.textField.textWidth) + (PADDING_X * Toolkit.scaleX)) / Toolkit.scaleX;
+        _textHeight = Math.fround(tf.textField.textHeight) / Toolkit.scaleY;
         if (_textHeight == 0) {
             var tmpText:String = tf.text;
             tf.text = "|";

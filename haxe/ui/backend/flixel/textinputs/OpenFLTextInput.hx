@@ -34,14 +34,14 @@ class OpenFLTextInput extends TextBase {
     
     public override function focus() {
         if (tf.stage != null) {
-			tf.stage.focus = tf;
-		}
+            tf.stage.focus = tf;
+        }
     }
     
     public override function blur() {
         if (tf.stage != null) {
-			tf.stage.focus = null;
-		}
+            tf.stage.focus = null;
+        }
     }
     
     public function attach() {

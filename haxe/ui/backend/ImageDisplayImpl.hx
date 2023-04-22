@@ -13,7 +13,7 @@ class ImageDisplayImpl extends ImageBase {
         if (_imageInfo != null) {
             frames = FlxImageFrame.fromFrame(_imageInfo.data);
             
-			aspectRatio = _imageInfo.width / _imageInfo.height;
+            aspectRatio = _imageInfo.width / _imageInfo.height;
             
             width = frameWidth = Std.int(_imageInfo.width * Toolkit.scaleX);
             height = frameHeight = Std.int(_imageInfo.height *  Toolkit.scaleY);

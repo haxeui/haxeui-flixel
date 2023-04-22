@@ -1,5 +1,6 @@
 package haxe.ui.backend.flixel;
 
+import flixel.util.FlxSpriteUtil;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.util.FlxColor;
@@ -15,11 +16,11 @@ import openfl.geom.Rectangle;
 
 class FlxStyleHelper {
     public static function applyStyle(sprite:FlxSprite, style:Style) {
-		if (sprite == null || sprite.pixels == null) {
+        if (sprite == null || sprite.pixels == null) {
             return;
         }
 
-		var pixels:BitmapData = sprite.pixels;
+        var pixels:BitmapData = sprite.pixels;
         
         var left:Float = 0;
         var top:Float = 0;
@@ -31,9 +32,29 @@ class FlxStyleHelper {
         }
         
         var rc:Rectangle = new Rectangle(top, left, width, height);
-        
         pixels.fillRect(rc, 0x0);
         
+        #if !no_openfl_drawing
+        var useOpenFLDrawing = false;
+        if (width > 1 && height > 1 && style.backgroundImage == null) {
+            if ((style.borderRadius != null && (style.borderRadius > 0))
+                || (style.borderRadiusTopLeft != null && (style.borderRadiusTopLeft > 0))
+                || (style.borderRadiusTopRight != null && (style.borderRadiusTopRight > 0))
+                || (style.borderRadiusBottomLeft != null && (style.borderRadiusBottomLeft > 0))
+                || (style.borderRadiusBottomRight != null && (style.borderRadiusBottomRight > 0))
+            ) {
+                useOpenFLDrawing = true;
+            }
+        }
+
+        if (useOpenFLDrawing) {
+            var g = FlxSpriteUtil.flashGfx;
+            OpenFLStyleHelper.paintStyleSection(g, style, width, height, left, top);
+            FlxSpriteUtil.updateSpriteGraphic(sprite);
+            return;
+        }
+        #end
+
         if (style.borderLeftSize != null && style.borderLeftSize != 0
             && style.borderLeftSize == style.borderRightSize
             && style.borderLeftSize == style.borderBottomSize
@@ -90,7 +111,7 @@ class FlxStyleHelper {
         
         
         if (style.backgroundColor != null) {
-			var opacity = style.backgroundOpacity == null ? 1 : style.backgroundOpacity;
+            var opacity = style.backgroundOpacity == null ? 1 : style.backgroundOpacity;
             if (style.backgroundColorEnd != null && style.backgroundColor != style.backgroundColorEnd) {
                 var gradientType:String = "vertical";
                 if (style.backgroundGradientStyle != null) {
@@ -131,147 +152,147 @@ class FlxStyleHelper {
     }
     
     private static function paintBackroundImage(sprite:FlxSprite, data:ImageData, style:Style) {
-		var bmd = data.parent.bitmap;
-		var rect = data.frame.copyToFlash();
-		
-		// if it's a spritesheet and the frame is rotated or flipped, paint the "original" sprite
-		if (!bmd.rect.equals(rect) && (data.angle != FlxFrameAngle.ANGLE_0 || data.flipX || data.flipY)) {
-			bmd = data.paintRotatedAndFlipped();
-			rect.setTo(0, 0, data.sourceSize.x, data.sourceSize.y);
-		}
-		
-		if (style.backgroundImageClipTop != null && style.backgroundImageClipBottom != null && style.backgroundImageClipLeft != null && style.backgroundImageClipRight != null) {
-			rect.x += style.backgroundImageClipLeft;
-			rect.y += style.backgroundImageClipTop;
-			rect.width = Math.min(rect.width, style.backgroundImageClipRight - style.backgroundImageClipLeft);
-			rect.height = Math.min(rect.height, style.backgroundImageClipBottom - style.backgroundImageClipTop);
-		}
-		
-		var slice:haxe.ui.geom.Rectangle = null;
-		
-		if (style.backgroundImageSliceTop != null && style.backgroundImageSliceBottom != null && style.backgroundImageSliceLeft != null && style.backgroundImageSliceRight != null) {
-			slice = new haxe.ui.geom.Rectangle(style.backgroundImageSliceLeft, style.backgroundImageSliceTop, style.backgroundImageSliceRight - style.backgroundImageSliceLeft, style.backgroundImageSliceBottom - style.backgroundImageSliceTop);
-		}
-		
-		if (slice == null) {
-			
-			var matrix:Matrix = null;
-			
-			if (style.backgroundImageRepeat == "stretch") {
-				matrix = new Matrix();
-				matrix.translate( -rect.x, -rect.y);
-				matrix.scale(sprite.frameWidth / rect.width, sprite.frameHeight / rect.height);
-			}
-			
-			if (matrix == null) {
-				
-				var blitPt = new Point();
-				
-				if (style.backgroundImageRepeat == null) {
-					sprite.pixels.copyPixels(bmd, rect, blitPt);
-				}
-				
-				else if (style.backgroundImageRepeat == "repeat") {
-					
-					var repX = Math.ceil(sprite.frameWidth / rect.width);
-					var repY = Math.ceil(sprite.frameHeight / rect.height);
-					
-					for (i in 0...repX) {
-						
-						blitPt.x = i * rect.width;
-						
-						for (j in 0...repY) {
-							
-							blitPt.y = j * rect.height;
-							
-							sprite.pixels.copyPixels(bmd, rect, blitPt);
-						}
-					}
-				}
-			}
-			
-			else {
-				sprite.pixels.draw(bmd, matrix, null, null, null);
-			}
-			
-			sprite.dirty = true;
-		}
-		
-		else {
-			
-			var rects = Slice9.buildRects(sprite.frameWidth, sprite.frameHeight, rect.width, rect.height, slice);
-			
-			var src = null;
-			for (i in 0...rects.src.length) {
-				
-				src = rects.src[i];
-				
-				src.left += rect.x;
-				src.top += rect.y;
-			}
-			
-			var srcOpenFL = new Rectangle();
-			var dstOpenFL = new Rectangle();
-			var dstPt = new Point();
-			var mat = new Matrix();
-			
-			var pixels = sprite.pixels;
-			
-			// 9-slice credit @MSGhero and @IBwWG: https://gist.github.com/IBwWG/9ffe25a059983e7e4eeb7640d6645a37
-			
-			// copyPx() the corners
-			pixels.copyPixels(bmd, setOpenFLRect(srcOpenFL, rects.src[0]), setOpenFLRect(dstOpenFL, rects.dst[0]).topLeft, null, null, true); // TL
-			pixels.copyPixels(bmd, setOpenFLRect(srcOpenFL, rects.src[2]), setOpenFLRect(dstOpenFL, rects.dst[2]).topLeft, null, null, true); // TR
-			pixels.copyPixels(bmd, setOpenFLRect(srcOpenFL, rects.src[6]), setOpenFLRect(dstOpenFL, rects.dst[6]).topLeft, null, null, true); // BL
-			pixels.copyPixels(bmd, setOpenFLRect(srcOpenFL, rects.src[8]), setOpenFLRect(dstOpenFL, rects.dst[8]).topLeft, null, null, true); // BR
-			
-			// draw() the sides and center
-			var tl = rects.src[0];
-			var center = rects.src[4];
-			var br = rects.src[8];
-			
-			var scaleH = rects.dst[4].width / center.width;
-			var scaleV = rects.dst[4].height / center.height;
-			
-			// is it better to draw() from bmd (scaling a large bmd) or from a temp copyPx slice (creates a new bmd each time)?
-			
-			setOpenFLRect(dstOpenFL, rects.dst[1]);
-			mat.translate(tl.width * (1 / scaleH - 1) - rect.x, -rect.y);
-			mat.scale(scaleH, 1);
-			pixels.draw(bmd, mat, null, null, dstOpenFL); // T
-			
-			mat.identity();
-			
-			setOpenFLRect(dstOpenFL, rects.dst[3]);
-			mat.translate( -rect.x, tl.height * (1 / scaleV - 1) - rect.y);
-			mat.scale(1, scaleV);
-			pixels.draw(bmd, mat, null, null, dstOpenFL); // L
-			
-			mat.identity();
-			
-			setOpenFLRect(dstOpenFL, rects.dst[4]);
-			mat.translate(tl.width * (1 / scaleH - 1) - rect.x, tl.height * (1 / scaleV - 1) - rect.y);
-			mat.scale(scaleH, scaleV);
-			pixels.draw(bmd, mat, null, null, dstOpenFL); // C
-			
-			mat.identity();
-			
-			setOpenFLRect(dstOpenFL, rects.dst[5]);
-			mat.translate(sprite.frameWidth - rect.width - rect.x, tl.height * (1 / scaleV - 1) - rect.y);
-			mat.scale(1, scaleV);
-			pixels.draw(bmd, mat, null, null, dstOpenFL); // R
-			
-			mat.identity();
-			
-			setOpenFLRect(dstOpenFL, rects.dst[7]);
-			mat.translate(tl.width * (1 / scaleH - 1) - rect.x, sprite.frameHeight - rect.height - rect.y);
-			mat.scale(scaleH, 1);
-			pixels.draw(bmd, mat, null, null, dstOpenFL); // B
-		}
-	}
-	
-	static function setOpenFLRect(oflRect:flash.geom.Rectangle, uiRect:haxe.ui.geom.Rectangle):flash.geom.Rectangle {
-		oflRect.setTo(uiRect.left, uiRect.top, uiRect.width, uiRect.height);
-		return oflRect;
-	}
+        var bmd = data.parent.bitmap;
+        var rect = data.frame.copyToFlash();
+        
+        // if it's a spritesheet and the frame is rotated or flipped, paint the "original" sprite
+        if (!bmd.rect.equals(rect) && (data.angle != FlxFrameAngle.ANGLE_0 || data.flipX || data.flipY)) {
+            bmd = data.paintRotatedAndFlipped();
+            rect.setTo(0, 0, data.sourceSize.x, data.sourceSize.y);
+        }
+        
+        if (style.backgroundImageClipTop != null && style.backgroundImageClipBottom != null && style.backgroundImageClipLeft != null && style.backgroundImageClipRight != null) {
+            rect.x += style.backgroundImageClipLeft;
+            rect.y += style.backgroundImageClipTop;
+            rect.width = Math.min(rect.width, style.backgroundImageClipRight - style.backgroundImageClipLeft);
+            rect.height = Math.min(rect.height, style.backgroundImageClipBottom - style.backgroundImageClipTop);
+        }
+        
+        var slice:haxe.ui.geom.Rectangle = null;
+        
+        if (style.backgroundImageSliceTop != null && style.backgroundImageSliceBottom != null && style.backgroundImageSliceLeft != null && style.backgroundImageSliceRight != null) {
+            slice = new haxe.ui.geom.Rectangle(style.backgroundImageSliceLeft, style.backgroundImageSliceTop, style.backgroundImageSliceRight - style.backgroundImageSliceLeft, style.backgroundImageSliceBottom - style.backgroundImageSliceTop);
+        }
+        
+        if (slice == null) {
+            
+            var matrix:Matrix = null;
+            
+            if (style.backgroundImageRepeat == "stretch") {
+                matrix = new Matrix();
+                matrix.translate( -rect.x, -rect.y);
+                matrix.scale(sprite.frameWidth / rect.width, sprite.frameHeight / rect.height);
+            }
+            
+            if (matrix == null) {
+                
+                var blitPt = new Point();
+                
+                if (style.backgroundImageRepeat == null) {
+                    sprite.pixels.copyPixels(bmd, rect, blitPt);
+                }
+                
+                else if (style.backgroundImageRepeat == "repeat") {
+                    
+                    var repX = Math.ceil(sprite.frameWidth / rect.width);
+                    var repY = Math.ceil(sprite.frameHeight / rect.height);
+                    
+                    for (i in 0...repX) {
+                        
+                        blitPt.x = i * rect.width;
+                        
+                        for (j in 0...repY) {
+                            
+                            blitPt.y = j * rect.height;
+                            
+                            sprite.pixels.copyPixels(bmd, rect, blitPt);
+                        }
+                    }
+                }
+            }
+            
+            else {
+                sprite.pixels.draw(bmd, matrix, null, null, null);
+            }
+            
+            sprite.dirty = true;
+        }
+        
+        else {
+            
+            var rects = Slice9.buildRects(sprite.frameWidth, sprite.frameHeight, rect.width, rect.height, slice);
+            
+            var src = null;
+            for (i in 0...rects.src.length) {
+                
+                src = rects.src[i];
+                
+                src.left += rect.x;
+                src.top += rect.y;
+            }
+            
+            var srcOpenFL = new Rectangle();
+            var dstOpenFL = new Rectangle();
+            var dstPt = new Point();
+            var mat = new Matrix();
+            
+            var pixels = sprite.pixels;
+            
+            // 9-slice credit @MSGhero and @IBwWG: https://gist.github.com/IBwWG/9ffe25a059983e7e4eeb7640d6645a37
+            
+            // copyPx() the corners
+            pixels.copyPixels(bmd, setOpenFLRect(srcOpenFL, rects.src[0]), setOpenFLRect(dstOpenFL, rects.dst[0]).topLeft, null, null, true); // TL
+            pixels.copyPixels(bmd, setOpenFLRect(srcOpenFL, rects.src[2]), setOpenFLRect(dstOpenFL, rects.dst[2]).topLeft, null, null, true); // TR
+            pixels.copyPixels(bmd, setOpenFLRect(srcOpenFL, rects.src[6]), setOpenFLRect(dstOpenFL, rects.dst[6]).topLeft, null, null, true); // BL
+            pixels.copyPixels(bmd, setOpenFLRect(srcOpenFL, rects.src[8]), setOpenFLRect(dstOpenFL, rects.dst[8]).topLeft, null, null, true); // BR
+            
+            // draw() the sides and center
+            var tl = rects.src[0];
+            var center = rects.src[4];
+            var br = rects.src[8];
+            
+            var scaleH = rects.dst[4].width / center.width;
+            var scaleV = rects.dst[4].height / center.height;
+            
+            // is it better to draw() from bmd (scaling a large bmd) or from a temp copyPx slice (creates a new bmd each time)?
+            
+            setOpenFLRect(dstOpenFL, rects.dst[1]);
+            mat.translate(tl.width * (1 / scaleH - 1) - rect.x, -rect.y);
+            mat.scale(scaleH, 1);
+            pixels.draw(bmd, mat, null, null, dstOpenFL); // T
+            
+            mat.identity();
+            
+            setOpenFLRect(dstOpenFL, rects.dst[3]);
+            mat.translate( -rect.x, tl.height * (1 / scaleV - 1) - rect.y);
+            mat.scale(1, scaleV);
+            pixels.draw(bmd, mat, null, null, dstOpenFL); // L
+            
+            mat.identity();
+            
+            setOpenFLRect(dstOpenFL, rects.dst[4]);
+            mat.translate(tl.width * (1 / scaleH - 1) - rect.x, tl.height * (1 / scaleV - 1) - rect.y);
+            mat.scale(scaleH, scaleV);
+            pixels.draw(bmd, mat, null, null, dstOpenFL); // C
+            
+            mat.identity();
+            
+            setOpenFLRect(dstOpenFL, rects.dst[5]);
+            mat.translate(sprite.frameWidth - rect.width - rect.x, tl.height * (1 / scaleV - 1) - rect.y);
+            mat.scale(1, scaleV);
+            pixels.draw(bmd, mat, null, null, dstOpenFL); // R
+            
+            mat.identity();
+            
+            setOpenFLRect(dstOpenFL, rects.dst[7]);
+            mat.translate(tl.width * (1 / scaleH - 1) - rect.x, sprite.frameHeight - rect.height - rect.y);
+            mat.scale(scaleH, 1);
+            pixels.draw(bmd, mat, null, null, dstOpenFL); // B
+        }
+    }
+    
+    static function setOpenFLRect(oflRect:flash.geom.Rectangle, uiRect:haxe.ui.geom.Rectangle):flash.geom.Rectangle {
+        oflRect.setTo(uiRect.left, uiRect.top, uiRect.width, uiRect.height);
+        return oflRect;
+    }
 }
