@@ -1,21 +1,21 @@
 {
-    "version": "1.5.0",
     "contributors": [
         "haxeui",
         "MSGhero",
         "ianharrigan"
     ],
-    "dependencies": {
-        "haxeui-core": "",
-        "flixel": ""
-    },
-    "license": "MIT",
+    "version": "1.6.0",
+    "releasenote": "1.6.0 release",
     "tags": [
         "ui",
         "gui",
         "flixel"
     ],
-    "releasenote": "1.5.0 release",
+    "license": "MIT",
+    "dependencies": {
+        "flixel": "",
+        "haxeui-core": ""
+    },
     "name": "haxeui-flixel",
     "description": "The Flixel backend of the HaxeUI framework",
     "url": "https://github.com/haxeui/haxeui-flixel"
