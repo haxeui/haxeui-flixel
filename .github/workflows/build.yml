@@ -9,11 +9,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        haxe-version: [4.2.5, 4.3.0]
+        haxe-version: [4.2.5, 4.3.0, 4.3.1]
         target: [html5, linux, windows, mac]
         exclude:  
-          - os: windows-latest
-            haxe-version: 3.4.7
           - os: ubuntu-latest
             target: windows
           - os: ubuntu-latest
