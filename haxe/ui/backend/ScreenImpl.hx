@@ -318,13 +318,15 @@ class ScreenImpl extends ScreenBase {
     }
     
     private function __onMouseDown(event:MouseEvent) {
+        trace(">>>>>>>>>>>>>>>>>>>>>>>>>> MOUSE DOWN");
         var state = FlxG.state;
         if (state.subState != null) {
             state = state.subState;
         }
         var contains = containsUnsolicitedMemberAt(event.screenX, event.screenY, state);
         if (contains) { // lets attempt not in intercept unsolicated member events
-            return;
+            trace(">>>>>>>>>>>>>>>>>>> BOB");
+            //return;
         }
 
         var fn = _mapping.get(MouseEvent.MOUSE_DOWN);
