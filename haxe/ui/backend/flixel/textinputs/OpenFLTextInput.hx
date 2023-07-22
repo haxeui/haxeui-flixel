@@ -61,9 +61,22 @@ class OpenFLTextInput extends TextBase {
     }
     
     public function update() {
+        var ref = parentComponent;
+        // TODO: perf?
+        while (ref != null) {
+            if (ref.hidden) {
+                tf.visible = false;
+                _parentHidden = true;
+                break;
+            }
+            ref = ref.parentComponent;
+        }
+
         if (_parentHidden == true) {
             return;
         }
+
+        tf.visible = true;
         
         var x1 = tf.x;
         var y1 = tf.y;
