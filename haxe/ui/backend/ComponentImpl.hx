@@ -322,7 +322,7 @@ class ComponentImpl extends ComponentBase {
 
     // TODO: really need revision on if this is still needed, or what purpose it was originally supposed
     // to serve, maybe its no longer needed in flixel 5.0? 
-    private var _overrideSkipTransformChildren:Bool = false;
+    private var _overrideSkipTransformChildren:Bool = true;
     private override function handleVisibility(show:Bool):Void {
         if (_overrideSkipTransformChildren) {
             _skipTransformChildren = true;
