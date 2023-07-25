@@ -45,21 +45,9 @@ class OpenFLTextInput extends TextBase {
     }
     
     public function attach() {
-        parentComponent.registerEvent(UIEvent.HIDDEN, onParentHidden);
-        parentComponent.registerEvent(UIEvent.SHOWN, onParentShown);
     }
     
     private var _parentHidden:Bool = false;
-    private function onParentHidden(e) {
-        _parentHidden = true;
-        tf.visible = false;
-    }
-    
-    private function onParentShown(e) {
-        _parentHidden = false;
-        tf.visible = true;
-    }
-    
     public function update() {
         var ref = parentComponent;
         // TODO: perf?
@@ -109,6 +97,8 @@ class OpenFLTextInput extends TextBase {
     }
     
     public function destroy() {
+        _parentHidden = true;
+        tf.visible = false;
         FlxG.removeChild(tf);
         tf = null;
     }

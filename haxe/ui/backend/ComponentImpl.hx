@@ -253,7 +253,7 @@ class ComponentImpl extends ComponentBase {
                 break;
             }
         }
-        
+
         insert(index + indexOffset, child);
         return child;
     }
@@ -328,6 +328,9 @@ class ComponentImpl extends ComponentBase {
             _skipTransformChildren = true;
         }
         super.set_visible(show);
+        for (c in this.childComponents) {
+            c.handleVisibility(show);
+        }
         if (_overrideSkipTransformChildren) {
             _skipTransformChildren = false;
         }
@@ -338,20 +341,31 @@ class ComponentImpl extends ComponentBase {
     //***********************************************************************************************************
     private override function applyStyle(style:Style) {
         if (style.opacity != null) {
-            setAlpha(style.opacity);
+            applyAlpha(style.opacity);
         } else if (_surface.alpha != 1) {
-            setAlpha(1);
+            applyAlpha(1);
         }
         
         FlxStyleHelper.applyStyle(_surface, style);
         applyFilters(style);
     }
     
-    private function setAlpha(value:Float) {
+    private function applyAlpha(value:Float) {
         _surface.alpha = value;
-        for (c in childComponents) {
-            c.setAlpha(value);
+        if (hasTextInput()) {
+            getTextInput().tf.alpha = value;
         }
+        for (c in childComponents) {
+            c.applyAlpha(value);
+        }
+    }
+
+    public override function set_alpha(alpha:Float):Float {
+        _surface.alpha = alpha;
+        if (hasTextInput()) {
+            getTextInput().tf.alpha = alpha;
+        }
+        return super.set_alpha(alpha);
     }
     
     private function applyFilters(style:Style) {
@@ -1104,8 +1118,14 @@ class ComponentImpl extends ComponentBase {
 
     private var _updates:Int = 0;
     public override function update(elapsed:Float) {
+        if (_destroyed) {
+            super.update(elapsed);
+            return;
+        }
         if (_destroy == true) {
             destroyInternal();
+            super.update(elapsed);
+            return;
         }
         
         clearCaches();
@@ -1160,7 +1180,11 @@ class ComponentImpl extends ComponentBase {
         }
     }
 
+    private var _destroyed:Bool = false;
     private function destroyInternal() {
+        if (!_allowDestroy) {
+            return;
+        }
         if (_surface != null) {
             _surface.destroy();
             _surface = null;
@@ -1185,10 +1209,17 @@ class ComponentImpl extends ComponentBase {
             _unsolicitedMembers = null;
         }
         
+        _destroy = false;
+        _destroyed = true;
         super.destroy();
     }
     
+    private var _allowDestroy:Bool = true;
     public override function destroy():Void {
+        if (!_allowDestroy) {
+            return;
+        }
+
         if (parentComponent != null) {
             if (parentComponent.getComponentIndex(cast this) != -1) {
                 parentComponent.removeComponent(cast this);
@@ -1197,7 +1228,7 @@ class ComponentImpl extends ComponentBase {
         } else {
             Screen.instance.removeComponent(cast this);
         }
-        
+
         _destroy = true;
     }
     
