@@ -1,9 +1,9 @@
 package haxe.ui.backend.flixel;
 
-import flixel.util.FlxSpriteUtil;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.util.FlxColor;
+import flixel.util.FlxSpriteUtil;
 import haxe.ui.Toolkit;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.geom.Slice9;

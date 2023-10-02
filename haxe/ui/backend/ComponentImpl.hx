@@ -37,16 +37,20 @@ class ComponentImpl extends ComponentBase {
     private var _lastClickX:Float = -1;
     private var _lastClickY:Float = -1;
     
+    private var asComponent:Component;
+
     public function new() {
         super();
         _eventMap = new Map<String, UIEvent->Void>();
         
         this.pixelPerfectRender = true;
         this.moves = false;
-        super.set_visible(false);
+        superVisible(false);
+        
+        asComponent = cast(this, Component);
         
         if (Platform.instance.isMobile) {
-            cast(this, Component).addClass(":mobile");
+            asComponent.addClass(":mobile");
         }
         
         scrollFactor.set(0, 0); // ui doesn't scroll by default
@@ -61,9 +65,8 @@ class ComponentImpl extends ComponentBase {
     }
     
     private function recursiveReady() {
-        var component:Component = cast(this, Component);
-        component.ready();
-        for (child in component.childComponents) {
+        asComponent.ready();
+        for (child in asComponent.childComponents) {
             child.recursiveReady();
         }
     }
@@ -88,7 +91,7 @@ class ComponentImpl extends ComponentBase {
             return;
         }
         
-        var c:Component = cast(this, Component);
+        var c:Component = asComponent;
         var xpos:Float = 0;
         var ypos:Float = 0;
         while (c != null) {
@@ -122,7 +125,7 @@ class ComponentImpl extends ComponentBase {
             return _cachedRootComponent;
         }
         
-        var c:Component = cast(this, Component);
+        var c:Component = asComponent;
         while (c.parentComponent != null) {
             c = c.parentComponent;
         }
@@ -143,7 +146,7 @@ class ComponentImpl extends ComponentBase {
             return null;
         }
         
-        var c:Component = cast(this, Component);
+        var c:Component = asComponent;
         var clip:Component = null;
         while (c != null) {
             if (c.componentClipRect != null) {
@@ -163,15 +166,15 @@ class ComponentImpl extends ComponentBase {
 
     @:access(haxe.ui.core.Component)
     private function inBounds(x:Float, y:Float):Bool {
-        if (cast(this, Component).hidden == true) {
+        if (asComponent.hidden == true) {
             return false;
         }
 
         var b:Bool = false;
         var sx = screenX;
         var sy = screenY;
-        var cx = cast(this, Component).componentWidth * Toolkit.scaleX;
-        var cy = cast(this, Component).componentHeight * Toolkit.scaleY;
+        var cx = asComponent.componentWidth * Toolkit.scaleX;
+        var cy = asComponent.componentHeight * Toolkit.scaleY;
 
         if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
             b = true;
@@ -222,8 +225,10 @@ class ComponentImpl extends ComponentBase {
         var h:Int = Std.int(height * Toolkit.scaleY);
         if (_surface.width != w || _surface.height != h) {
             if (w <= 0 || h <= 0) {
+                _surface.graphic.destroy();
                 _surface.makeGraphic(1, 1, 0x0, true);
             } else {
+                _surface.graphic.destroy();
                 _surface.makeGraphic(w, h, 0x0, true);
                 applyStyle(style);
             }
@@ -241,6 +246,20 @@ class ComponentImpl extends ComponentBase {
     private override function handleAddComponent(child:Component):Component {
         handleAddComponentAt(child, childComponents.length - 1);
         return child;
+    }
+
+    // TODO: really need revision on if this is still needed, or what purpose it was originally supposed
+    // to serve, maybe its no longer needed in flixel 5.0? 
+    private var _overrideSkipTransformChildren:Bool = true;
+    private function superVisible(value:Bool) {
+        if (_overrideSkipTransformChildren) {
+            _skipTransformChildren = true;
+        }
+        super.set_visible(value);
+        _skipTransformChildren = false;
+        if (_overrideSkipTransformChildren) {
+            _skipTransformChildren = false;
+        }
     }
 
     private override function handleAddComponentAt(child:Component, index:Int):Component {
@@ -320,19 +339,10 @@ class ComponentImpl extends ComponentBase {
         }
     }
 
-    // TODO: really need revision on if this is still needed, or what purpose it was originally supposed
-    // to serve, maybe its no longer needed in flixel 5.0? 
-    private var _overrideSkipTransformChildren:Bool = true;
     private override function handleVisibility(show:Bool):Void {
-        if (_overrideSkipTransformChildren) {
-            _skipTransformChildren = true;
-        }
-        super.set_visible(show);
+        superVisible(show);
         for (c in this.childComponents) {
             c.handleVisibility(show);
-        }
-        if (_overrideSkipTransformChildren) {
-            _skipTransformChildren = false;
         }
     }
 
@@ -846,10 +856,8 @@ class ComponentImpl extends ComponentBase {
                     if (Platform.instance.isMobile) {
                         mouseEvent.touchEvent = true;
                     }
-                    Toolkit.callLater(function() {
-                        fn(mouseEvent);
-                        event.canceled = mouseEvent.canceled;
-                    });
+                    fn(mouseEvent);
+                    event.canceled = mouseEvent.canceled;
                 }
                 
                 if (type == haxe.ui.events.MouseEvent.CLICK) {
@@ -968,7 +976,7 @@ class ComponentImpl extends ComponentBase {
             _textDisplay.tf.visible = false;
             add(_textDisplay.tf);
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
-                _textDisplay.tf.visible = true;
+                //_textDisplay.tf.visible = true;
                 applyFilters(style);
             });
         }
@@ -1134,8 +1142,11 @@ class ComponentImpl extends ComponentBase {
 
         _updates++;
         if (_updates == 2) {
-            if (cast(this, Component).hidden == false) {
+            if (asComponent.hidden == false) {
                 super.set_visible(true);
+                if (hasTextDisplay()) {
+                    _textDisplay.tf.visible = true;
+                }
             } else {
                 super.set_visible(false);
             }
@@ -1163,7 +1174,7 @@ class ComponentImpl extends ComponentBase {
     // application, this means that when things are removed from the screen (and not destroyed) it can leave them
     // behind
     private function applyAddInternal() {
-        if (hasTextInput() && cast(this, Component).hidden == false) {
+        if (hasTextInput() && asComponent.hidden == false) {
             getTextInput().tf.visible = true;
         }
         for (c in childComponents) {

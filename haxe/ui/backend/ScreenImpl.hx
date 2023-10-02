@@ -112,14 +112,14 @@ class ScreenImpl extends ScreenBase {
             checkMembers(group);
         }
     }
-    
+
     private function onMemberRemoved(m:FlxBasic) {
         if ((m is Component) && rootComponents.indexOf(cast(m, Component)) != -1) {
             @:privateAccess var isDisposed = cast(m, Component)._isDisposed;
             removeComponent(cast m, isDisposed);
         }
     }
-    
+
     private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
         var found = false; // we only want top level components
         for (m in state.members) {
