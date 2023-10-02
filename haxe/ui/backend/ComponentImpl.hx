@@ -176,7 +176,7 @@ class ComponentImpl extends ComponentBase {
         var cx = asComponent.componentWidth * Toolkit.scaleX;
         var cy = asComponent.componentHeight * Toolkit.scaleY;
 
-        if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
+        if (x >= sx && y >= sy && x <= sx + cx && y < sy + cy) {
             b = true;
         }
 
@@ -189,7 +189,7 @@ class ComponentImpl extends ComponentBase {
                 var sy = (clip.screenY + (clip.componentClipRect.top * Toolkit.scaleY));
                 var cx = clip.componentClipRect.width * Toolkit.scaleX;
                 var cy = clip.componentClipRect.height * Toolkit.scaleY;
-                if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
+                if (x >= sx && y >= sy && x <= sx + cx && y < sy + cy) {
                     b = true;
                 }
             }
@@ -356,6 +356,11 @@ class ComponentImpl extends ComponentBase {
             applyAlpha(1);
         }
         
+        if (style != null && style.cursor != null && _mouseOverFlag) {
+            Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
+            _cursorSet = true;
+        }
+
         FlxStyleHelper.applyStyle(_surface, style);
         applyFilters(style);
     }
@@ -698,6 +703,7 @@ class ComponentImpl extends ComponentBase {
     }
     
     private var _mouseOverFlag:Bool = false;
+    private var _cursorSet:Bool = false;
     private function __onMouseMove(event:MouseEvent) {
         var x = event.screenX;
         var y = event.screenY;
@@ -731,6 +737,11 @@ class ComponentImpl extends ComponentBase {
 
             var i = inBounds(x, y);
             if (i == true) {
+                if (this.style != null && this.style.cursor != null) {
+                    Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
+                    _cursorSet = true;
+                }
+
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
                 if (fn != null) {
                     var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
@@ -746,6 +757,11 @@ class ComponentImpl extends ComponentBase {
             
             if (i == true && _mouseOverFlag == false) {
                 if (isEventRelevant(getComponentsAtPoint(x, y, true), MouseEvent.MOUSE_OVER)) {
+                    if (this.style != null && this.style.cursor != null) {
+                        Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
+                        _cursorSet = true;
+                    }
+    
                     _mouseOverFlag = true;
                     var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
                     if (fn != null) {
@@ -760,6 +776,11 @@ class ComponentImpl extends ComponentBase {
                     }
                 }
             } else if (i == false && _mouseOverFlag == true) {
+                if (_cursorSet) {
+                    Screen.instance.setCursor("default");
+                    _cursorSet = false;
+                }
+
                 _mouseOverFlag = false;
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
                 if (fn != null) {

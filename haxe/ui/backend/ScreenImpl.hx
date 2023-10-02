@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import haxe.ui.Toolkit;
+import haxe.ui.backend.flixel.CursorHelper;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -183,6 +184,30 @@ class ScreenImpl extends ScreenBase {
         return s;
     }
     
+    private var _cursor:String = null;
+    public function setCursor(cursor:String, offsetX:Null<Int> = null, offsetY:Null<Int> = null) {
+        #if haxeui_flixel_no_custom_cursors
+        return;
+        #end
+
+        if (!CursorHelper.useCustomCursors) {
+            return;
+        }
+
+        if (_cursor == cursor) {
+            return;
+        }
+        _cursor = cursor;
+        if (CursorHelper.hasCursor(_cursor)) {
+            var cursorInfo = CursorHelper.registeredCursors.get(_cursor);
+            FlxG.mouse.load(new FlxSprite().loadGraphic(cursorInfo.graphic).pixels, cursorInfo.scale, cursorInfo.offsetX, cursorInfo.offsetY);
+        } else if (openfl.Assets.exists(_cursor)) {
+            FlxG.mouse.load(new FlxSprite().loadGraphic(_cursor).pixels, 1, offsetX, offsetY);
+        } else {
+            FlxG.mouse.load(null);
+        }
+    }
+
     public override function addComponent(component:Component):Component {
         if (rootComponents.length > 0) {
             var cameras = StateHelper.findCameras(rootComponents[0]);
