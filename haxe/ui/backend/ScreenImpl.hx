@@ -216,15 +216,6 @@ class ScreenImpl extends ScreenBase {
             }
         }
         
-        // this is a bit hacky: the problem is that tooltips are added to the current state
-        // and that state can destroy things at will, haxeui will honour the destruction
-        // remove destroyed components from the screen, however, sometimes (like with tooltips)
-        // its not supposed to be destroyed and will be reused, this stops haxeui from destroying
-        // the components
-        if ((component is haxe.ui.tooltips.ToolTip)) {
-            component._allowDestroy = false;
-        }
-
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.add(component);
             if (rootComponents.indexOf(component) == -1) {
