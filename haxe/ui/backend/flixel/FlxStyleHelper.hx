@@ -76,11 +76,24 @@ class FlxStyleHelper {
         } else { // compound border
             var org = rc.clone();
             
+            var borderTopSize:Float = 0;
+            if (style.borderTopSize != null && style.borderTopSize > 0) {
+                borderTopSize = style.borderTopSize * Toolkit.scale;
+            }
+            var borderLeftSize:Float = 0;
+            if (style.borderLeftSize != null && style.borderLeftSize > 0) {
+                borderLeftSize = style.borderLeftSize * Toolkit.scale;
+            }
+            var borderRightSize:Float = 0;
+            if (style.borderRightSize != null && style.borderRightSize > 0) {
+                borderRightSize = style.borderRightSize * Toolkit.scale;
+            }
+
             if (style.borderTopSize != null && style.borderTopSize > 0) {
                 var borderSize = style.borderTopSize * Toolkit.scale;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderTopColor;
-                pixels.fillRect(new Rectangle(rc.left, rc.top, org.width, borderSize), color); // top
+                pixels.fillRect(new Rectangle(rc.left + borderLeftSize, rc.top, org.width - (borderLeftSize + borderRightSize), borderSize), color); // top
                 rc.top += borderSize;
             }
             
@@ -96,7 +109,7 @@ class FlxStyleHelper {
                 var borderSize = style.borderLeftSize * Toolkit.scale;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderLeftColor;
-                pixels.fillRect(new Rectangle(rc.left, rc.top, borderSize, org.height - rc.top), color); // left 
+                pixels.fillRect(new Rectangle(rc.left, rc.top - borderTopSize, borderSize, org.height - rc.top + borderTopSize), color); // left 
                 rc.left += borderSize;
             }
             
@@ -104,7 +117,7 @@ class FlxStyleHelper {
                 var borderSize = style.borderRightSize * Toolkit.scale;
                 var opacity = style.borderOpacity == null ? 1 : style.borderOpacity;
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderRightColor;
-                pixels.fillRect(new Rectangle(org.width - borderSize, rc.top, borderSize, org.height), color); // right 
+                pixels.fillRect(new Rectangle(org.width - borderSize, rc.top - borderTopSize, borderSize, org.height + borderTopSize), color); // right 
                 rc.right -= borderSize;
             }
         }
