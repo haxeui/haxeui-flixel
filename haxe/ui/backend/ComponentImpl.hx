@@ -367,7 +367,7 @@ class ComponentImpl extends ComponentBase {
         if (style.opacity != null) {
             applyAlpha(style.opacity);
         } else if (_surface.alpha != 1) {
-            applyAlpha(1);
+            //applyAlpha(1);
         }
         
         if (style != null && style.cursor != null && _mouseOverFlag) {
@@ -381,6 +381,9 @@ class ComponentImpl extends ComponentBase {
     
     private function applyAlpha(value:Float) {
         _surface.alpha = value;
+        if (hasTextDisplay()) {
+            getTextDisplay().tf.alpha = value;
+        }
         if (hasTextInput()) {
             getTextInput().tf.alpha = value;
         }
@@ -391,6 +394,9 @@ class ComponentImpl extends ComponentBase {
 
     public override function set_alpha(alpha:Float):Float {
         _surface.alpha = alpha;
+        if (hasTextDisplay()) {
+            getTextDisplay().tf.alpha = value;
+        }
         if (hasTextInput()) {
             getTextInput().tf.alpha = alpha;
         }
