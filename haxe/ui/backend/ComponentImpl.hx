@@ -340,9 +340,23 @@ class ComponentImpl extends ComponentBase {
     }
 
     private override function handleVisibility(show:Bool):Void {
+        applyVisibility(show);
+    }
+
+    private function applyVisibility(show:Bool):Void {
         superVisible(show);
+
+        if (hasTextDisplay()) {
+            _textDisplay.tf.visible = show;
+        }
+        if (hasTextInput()) {
+            _textInput.tf.visible = show;
+        }
+
         for (c in this.childComponents) {
-            c.handleVisibility(show);
+            if (!c.hidden) {
+                c.applyVisibility(show);
+            }
         }
     }
 
@@ -1164,12 +1178,9 @@ class ComponentImpl extends ComponentBase {
         _updates++;
         if (_updates == 2) {
             if (asComponent.hidden == false) {
-                super.set_visible(true);
-                if (hasTextDisplay()) {
-                    _textDisplay.tf.visible = true;
-                }
+                applyVisibility(true);
             } else {
-                super.set_visible(false);
+                applyVisibility(false);
             }
         }
         
