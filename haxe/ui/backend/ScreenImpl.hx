@@ -238,6 +238,8 @@ class ScreenImpl extends ScreenBase {
         }
         if (dispose) {
             component.destroyInternal();
+            component.destroy();
+            component.destroyComponent();
         } else {
             component.applyRemoveInternal();
         }
