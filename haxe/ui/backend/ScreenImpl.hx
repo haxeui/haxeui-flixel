@@ -276,15 +276,8 @@ class ScreenImpl extends ScreenBase {
     
     private override function handleSetComponentIndex(child:Component, index:Int) {
         var offset = 0;
-        var componentFound = false;
         StateHelper.currentState.forEach((item) -> {
-            if ((item is Component)) {
-                componentFound = true;
-            } else {
-                if (!componentFound) {
-                    offset++;
-                }
-            }
+            offset++;
         });
         
         StateHelper.currentState.remove(child);
