@@ -370,10 +370,12 @@ class ComponentImpl extends ComponentBase {
             //applyAlpha(1);
         }
         
+        /*
         if (style != null && style.cursor != null && _mouseOverFlag) {
             Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
             _cursorSet = true;
         }
+        */
 
         FlxStyleHelper.applyStyle(_surface, style);
         applyFilters(style);

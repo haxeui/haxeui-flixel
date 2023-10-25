@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 
+import haxe.ui.core.Screen;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -197,6 +198,7 @@ class ScreenImpl extends ScreenBase {
         if (_cursor == cursor) {
             return;
         }
+
         _cursor = cursor;
         if (CursorHelper.hasCursor(_cursor)) {
             var cursorInfo = CursorHelper.registeredCursors.get(_cursor);
@@ -224,6 +226,7 @@ class ScreenImpl extends ScreenBase {
             component.recursiveReady();
             onContainerResize();
             component.applyAddInternal();
+            checkResetCursor();
         }
         return component;
     }
@@ -246,6 +249,7 @@ class ScreenImpl extends ScreenBase {
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.remove(component, true);
         }
+        checkResetCursor();
         onContainerResize();
         return component;
     }
@@ -464,5 +468,28 @@ class ScreenImpl extends ScreenBase {
         }
 
         return false;
+    }
+
+    private function checkResetCursor(x:Null<Float> = null, y:Null<Float> = null) {
+        if (x == null) {
+            x = MouseHelper.currentMouseX;
+        }
+        if (y == null) {
+            y = MouseHelper.currentMouseY;
+        }
+        var components = Screen.instance.findComponentsUnderPoint(x, y);
+        var desiredCursor = "default";
+        var desiredCursorOffsetX:Null<Int> = null;
+        var desiredCursorOffsetY:Null<Int> = null;
+        for (c in components) {
+            if (c.style.cursor != null) {
+                desiredCursor = c.style.cursor;
+                desiredCursorOffsetX = c.style.cursorOffsetX;
+                desiredCursorOffsetX = c.style.cursorOffsetY;
+                break;
+            }
+        }
+
+        setCursor(desiredCursor, desiredCursorOffsetX, desiredCursorOffsetY);
     }
 }
