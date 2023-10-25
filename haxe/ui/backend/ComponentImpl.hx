@@ -929,6 +929,11 @@ class ComponentImpl extends ComponentBase {
         }
         _mouseDownFlag = false;
     }
+
+    #if haxeui_dont_impose_base_class
+    private function applyRootLayout(l:String) {
+    }
+    #end
     
     private function __onDoubleClick(event:MouseEvent) {
         if (StateHelper.hasMember(_surface) == false) {
