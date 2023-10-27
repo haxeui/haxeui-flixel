@@ -1,6 +1,8 @@
 package haxe.ui.backend;
 
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
+
+using StringTools;
 #if !js
 import haxe.io.Bytes;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
@@ -10,7 +12,6 @@ import openfl.net.FileReference;
 import openfl.net.FileReferenceList;
 #end
 
-using StringTools;
 
 class OpenFileDialogImpl extends OpenFileDialogBase {
     #if js
@@ -55,7 +56,6 @@ class OpenFileDialogImpl extends OpenFileDialogBase {
     private function buildFileFilters():Array<FileFilter> {
         var f = null;
         
-        /* DOESNT WORK AS OPENFL DOCS STATE
         if (options.extensions != null && options.extensions.length > 0) {
             f = [];
             for (e in options.extensions) {
@@ -77,7 +77,6 @@ class OpenFileDialogImpl extends OpenFileDialogBase {
                 f.push(new FileFilter(e.label, finalParts.join(";")));
             }
         }
-        */
         
         return f;
     }
