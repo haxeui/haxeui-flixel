@@ -1,10 +1,10 @@
 package haxe.ui.backend.flixel;
 
 import haxe.rtti.CType;
-import haxe.ui.core.ComponentClassMap;
-import haxe.ui.core.Screen;
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.core.Component;
+import haxe.ui.core.ComponentClassMap;
+import haxe.ui.core.Screen;
 
 using StringTools;
 
@@ -17,15 +17,15 @@ class UIRuntimeState extends UIStateBase { // uses rtti to "build" a class with 
 	public function new(assetId:String = null) {
 		super();
 		this.assetId = assetId;
-		buildViaRTTI();
-		linkViaRTTI();
 	}
 
 	public override function create() {
-		super.create();
+		buildViaRTTI();
+		linkViaRTTI();
 		if (root != null) {
 			Screen.instance.addComponent(root);
 		}
+		super.create();
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
