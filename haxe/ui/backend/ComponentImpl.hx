@@ -166,7 +166,7 @@ class ComponentImpl extends ComponentBase {
 
     @:access(haxe.ui.core.Component)
     private function inBounds(x:Float, y:Float):Bool {
-        if (asComponent.hidden == true || asComponent.hasScreen == false) {
+        if (asComponent.hidden == true) {
             return false;
         }
 
