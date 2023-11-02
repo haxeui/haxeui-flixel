@@ -1205,11 +1205,17 @@ class ComponentImpl extends ComponentBase {
             var value = this.componentClipRect;
             value.top = Std.int(value.top);
             value.left = Std.int(value.left);
-            var rect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
-                                   (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
-                                   (value.width * Toolkit.scaleX), (value.height * Toolkit.scaleY));
-            clipRect = rect;
-            rect.put();
+            if (parentComponent != null) {
+                var rect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
+                                    (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
+                                    (value.width * Toolkit.scaleX), (value.height * Toolkit.scaleY));
+                clipRect = rect;
+                rect.put();
+            } else { // top-level (root) components can also clip (Absolute auto clips via a css style), but this means they wont have a parentComponent set, lets handle them differently
+                var rect = FlxRect.get(_surface.x, _surface.y, value.width, value.height);
+                clipRect = rect;
+                rect.put();
+            }
         }
     }
     
