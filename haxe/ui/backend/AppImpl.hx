@@ -9,10 +9,12 @@ class AppImpl extends AppBase {
     }
     
     private override function build() {
+        var targetFramerate = Toolkit.backendProperties.getPropInt("haxe.ui.flixel.fps", 60);
+
         #if (flixel < "5.0.0")
-        Lib.current.stage.addChild(new FlxGame(0, 0, FlxHaxeUIAppState, 1, 60, 60, true));
+        Lib.current.stage.addChild(new FlxGame(0, 0, FlxHaxeUIAppState, 1, targetFramerate, targetFramerate, true));
         #else
-        Lib.current.stage.addChild(new FlxGame(0, 0, FlxHaxeUIAppState, 60, 60, true));
+        Lib.current.stage.addChild(new FlxGame(0, 0, FlxHaxeUIAppState, targetFramerate, targetFramerate, true));
         #end
         if (Toolkit.backendProperties.getPropBool("haxe.ui.flixel.fps.show")) {
             var x = Toolkit.backendProperties.getPropInt("haxe.ui.flixel.fps.left");

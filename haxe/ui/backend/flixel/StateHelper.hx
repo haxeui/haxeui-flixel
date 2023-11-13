@@ -25,6 +25,9 @@ class StateHelper {
     }
     
     public static function hasMember(member:FlxBasic, group:FlxTypedGroup<FlxBasic> = null):Bool {
+        // TODO: we drop frames because of this, need to revise / thing of a better way (or simply remove)
+        return true;
+
         if (group == null) {
             group = currentState;
         }

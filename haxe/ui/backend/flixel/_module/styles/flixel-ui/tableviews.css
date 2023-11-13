@@ -1,8 +1,0 @@
-.tableview .compounditemrenderer:selected {
-    background-color: #3399FF;
-    color: white;
-}
-
-.tableview .compounditemrenderer:selected .label {
-    color: white;
-}

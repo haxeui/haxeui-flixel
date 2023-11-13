@@ -6,9 +6,11 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import haxe.ui.Toolkit;
+import haxe.ui.backend.flixel.CursorHelper;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
+import haxe.ui.core.Screen;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
@@ -112,14 +114,14 @@ class ScreenImpl extends ScreenBase {
             checkMembers(group);
         }
     }
-    
+
     private function onMemberRemoved(m:FlxBasic) {
         if ((m is Component) && rootComponents.indexOf(cast(m, Component)) != -1) {
             @:privateAccess var isDisposed = cast(m, Component)._isDisposed;
             removeComponent(cast m, isDisposed);
         }
     }
-    
+
     private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
         var found = false; // we only want top level components
         for (m in state.members) {
@@ -183,6 +185,31 @@ class ScreenImpl extends ScreenBase {
         return s;
     }
     
+    private var _cursor:String = null;
+    public function setCursor(cursor:String, offsetX:Null<Int> = null, offsetY:Null<Int> = null) {
+        #if haxeui_flixel_no_custom_cursors
+        return;
+        #end
+
+        if (!CursorHelper.useCustomCursors) {
+            return;
+        }
+
+        if (_cursor == cursor) {
+            return;
+        }
+
+        _cursor = cursor;
+        if (CursorHelper.hasCursor(_cursor)) {
+            var cursorInfo = CursorHelper.registeredCursors.get(_cursor);
+            FlxG.mouse.load(new FlxSprite().loadGraphic(cursorInfo.graphic).pixels, cursorInfo.scale, cursorInfo.offsetX, cursorInfo.offsetY);
+        } else if (openfl.Assets.exists(_cursor)) {
+            FlxG.mouse.load(new FlxSprite().loadGraphic(_cursor).pixels, 1, offsetX, offsetY);
+        } else {
+            FlxG.mouse.load(null);
+        }
+    }
+
     public override function addComponent(component:Component):Component {
         if (rootComponents.length > 0) {
             var cameras = StateHelper.findCameras(rootComponents[0]);
@@ -191,15 +218,6 @@ class ScreenImpl extends ScreenBase {
             }
         }
         
-        // this is a bit hacky: the problem is that tooltips are added to the current state
-        // and that state can destroy things at will, haxeui will honour the destruction
-        // remove destroyed components from the screen, however, sometimes (like with tooltips)
-        // its not supposed to be destroyed and will be reused, this stops haxeui from destroying
-        // the components
-        if ((component is haxe.ui.tooltips.ToolTip)) {
-            component._allowDestroy = false;
-        }
-
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.add(component);
             if (rootComponents.indexOf(component) == -1) {
@@ -208,6 +226,7 @@ class ScreenImpl extends ScreenBase {
             component.recursiveReady();
             onContainerResize();
             component.applyAddInternal();
+            checkResetCursor();
         }
         return component;
     }
@@ -222,12 +241,15 @@ class ScreenImpl extends ScreenBase {
         }
         if (dispose) {
             component.destroyInternal();
+            component.destroy();
+            component.destroyComponent();
         } else {
             component.applyRemoveInternal();
         }
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.remove(component, true);
         }
+        checkResetCursor();
         onContainerResize();
         return component;
     }
@@ -257,8 +279,13 @@ class ScreenImpl extends ScreenBase {
     }
     
     private override function handleSetComponentIndex(child:Component, index:Int) {
+        var offset = 0;
+        StateHelper.currentState.forEach((item) -> {
+            offset++;
+        });
+        
         StateHelper.currentState.remove(child);
-        StateHelper.currentState.insert(index, child);
+        StateHelper.currentState.insert(index + offset, child);
     }
     
     private override function supportsEvent(type:String):Bool {
@@ -441,5 +468,28 @@ class ScreenImpl extends ScreenBase {
         }
 
         return false;
+    }
+
+    private function checkResetCursor(x:Null<Float> = null, y:Null<Float> = null) {
+        if (x == null) {
+            x = MouseHelper.currentMouseX;
+        }
+        if (y == null) {
+            y = MouseHelper.currentMouseY;
+        }
+        var components = Screen.instance.findComponentsUnderPoint(x, y);
+        var desiredCursor = "default";
+        var desiredCursorOffsetX:Null<Int> = null;
+        var desiredCursorOffsetY:Null<Int> = null;
+        for (c in components) {
+            if (c.style.cursor != null) {
+                desiredCursor = c.style.cursor;
+                desiredCursorOffsetX = c.style.cursorOffsetX;
+                desiredCursorOffsetX = c.style.cursorOffsetY;
+                break;
+            }
+        }
+
+        setCursor(desiredCursor, desiredCursorOffsetX, desiredCursorOffsetY);
     }
 }

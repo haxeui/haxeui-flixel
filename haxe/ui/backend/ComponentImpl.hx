@@ -37,16 +37,20 @@ class ComponentImpl extends ComponentBase {
     private var _lastClickX:Float = -1;
     private var _lastClickY:Float = -1;
     
+    private var asComponent:Component;
+
     public function new() {
         super();
         _eventMap = new Map<String, UIEvent->Void>();
         
         this.pixelPerfectRender = true;
         this.moves = false;
-        super.set_visible(false);
+        superVisible(false);
+        
+        asComponent = cast(this, Component);
         
         if (Platform.instance.isMobile) {
-            cast(this, Component).addClass(":mobile");
+            asComponent.addClass(":mobile");
         }
         
         scrollFactor.set(0, 0); // ui doesn't scroll by default
@@ -61,9 +65,8 @@ class ComponentImpl extends ComponentBase {
     }
     
     private function recursiveReady() {
-        var component:Component = cast(this, Component);
-        component.ready();
-        for (child in component.childComponents) {
+        asComponent.ready();
+        for (child in asComponent.childComponents) {
             child.recursiveReady();
         }
     }
@@ -88,7 +91,7 @@ class ComponentImpl extends ComponentBase {
             return;
         }
         
-        var c:Component = cast(this, Component);
+        var c:Component = asComponent;
         var xpos:Float = 0;
         var ypos:Float = 0;
         while (c != null) {
@@ -122,7 +125,7 @@ class ComponentImpl extends ComponentBase {
             return _cachedRootComponent;
         }
         
-        var c:Component = cast(this, Component);
+        var c:Component = asComponent;
         while (c.parentComponent != null) {
             c = c.parentComponent;
         }
@@ -143,7 +146,7 @@ class ComponentImpl extends ComponentBase {
             return null;
         }
         
-        var c:Component = cast(this, Component);
+        var c:Component = asComponent;
         var clip:Component = null;
         while (c != null) {
             if (c.componentClipRect != null) {
@@ -163,17 +166,17 @@ class ComponentImpl extends ComponentBase {
 
     @:access(haxe.ui.core.Component)
     private function inBounds(x:Float, y:Float):Bool {
-        if (cast(this, Component).hidden == true) {
+        if (asComponent.hidden == true) {
             return false;
         }
 
         var b:Bool = false;
         var sx = screenX;
         var sy = screenY;
-        var cx = cast(this, Component).componentWidth * Toolkit.scaleX;
-        var cy = cast(this, Component).componentHeight * Toolkit.scaleY;
+        var cx = asComponent.componentWidth * Toolkit.scaleX;
+        var cy = asComponent.componentHeight * Toolkit.scaleY;
 
-        if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
+        if (x >= sx && y >= sy && x <= sx + cx && y < sy + cy) {
             b = true;
         }
 
@@ -186,7 +189,7 @@ class ComponentImpl extends ComponentBase {
                 var sy = (clip.screenY + (clip.componentClipRect.top * Toolkit.scaleY));
                 var cx = clip.componentClipRect.width * Toolkit.scaleX;
                 var cy = clip.componentClipRect.height * Toolkit.scaleY;
-                if (x >= sx && y >= sy && x <= sx + cx && y <= sy + cy) {
+                if (x >= sx && y >= sy && x <= sx + cx && y < sy + cy) {
                     b = true;
                 }
             }
@@ -222,8 +225,10 @@ class ComponentImpl extends ComponentBase {
         var h:Int = Std.int(height * Toolkit.scaleY);
         if (_surface.width != w || _surface.height != h) {
             if (w <= 0 || h <= 0) {
+                _surface.graphic.destroy();
                 _surface.makeGraphic(1, 1, 0x0, true);
             } else {
+                _surface.graphic.destroy();
                 _surface.makeGraphic(w, h, 0x0, true);
                 applyStyle(style);
             }
@@ -241,6 +246,20 @@ class ComponentImpl extends ComponentBase {
     private override function handleAddComponent(child:Component):Component {
         handleAddComponentAt(child, childComponents.length - 1);
         return child;
+    }
+
+    // TODO: really need revision on if this is still needed, or what purpose it was originally supposed
+    // to serve, maybe its no longer needed in flixel 5.0? 
+    private var _overrideSkipTransformChildren:Bool = true;
+    private function superVisible(value:Bool) {
+        if (_overrideSkipTransformChildren) {
+            _skipTransformChildren = true;
+        }
+        super.set_visible(value);
+        _skipTransformChildren = false;
+        if (_overrideSkipTransformChildren) {
+            _skipTransformChildren = false;
+        }
     }
 
     private override function handleAddComponentAt(child:Component, index:Int):Component {
@@ -320,19 +339,24 @@ class ComponentImpl extends ComponentBase {
         }
     }
 
-    // TODO: really need revision on if this is still needed, or what purpose it was originally supposed
-    // to serve, maybe its no longer needed in flixel 5.0? 
-    private var _overrideSkipTransformChildren:Bool = true;
     private override function handleVisibility(show:Bool):Void {
-        if (_overrideSkipTransformChildren) {
-            _skipTransformChildren = true;
+        applyVisibility(show);
+    }
+
+    private function applyVisibility(show:Bool):Void {
+        superVisible(show);
+
+        if (hasTextDisplay()) {
+            _textDisplay.tf.visible = show;
         }
-        super.set_visible(show);
+        if (hasTextInput()) {
+            _textInput.tf.visible = show;
+        }
+
         for (c in this.childComponents) {
-            c.handleVisibility(show);
-        }
-        if (_overrideSkipTransformChildren) {
-            _skipTransformChildren = false;
+            if (!c.hidden) {
+                c.applyVisibility(show);
+            }
         }
     }
 
@@ -343,15 +367,25 @@ class ComponentImpl extends ComponentBase {
         if (style.opacity != null) {
             applyAlpha(style.opacity);
         } else if (_surface.alpha != 1) {
-            applyAlpha(1);
+            //applyAlpha(1);
         }
         
+        /*
+        if (style != null && style.cursor != null && _mouseOverFlag) {
+            Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
+            _cursorSet = true;
+        }
+        */
+
         FlxStyleHelper.applyStyle(_surface, style);
         applyFilters(style);
     }
     
     private function applyAlpha(value:Float) {
         _surface.alpha = value;
+        if (hasTextDisplay()) {
+            getTextDisplay().tf.alpha = value;
+        }
         if (hasTextInput()) {
             getTextInput().tf.alpha = value;
         }
@@ -362,6 +396,9 @@ class ComponentImpl extends ComponentBase {
 
     public override function set_alpha(alpha:Float):Float {
         _surface.alpha = alpha;
+        if (hasTextDisplay()) {
+            getTextDisplay().tf.alpha = value;
+        }
         if (hasTextInput()) {
             getTextInput().tf.alpha = alpha;
         }
@@ -688,6 +725,7 @@ class ComponentImpl extends ComponentBase {
     }
     
     private var _mouseOverFlag:Bool = false;
+    private var _cursorSet:Bool = false;
     private function __onMouseMove(event:MouseEvent) {
         var x = event.screenX;
         var y = event.screenY;
@@ -721,6 +759,11 @@ class ComponentImpl extends ComponentBase {
 
             var i = inBounds(x, y);
             if (i == true) {
+                if (this.style != null && this.style.cursor != null) {
+                    Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
+                    _cursorSet = true;
+                }
+
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
                 if (fn != null) {
                     var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
@@ -736,6 +779,11 @@ class ComponentImpl extends ComponentBase {
             
             if (i == true && _mouseOverFlag == false) {
                 if (isEventRelevant(getComponentsAtPoint(x, y, true), MouseEvent.MOUSE_OVER)) {
+                    if (this.style != null && this.style.cursor != null) {
+                        Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
+                        _cursorSet = true;
+                    }
+    
                     _mouseOverFlag = true;
                     var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
                     if (fn != null) {
@@ -750,6 +798,11 @@ class ComponentImpl extends ComponentBase {
                     }
                 }
             } else if (i == false && _mouseOverFlag == true) {
+                if (_cursorSet) {
+                    Screen.instance.setCursor("default");
+                    _cursorSet = false;
+                }
+
                 _mouseOverFlag = false;
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
                 if (fn != null) {
@@ -846,10 +899,8 @@ class ComponentImpl extends ComponentBase {
                     if (Platform.instance.isMobile) {
                         mouseEvent.touchEvent = true;
                     }
-                    Toolkit.callLater(function() {
-                        fn(mouseEvent);
-                        event.canceled = mouseEvent.canceled;
-                    });
+                    fn(mouseEvent);
+                    event.canceled = mouseEvent.canceled;
                 }
                 
                 if (type == haxe.ui.events.MouseEvent.CLICK) {
@@ -878,6 +929,11 @@ class ComponentImpl extends ComponentBase {
         }
         _mouseDownFlag = false;
     }
+
+    #if haxeui_dont_impose_base_class
+    private function applyRootLayout(l:String) {
+    }
+    #end
     
     private function __onDoubleClick(event:MouseEvent) {
         if (StateHelper.hasMember(_surface) == false) {
@@ -968,7 +1024,7 @@ class ComponentImpl extends ComponentBase {
             _textDisplay.tf.visible = false;
             add(_textDisplay.tf);
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
-                _textDisplay.tf.visible = true;
+                //_textDisplay.tf.visible = true;
                 applyFilters(style);
             });
         }
@@ -1134,10 +1190,10 @@ class ComponentImpl extends ComponentBase {
 
         _updates++;
         if (_updates == 2) {
-            if (cast(this, Component).hidden == false) {
-                super.set_visible(true);
+            if (asComponent.hidden == false) {
+                applyVisibility(true);
             } else {
-                super.set_visible(false);
+                applyVisibility(false);
             }
         }
         
@@ -1149,11 +1205,17 @@ class ComponentImpl extends ComponentBase {
             var value = this.componentClipRect;
             value.top = Std.int(value.top);
             value.left = Std.int(value.left);
-            var rect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
-                                   (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
-                                   (value.width * Toolkit.scaleX), (value.height * Toolkit.scaleY));
-            clipRect = rect;
-            rect.put();
+            if (parentComponent != null) {
+                var rect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
+                                    (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
+                                    (value.width * Toolkit.scaleX), (value.height * Toolkit.scaleY));
+                clipRect = rect;
+                rect.put();
+            } else { // top-level (root) components can also clip (Absolute auto clips via a css style), but this means they wont have a parentComponent set, lets handle them differently
+                var rect = FlxRect.get(_surface.x, _surface.y, value.width, value.height);
+                clipRect = rect;
+                rect.put();
+            }
         }
     }
     
@@ -1163,7 +1225,7 @@ class ComponentImpl extends ComponentBase {
     // application, this means that when things are removed from the screen (and not destroyed) it can leave them
     // behind
     private function applyAddInternal() {
-        if (hasTextInput() && cast(this, Component).hidden == false) {
+        if (hasTextInput() && asComponent.hidden == false) {
             getTextInput().tf.visible = true;
         }
         for (c in childComponents) {
