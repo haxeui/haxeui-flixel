@@ -21,10 +21,16 @@ class UIRuntimeSubState extends UISubStateBase { // uses rtti to "build" a class
 		root = buildViaRTTI(rtti);
 		linkViaRTTI(rtti, this, root);
 		if (root != null) {
+            root.registerEvent(UIEvent.READY, (_) -> {
+                onReady();
+            });
 			Screen.instance.addComponent(root);
 		}
 		super.create();
 	}
+
+    private function onReady() {
+    }
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// util functions

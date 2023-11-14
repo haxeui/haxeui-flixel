@@ -19,9 +19,15 @@ class UIRuntimeFragment extends UIFragmentBase implements IComponentDelegate { /
         root = buildViaRTTI(rtti);
         linkViaRTTI(rtti, this, root);
         if (root != null) {
+            root.registerEvent(UIEvent.READY, (_) -> {
+                onReady();
+            });
             add(root);
         }
 	}
+
+    private function onReady() {
+    }
 
     public var component(get, set):Component;
     private function get_component():Component {
