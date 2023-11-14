@@ -1,11 +1,9 @@
 package haxe.ui.backend.flixel;
 
-import haxe.rtti.CType;
-import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.core.Component;
-import haxe.ui.core.ComponentClassMap;
 import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
+import haxe.ui.backend.flixel.UIRTTITools.*;
 
 using StringTools;
 
@@ -13,16 +11,14 @@ using StringTools;
 class UIRuntimeState extends UIStateBase { // uses rtti to "build" a class with a similar experience to using macros
 	public var root:Component;
 
-	public var assetId:String;
-
-	public function new(assetId:String = null) {
+	public function new() {
 		super();
-		this.assetId = assetId;
 	}
 
 	public override function create() {
-		buildViaRTTI();
-		linkViaRTTI();
+		var rtti = haxe.rtti.Rtti.getRtti(Type.getClass(this));
+		root = buildViaRTTI(rtti);
+		linkViaRTTI(rtti, this, root);
 		if (root != null) {
 			Screen.instance.addComponent(root);
 		}
@@ -88,119 +84,9 @@ class UIRuntimeState extends UIStateBase { // uses rtti to "build" a class with 
         root.dispatch(event);
     }
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////
-	// rtti functions
-	/////////////////////////////////////////////////////////////////////////////////////////////////
-	private function buildViaRTTI() {
-		var rtti = haxe.rtti.Rtti.getRtti(Type.getClass(this));
-		var m = getMetaWithValueRTTI(rtti.meta, "build", "haxe.ui.RuntimeComponentBuilder.build");
-		if (m != null) {
-			assetId = m.params[0].replace("haxe.ui.RuntimeComponentBuilder.build(", "").replace(")", "");
-			assetId = assetId.replace("\"", "");
-			assetId = assetId.replace("'", "");
-			this.root = RuntimeComponentBuilder.fromAsset(assetId);
-			if (this.root == null) {
-				throw "could not loading runtime ui from asset (" + assetId + ")";
-			}
-		}
-		m = getMetaRTTI(rtti.meta, "xml");
-		if (m != null) { // comes back as an escaped CDATA section
-			var xmlString = m.params[0].trim();
-			if (xmlString.startsWith("<![CDATA[")) {
-				xmlString = xmlString.substring("<![CDATA[".length);
-			}
-			if (xmlString.endsWith("]]>")) {
-				xmlString = xmlString.substring(0, xmlString.length - "]]>".length);
-			}
-			if (xmlString.startsWith("\"")) {
-				xmlString = xmlString.substring(1);
-			}
-			if (xmlString.endsWith("\"")) {
-				xmlString = xmlString.substring(0, xmlString.length - 1);
-			}
-			xmlString = xmlString.replace("\\r", "\r");
-			xmlString = xmlString.replace("\\n", "\n");
-			xmlString = xmlString.replace("\\\"", "\"");
-			xmlString = xmlString.trim();
-            try {
-			    this.root = RuntimeComponentBuilder.fromString(xmlString);
-            } catch (e:Dynamic) {
-                trace("ERROR", e);
-            }
-		}
-	}
-
-	private function linkViaRTTI(force:Bool = false) {
-		if (root == null) {
-			return;
-		}
-		var rtti = haxe.rtti.Rtti.getRtti(Type.getClass(this));
-		for (f in rtti.fields) {
-			switch (f.type) {
-				case CClass(name, params):
-					if (ComponentClassMap.instance.hasClassName(name)) {
-						var candidate = root.findComponent(f.name);
-						if (force) {
-							Reflect.setField(this, f.name, null);
-						}
-						if (candidate != null && Reflect.field(this, f.name) == null) {
-							Reflect.setField(this, f.name, candidate);
-						}
-					}
-				case CFunction(args, ret):
-					var m = getMetaRTTI(f.meta, "bind");
-					if (m != null) {
-						var candidate:Component = root.findComponent(m.params[0]);
-						if (candidate != null) {
-							var parts = m.params[1].split(".");
-							var candidateEvent = "haxe.ui.events." + parts[0];
-							var c = Type.resolveClass(candidateEvent);
-							if (c != null) {
-								var eventString = Reflect.field(c, parts[1]);
-								var fn = Reflect.field(this, f.name);
-								candidate.registerEvent(eventString, fn);
-							}
-
-						}
-					}
-				case _:			
-			}
-		}
-	}
-
-	private function getMetaRTTI(metadata:MetaData, name:String):{name:String, params:Array<String>} {
-		for (m in metadata) {
-			if (m.name == name || m.name == ":" + name) {
-				return m;
-			}
-		}
-		return null;
-	}
-
-	private function getMetasRTTI(metadata:MetaData, name:String):Array<{name:String, params:Array<String>}> {
-		var metas = [];
-		for (m in metadata) {
-			if (m.name == name || m.name == ":" + name) {
-				metas.push(m);
-			}
-		}
-		return metas;
-	}
-
-	private function getMetaWithValueRTTI(metadata:MetaData, name:String, value:String, paramIndex:Int = 0):{name:String, params:Array<String>} {
-		for (m in metadata) {
-			if (m.name == name || m.name == ":" + name) {
-				if (m.params[paramIndex].startsWith(value)) {
-					return m;
-				}
-			}
-		}
-		return null;
-	}
-
 	public override function destroy() {
 		if (root != null) {
-			remove(root);
+			Screen.instance.removeComponent(root);
 		}
 		root = null;
 	}
