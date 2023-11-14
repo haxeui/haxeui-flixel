@@ -74,22 +74,41 @@ class UIRTTITools {
 				case CFunction(args, ret):
 					var m = getMetaRTTI(f.meta, "bind");
 					if (m != null) {
-						var candidate:Component = root.findComponent(m.params[0]);
-						if (candidate != null) {
-							var parts = m.params[1].split(".");
-							var candidateEvent = "haxe.ui.events." + parts[0];
-							var c = Type.resolveClass(candidateEvent);
-							if (c != null) {
-								var eventString = Reflect.field(c, parts[1]);
-								var fn = Reflect.field(target, f.name);
-								candidate.registerEvent(eventString, fn);
-							}
-
-						}
+                        if (m.params[0] == "this") {
+                            if ((target is IComponentDelegate)) {
+                                var componentDelegate:IComponentDelegate = cast target;
+                                bindEvent(componentDelegate.component, f.name, target, m.params[1]);
+                            } else {
+                                bindEvent(root, f.name, target, m.params[1]);
+                            }
+                        } else {
+                            var candidate:Component = root.findComponent(m.params[0]);
+                            bindEvent(candidate, f.name, target, m.params[1]);
+                        }
 					}
 				case _:			
 			}
 		}
+    }
+
+    private static function bindEvent(candidate:Component, fieldName:String, target:Dynamic, eventClass:String) {
+        if (candidate == null) {
+            return;
+        }
+        var parts = eventClass.split(".");
+        var c = resolveEventClass(eventClass);
+        if (c != null) {
+            var eventString = Reflect.field(c, parts[1]);
+            var fn = Reflect.field(target, fieldName);
+            candidate.registerEvent(eventString, fn);
+        }
+    }
+
+    private static function resolveEventClass(eventClass:String) {
+        var parts = eventClass.split(".");
+        var candidateEvent = "haxe.ui.events." + parts[0];
+        var c = Type.resolveClass(candidateEvent);
+        return c;
     }
 
 	private static function getMetaRTTI(metadata:MetaData, name:String):{name:String, params:Array<String>} {
