@@ -77,7 +77,7 @@ class UIRTTITools {
                         if (m.params[0] == "this") {
                             if ((target is IComponentDelegate)) {
                                 var componentDelegate:IComponentDelegate = cast target;
-                                bindEvent(rtti, componentDelegate.component, f.name, target, m.params[1]);
+                                bindEvent(rtti, componentDelegate.component, f.name, target, m.params[1], true);
                             } else {
                                 bindEvent(rtti, root, f.name, target, m.params[1]);
                             }
@@ -91,7 +91,7 @@ class UIRTTITools {
 		}
     }
 
-    private static function bindEvent(rtti:Classdef, candidate:Component, fieldName:String, target:Dynamic, eventClass:String) {
+    private static function bindEvent(rtti:Classdef, candidate:Component, fieldName:String, target:Dynamic, eventClass:String, isComponentDelegate:Bool = false) {
         if (candidate == null) {
             return;
         }
@@ -102,6 +102,14 @@ class UIRTTITools {
         if (c != null) {
             var eventString = Reflect.field(c, eventName);
             var fn = Reflect.field(target, fieldName);
+            // this may be ill-concieved, but if we are talking about a component delegate (ie, a fragment)
+            // it means we are going to attach a component to an "empty" class which means this code has
+            // already run once, meaning there are two event listeners, this way we remove them first
+            // in practice its probably _exactly_ what we want, but this could also clear up binding
+            // two functions to the same event (which isnt common at all)
+            if (isComponentDelegate) {
+                candidate.unregisterEvents(eventString);
+            }
             candidate.registerEvent(eventString, fn);
         } else {
             throw "could not resolve event class '" + eventClass + "' (you may need to use fully qualified class names)";
