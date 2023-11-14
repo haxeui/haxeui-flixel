@@ -63,7 +63,7 @@ class UIRTTITools {
 						if (candidate != null && Reflect.field(target, f.name) == null) {
                             var temp = Type.createEmptyInstance(Type.resolveClass(name));
                             if ((temp is IComponentDelegate)) {
-                                var componentDelegate:IComponentDelegate = Type.createInstance(Type.resolveClass(name), [false]);
+                                var componentDelegate:IComponentDelegate = Type.createEmptyInstance(Type.resolveClass(name));
                                 componentDelegate.component = candidate;
                                 Reflect.setField(target, f.name, componentDelegate);
                             } else {
