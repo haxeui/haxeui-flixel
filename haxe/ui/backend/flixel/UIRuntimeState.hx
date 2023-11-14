@@ -90,6 +90,9 @@ class UIRuntimeState extends UIStateBase { // uses rtti to "build" a class with 
 			assetId = assetId.replace("\"", "");
 			assetId = assetId.replace("'", "");
 			this.root = RuntimeComponentBuilder.fromAsset(assetId);
+			if (this.root == null) {
+				throw "could not loading runtime ui from asset (" + assetId + ")";
+			}
 		}
 		m = getMetaRTTI(rtti.meta, "xml");
 		if (m != null) { // comes back as an escaped CDATA section
