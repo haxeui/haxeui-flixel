@@ -20,29 +20,29 @@ import openfl.Lib;
 @:access(haxe.ui.backend.ComponentImpl)
 class ScreenImpl extends ScreenBase {
     private var _mapping:Map<String, UIEvent->Void>;
-    
+
     #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
     private static var _inputManager:haxe.ui.backend.flixel.InputManager = null;
     #end
-    
+
     public function new() {
         _mapping = new Map<String, UIEvent->Void>();
 
         #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
-        
+
         if (_inputManager == null) {
             _inputManager = new haxe.ui.backend.flixel.InputManager();
             _inputManager.onResetCb = onReset;
             FlxG.inputs.add(_inputManager);
         }
-        
+
         #end
-        
+
         FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
         FlxG.signals.preStateCreate.add(onPreStateCreate);
         onPostStateSwitch();
-        
+
         addResizeHandler();
     }
 
@@ -51,9 +51,9 @@ class ScreenImpl extends ScreenBase {
         checkMembers(state);
         state.memberRemoved.add(onMemberRemoved);
     }
-    
+
     #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
-    
+
     private function onReset() {
         if (FlxG.state != null && FlxG.state.subState != null) {
             var cachedSubStateOpenedCallback = FlxG.state.subState.openCallback;
@@ -65,26 +65,26 @@ class ScreenImpl extends ScreenBase {
             }
         }
     }
-    
+
     #end
-    
+
     private function onPostGameStart() {
         onPostStateSwitch();
     }
-    
+
     private function onPostStateSwitch() {
         if (FlxG.game == null) {
             return;
         }
         rootComponents = [];
-        
+
         #if (flixel >= "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
         FlxG.state.subStateOpened.add(onMemberAdded);
         #end
-        
+
         FlxG.state.memberAdded.add(onMemberAdded);
         checkMembers(FlxG.state);
-        
+
         FlxG.state.memberRemoved.add(onMemberRemoved);
 
 		#if (!FLX_NO_MOUSE && !haxeui_no_mouse_reset)
@@ -155,36 +155,36 @@ class ScreenImpl extends ScreenBase {
         }
         return found;
     }
-    
+
     private override function get_width():Float {
         return FlxG.width / Toolkit.scaleX;
     }
-    
+
     private override function get_height() {
         return FlxG.height / Toolkit.scaleY;
     }
-    
+
     private override function get_actualWidth():Float {
         return FlxG.width;
     }
-    
+
     private override function get_actualHeight():Float {
         return FlxG.height;
     }
-    
+
     private override function get_dpi():Float {
         return System.getDisplay(0).dpi;
     }
-    
+
     private override function get_title():String {
         return Lib.current.stage.window.title;
     }
-    
+
     private override function set_title(s:String):String {
         Lib.current.stage.window.title = s;
         return s;
     }
-    
+
     private var _cursor:String = null;
     public function setCursor(cursor:String, offsetX:Null<Int> = null, offsetY:Null<Int> = null) {
         #if haxeui_flixel_no_custom_cursors
@@ -217,7 +217,7 @@ class ScreenImpl extends ScreenBase {
                 component.cameras = cameras;
             }
         }
-        
+
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.add(component);
             if (rootComponents.indexOf(component) == -1) {
@@ -230,7 +230,7 @@ class ScreenImpl extends ScreenBase {
         }
         return component;
     }
-    
+
     public override function removeComponent(component:Component, dispose:Bool = true):Component {
         if (rootComponents.indexOf(component) == -1) {
             return component;
@@ -253,7 +253,7 @@ class ScreenImpl extends ScreenBase {
         onContainerResize();
         return component;
     }
-    
+
     private var _resizeHandlerAdded:Bool = false;
     private function addResizeHandler() {
         if (_resizeHandlerAdded == true) {
@@ -262,11 +262,11 @@ class ScreenImpl extends ScreenBase {
         _resizeHandlerAdded = true;
         FlxG.signals.gameResized.add(onGameResized);
     }
-    
+
     private function onGameResized(width:Int, height:Int) {
         onContainerResize();
     }
-    
+
     private function onContainerResize() {
         for (c in rootComponents) {
             if (c.percentWidth > 0) {
@@ -277,17 +277,17 @@ class ScreenImpl extends ScreenBase {
             }
         }
     }
-    
+
     private override function handleSetComponentIndex(child:Component, index:Int) {
         var offset = 0;
         StateHelper.currentState.forEach((item) -> {
             offset++;
         });
-        
+
         StateHelper.currentState.remove(child);
         StateHelper.currentState.insert(index + offset, child);
     }
-    
+
     private override function supportsEvent(type:String):Bool {
         if (type == MouseEvent.MOUSE_MOVE
             || type == MouseEvent.MOUSE_DOWN
@@ -302,7 +302,7 @@ class ScreenImpl extends ScreenBase {
             }
         return false;
     }
-    
+
     private var _mouseDownButton:Int = 0;
     private override function mapEvent(type:String, listener:UIEvent->Void) {
         switch (type) {
@@ -311,25 +311,25 @@ class ScreenImpl extends ScreenBase {
                     _mapping.set(type, listener);
                     MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove, 10);
                 }
-                
+
             case MouseEvent.MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_DOWN:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
                     MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown, 10);
                 }
-                
+
             case MouseEvent.MOUSE_UP | MouseEvent.RIGHT_MOUSE_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
                     MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp, 10);
                 }
-                
+
             case KeyboardEvent.KEY_DOWN:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
                     FlxG.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, __onKeyEvent);
                 }
-                
+
             case KeyboardEvent.KEY_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
@@ -337,7 +337,7 @@ class ScreenImpl extends ScreenBase {
                 }
         }
     }
-    
+
     private function __onMouseMove(event:MouseEvent) {
         var fn = _mapping.get(MouseEvent.MOUSE_MOVE);
         if (fn != null) {
@@ -352,7 +352,7 @@ class ScreenImpl extends ScreenBase {
             event.canceled = mouseEvent.canceled;
         }
     }
-    
+
     private function __onMouseDown(event:MouseEvent) {
         var state = FlxG.state;
         if (state.subState != null) {
@@ -380,7 +380,7 @@ class ScreenImpl extends ScreenBase {
             event.canceled = mouseEvent.canceled;
         }
     }
-    
+
     private function __onMouseUp(event:MouseEvent) {
         var fn = _mapping.get(MouseEvent.MOUSE_UP);
         if (fn != null) {
@@ -397,7 +397,7 @@ class ScreenImpl extends ScreenBase {
             event.canceled = mouseEvent.canceled;
         }
     }
-    
+
     private function __onKeyEvent(event:openfl.events.KeyboardEvent) {
         var type:String = null;
         if (event.type == openfl.events.KeyboardEvent.KEY_DOWN) {
@@ -482,6 +482,9 @@ class ScreenImpl extends ScreenBase {
         var desiredCursorOffsetX:Null<Int> = null;
         var desiredCursorOffsetY:Null<Int> = null;
         for (c in components) {
+            if (c.style == null) {
+                c.validateNow();
+            }
             if (c.style.cursor != null) {
                 desiredCursor = c.style.cursor;
                 desiredCursorOffsetX = c.style.cursorOffsetX;
