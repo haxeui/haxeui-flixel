@@ -77,13 +77,13 @@ class UIRTTITools {
                         if (m.params[0] == "this") {
                             if ((target is IComponentDelegate)) {
                                 var componentDelegate:IComponentDelegate = cast target;
-                                bindEvent(componentDelegate.component, f.name, target, m.params[1]);
+                                bindEvent(rtti, componentDelegate.component, f.name, target, m.params[1]);
                             } else {
-                                bindEvent(root, f.name, target, m.params[1]);
+                                bindEvent(rtti, root, f.name, target, m.params[1]);
                             }
                         } else {
                             var candidate:Component = root.findComponent(m.params[0]);
-                            bindEvent(candidate, f.name, target, m.params[1]);
+                            bindEvent(rtti, candidate, f.name, target, m.params[1]);
                         }
 					}
 				case _:			
@@ -91,24 +91,62 @@ class UIRTTITools {
 		}
     }
 
-    private static function bindEvent(candidate:Component, fieldName:String, target:Dynamic, eventClass:String) {
+    private static function bindEvent(rtti:Classdef, candidate:Component, fieldName:String, target:Dynamic, eventClass:String) {
         if (candidate == null) {
             return;
         }
         var parts = eventClass.split(".");
-        var c = resolveEventClass(eventClass);
+        var eventName = parts.pop();
+        eventClass = parts.join(".");
+        var c = resolveEventClass(rtti, eventClass);
         if (c != null) {
-            var eventString = Reflect.field(c, parts[1]);
+            var eventString = Reflect.field(c, eventName);
             var fn = Reflect.field(target, fieldName);
             candidate.registerEvent(eventString, fn);
+        } else {
+            throw "could not resolve event class '" + eventClass + "' (you may need to use fully qualified class names)";
         }
     }
 
-    private static function resolveEventClass(eventClass:String) {
-        var parts = eventClass.split(".");
-        var candidateEvent = "haxe.ui.events." + parts[0];
-        var c = Type.resolveClass(candidateEvent);
-        return c;
+    private static function resolveEventClass(rtti:Classdef, eventClass:String) {
+        var candidateEvent = "haxe.ui.events." + eventClass;
+        var event = Type.resolveClass(candidateEvent);
+        if (event != null) {
+            return event;
+        }
+
+        var event = Type.resolveClass(eventClass);
+        if (event != null) {
+            return event;
+        }
+
+        // this is pretty brute force method, were going to see if we can find any functions
+        // with @:bind meta, these are presumably the event handlers, if we can find one
+        // where the the last part of the arg type (which would be the event type) matches
+        // the event we are looking for, we'll consider that match, and can use that as a
+        // fully qualified event class
+        for (f in rtti.fields) {
+            switch (f.type) {
+                case CFunction(args, ret):
+                    if (getMetaRTTI(f.meta, "bind") != null) {
+                        for (arg in args) {
+                            switch (arg.t) {
+                                case CClass(name, params):
+                                    if (name.endsWith(eventClass)) {
+                                        var event = Type.resolveClass(name);
+                                        if (event != null) {
+                                            return event;
+                                        }
+                                    }
+                                case _:    
+                            }
+                        }
+                    }
+                case _:    
+            }
+        }
+
+        return null;
     }
 
 	private static function getMetaRTTI(metadata:MetaData, name:String):{name:String, params:Array<String>} {
