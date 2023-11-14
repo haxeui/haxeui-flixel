@@ -5,6 +5,7 @@ import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.core.Component;
 import haxe.ui.core.ComponentClassMap;
 import haxe.ui.core.Screen;
+import haxe.ui.events.UIEvent;
 
 using StringTools;
 
@@ -80,6 +81,14 @@ class UIRuntimeFragment extends UIFragmentBase implements IComponentDelegate { /
 
 		return root.findComponentsUnderPoint(screenX, screenY, type);
 	}
+
+    public function dispatch<T:UIEvent>(event:T) {
+		if (root == null) {
+			throw "no root component";
+		}
+
+        root.dispatch(event);
+    }
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// rtti functions
