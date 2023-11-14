@@ -3,6 +3,7 @@ package haxe.ui.backend.flixel;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
+import haxe.ui.events.EventType;
 import haxe.ui.backend.flixel.UIRTTITools.*;
 
 using StringTools;
@@ -82,6 +83,14 @@ class UIRuntimeState extends UIStateBase { // uses rtti to "build" a class with 
 		}
 
         root.dispatch(event);
+    }
+
+    public function registerEvent<T:UIEvent>(type:EventType<T>, listener:T->Void, priority:Int = 0) {
+		if (root == null) {
+			throw "no root component";
+		}
+
+        root.registerEvent(type, listener, priority);
     }
 
 	public override function destroy() {
