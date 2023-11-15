@@ -93,6 +93,24 @@ class UIRTTITools {
                                 var parts = m.params[0].split(".");
                                 var className = parts.shift();
                                 var c = Type.resolveClass(className);
+
+                                if (c == null) {
+                                    // this allows full qualified class names:
+                                    //    @:bind(some.pkg.MyClass.instance, SomeEvent.EventType)
+                                    // by looping over each part looking for a valid class
+                                    // its not fast (or pretty), but it will only happen once (per @:bind)
+                                    var candidateClass = className;
+                                    while (parts.length > 0) {
+                                        var part = parts.shift();
+                                        candidateClass += "." + part;
+                                        var temp = Type.resolveClass(candidateClass);
+                                        if (temp != null) {
+                                            c = temp;
+                                            break;
+                                        }
+                                    }
+                                }
+
                                 if (c != null) {
                                     var ref:Dynamic = c;
                                     var found = (parts.length > 0);
