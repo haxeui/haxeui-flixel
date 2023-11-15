@@ -83,7 +83,51 @@ class UIRTTITools {
                             }
                         } else {
                             var candidate:Component = root.findComponent(m.params[0]);
-                            bindEvent(rtti, candidate, f.name, target, m.params[1]);
+                            if (candidate != null) {
+                                bindEvent(rtti, candidate, f.name, target, m.params[1]);
+                            } else {
+                                // another perfectly valid contruct, albeit less common (though still useful), is the ability to use 
+                                // @:bind to bind to variables on static fields, eg:
+                                //     @:bind(MyClass.instance, SomeEvent.EventType)
+                                // this code facilitates that by attempting to resolve the item and binding the event to it
+                                var parts = m.params[0].split(".");
+                                var className = parts.shift();
+                                var c = Type.resolveClass(className);
+                                if (c != null) {
+                                    var ref:Dynamic = c;
+                                    var found = (parts.length > 0);
+                                    for (part in parts) {
+                                        if (!Reflect.hasField(ref, part)) {
+                                            found = false;
+                                            break;
+                                        }
+                                        ref = Reflect.field(ref, part);
+                                    }
+                                    if (found) {
+                                        if (ref != null) {
+                                            if ((ref is UIRuntimeState)) {
+                                                var state:UIRuntimeState = cast ref;
+                                                bindEvent(rtti, state.root, f.name, target, m.params[1]);
+                                            } else if ((ref is UIRuntimeSubState)) {
+                                                var subState:UIRuntimeSubState = cast ref;
+                                                bindEvent(rtti, subState.root, f.name, target, m.params[1]);
+                                            } else if ((ref is IComponentDelegate)) {
+                                                var componentDelegate:IComponentDelegate = cast ref;
+                                                bindEvent(rtti, componentDelegate.component, f.name, target, m.params[1]);
+                                            } else if ((ref is Component)) {
+                                                var component:Component = cast ref;
+                                                bindEvent(rtti, component, f.name, target, m.params[1]);
+                                            }
+                                        } else {
+                                            throw "could not resolve bind param '" + m.params[0] + "'";
+                                        }
+                                    } else {
+                                        throw "could not resolve bind param '" + m.params[0] + "'";
+                                    }
+                                } else {
+                                    throw "could not resolve bind param '" + m.params[0] + "'";
+                                }
+                            }
                         }
 					}
 				case _:			
