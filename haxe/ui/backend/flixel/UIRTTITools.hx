@@ -119,13 +119,13 @@ class UIRTTITools {
                                                 bindEvent(rtti, component, f.name, target, m.params[1]);
                                             }
                                         } else {
-                                            throw "could not resolve bind param '" + m.params[0] + "'";
+                                            throw "bind param resolved, but was null '" + m.params[0] + "'";
                                         }
                                     } else {
                                         throw "could not resolve bind param '" + m.params[0] + "'";
                                     }
                                 } else {
-                                    throw "could not resolve bind param '" + m.params[0] + "'";
+                                    throw "could not resolve class '" + className + "'";
                                 }
                             }
                         }
