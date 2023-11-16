@@ -101,14 +101,14 @@ class UIRuntimeState extends UIStateBase { // uses rtti to "build" a class with 
 
 	public function show() {
 		if (root != null) {
-			remove(root);
+			throw "no root component";
 		}
 		root.show();
 	}
 
 	public function hide() {
 		if (root != null) {
-			remove(root);
+			throw "no root component";
 		}
 		root.hide();
 	}
