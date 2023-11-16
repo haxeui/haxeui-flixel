@@ -108,14 +108,14 @@ class UIRuntimeFragment extends UIFragmentBase implements IComponentDelegate { /
     }
 
 	public function show() {
-		if (root != null) {
+		if (root == null) {
 			throw "no root component";
 		}
 		root.show();
 	}
 
 	public function hide() {
-		if (root != null) {
+		if (root == null) {
 			throw "no root component";
 		}
 		root.hide();
