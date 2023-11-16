@@ -87,4 +87,13 @@ class UISubState extends UISubStateBase { // must use -D haxeui_dont_impose_base
         root.styleString  = value;
         return value;
     }
+
+	public function show() {
+		root.show();
+	}
+
+	public function hide() {
+		root.hide();
+	}
+
 }

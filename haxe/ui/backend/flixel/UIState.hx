@@ -87,4 +87,12 @@ class UIState extends UIStateBase { // must use -D haxeui_dont_impose_base_class
         root.styleString  = value;
         return value;
     }
+
+	public function show() {
+		root.show();
+	}
+
+	public function hide() {
+		root.hide();
+	}
 }

@@ -107,6 +107,20 @@ class UIRuntimeFragment extends UIFragmentBase implements IComponentDelegate { /
         root.registerEvent(type, listener, priority);
     }
 
+	public function show() {
+		if (root != null) {
+			remove(root);
+		}
+		root.show();
+	}
+
+	public function hide() {
+		if (root != null) {
+			remove(root);
+		}
+		root.hide();
+	}
+
 	public override function destroy() {
 		if (root != null) {
 			remove(root);
