@@ -89,11 +89,13 @@ class OpenFLTextInput extends TextBase {
             }
         }
 
+        /*
         if (overlaps == true && tf.visible == true) {
             tf.visible = false;
         } else if (overlaps == false && tf.visible == false) {
             tf.visible = true;
         }
+        */
     }
     
     public function destroy() {
