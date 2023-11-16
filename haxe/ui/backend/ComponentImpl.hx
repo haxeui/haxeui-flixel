@@ -1037,7 +1037,7 @@ class ComponentImpl extends ComponentBase {
             super.createTextInput(text);
             _textInput.attach();
             _textInput.tf.visible = false;
-            FlxG.addChildBelowMouse(_textInput.tf);
+            FlxG.addChildBelowMouse(_textInput.tf, 0xffffff);
             /*
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
                 if (_textInput != null) {
