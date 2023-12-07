@@ -1,6 +1,13 @@
 package haxe.ui.backend;
 
-import haxe.ui.backend.flixel.textinputs.OpenFLTextInput;
+typedef TextInputEvent = {type:String, stageX:Float, stageY:Float};
 
-class TextInputImpl extends OpenFLTextInput {
-}
+#if flixel_text_input
+
+typedef TextInputImpl = haxe.ui.backend.flixel.textinputs.FlxTextInput;
+
+#else
+
+typedef TextInputImpl = haxe.ui.backend.flixel.textinputs.OpenFLTextInput;
+
+#end

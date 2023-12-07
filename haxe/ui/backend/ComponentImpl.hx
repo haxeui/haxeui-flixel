@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 
+import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
@@ -284,11 +285,17 @@ class ComponentImpl extends ComponentBase {
                 _unsolicitedMembers = [];
             }
             if (findUnsolictedEntryFromSprite(sprite) == null) {
-                _unsolicitedMembers.push({
-                    sprite: sprite,
-                    originalX: sprite.x,
-                    originalY: sprite.y
-                });
+                var use = true;
+                if (_textInput != null && _textInput.equals(sprite)) {
+                    use = false;
+                }
+                if (use) {
+                    _unsolicitedMembers.push({
+                        sprite: sprite,
+                        originalX: sprite.x,
+                        originalY: sprite.y
+                    });
+                }
             }
         }
         super.preAdd(sprite);
@@ -350,7 +357,7 @@ class ComponentImpl extends ComponentBase {
             _textDisplay.tf.visible = show;
         }
         if (hasTextInput()) {
-            _textInput.tf.visible = show;
+            _textInput.visible = show;
         }
 
         for (c in this.childComponents) {
@@ -387,7 +394,7 @@ class ComponentImpl extends ComponentBase {
             getTextDisplay().tf.alpha = value;
         }
         if (hasTextInput()) {
-            getTextInput().tf.alpha = value;
+            getTextInput().alpha = value;
         }
         for (c in childComponents) {
             c.applyAlpha(value);
@@ -400,7 +407,7 @@ class ComponentImpl extends ComponentBase {
             getTextDisplay().tf.alpha = value;
         }
         if (hasTextInput()) {
-            getTextInput().tf.alpha = alpha;
+            getTextInput().alpha = alpha;
         }
         return super.set_alpha(alpha);
     }
@@ -474,7 +481,7 @@ class ComponentImpl extends ComponentBase {
                     notifyMouseMove(true);
                     _eventMap.set(MouseEvent.MOUSE_DOWN, listener);
                     if (hasTextInput()) {
-                        getTextInput().tf.addEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseEvent);
+                        getTextInput().onMouseDown = __onTextInputMouseEvent;
                     }
                 }
 
@@ -485,7 +492,7 @@ class ComponentImpl extends ComponentBase {
                     notifyMouseMove(true);
                     _eventMap.set(MouseEvent.MOUSE_UP, listener);
                     if (hasTextInput()) {
-                        getTextInput().tf.addEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseEvent);
+                        getTextInput().onMouseUp = __onTextInputMouseEvent;
                     }
                 }
                 
@@ -503,7 +510,7 @@ class ComponentImpl extends ComponentBase {
                     notifyMouseMove(true);
                     _eventMap.set(MouseEvent.CLICK, listener);
                     if (hasTextInput()) {
-                        getTextInput().tf.addEventListener(openfl.events.MouseEvent.CLICK, __onTextInputMouseEvent);
+                        getTextInput().onClick = __onTextInputMouseEvent;
                     }
                 }
                 
@@ -543,7 +550,7 @@ class ComponentImpl extends ComponentBase {
                 if (_eventMap.exists(UIEvent.CHANGE) == false) {
                     if (hasTextInput() == true) {
                         _eventMap.set(UIEvent.CHANGE, listener);
-                        getTextInput().tf.addEventListener(Event.CHANGE, __onTextInputChange);
+                        getTextInput().onChange = __onTextInputChange;
                     }
                 }
         }
@@ -569,7 +576,7 @@ class ComponentImpl extends ComponentBase {
                 notifyMouseUp(false);
                 notifyMouseMove(false);
                 if (hasTextInput()) {
-                    getTextInput().tf.removeEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseEvent);
+                    getTextInput().onMouseDown = null;
                 }
                 
 
@@ -579,7 +586,7 @@ class ComponentImpl extends ComponentBase {
                 notifyMouseUp(false);
                 notifyMouseMove(false);
                 if (hasTextInput()) {
-                    getTextInput().tf.removeEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseEvent);
+                    getTextInput().onMouseUp = null;
                 }
                 
             case MouseEvent.MOUSE_WHEEL:
@@ -593,7 +600,7 @@ class ComponentImpl extends ComponentBase {
                 notifyMouseUp(false);
                 notifyMouseMove(false);
                 if (hasTextInput()) {
-                    getTextInput().tf.removeEventListener(openfl.events.MouseEvent.CLICK, __onTextInputMouseEvent);
+                    getTextInput().onClick = null;
                 }
                 
             case MouseEvent.DBL_CLICK:
@@ -623,7 +630,7 @@ class ComponentImpl extends ComponentBase {
             case UIEvent.CHANGE:
                 _eventMap.remove(type);
                 if (hasTextInput() == true) {
-                    getTextInput().tf.removeEventListener(Event.CHANGE, __onTextInputChange);
+                    getTextInput().onChange = null;
                 }
         }
     }
@@ -693,16 +700,14 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
-    private function __onTextInputChange(event:Event) {
+    private function __onTextInputChange(event:TextInputEvent) {
         var fn:UIEvent->Void = _eventMap.get(UIEvent.CHANGE);
         if (fn != null) {
             fn(new UIEvent(UIEvent.CHANGE));
         }
     }
     
-    // since we use openfl's text input for text input we need to handle its events differently 
-    // to how we do in the rest of haxeui-flixel
-    private function __onTextInputMouseEvent(event:openfl.events.MouseEvent) {
+    private function __onTextInputMouseEvent(event:TextInputEvent) {
         var type = null;
         switch (event.type) {
             case openfl.events.MouseEvent.MOUSE_DOWN:
@@ -1036,8 +1041,8 @@ class ComponentImpl extends ComponentBase {
         if (_textInput == null) {
             super.createTextInput(text);
             _textInput.attach();
-            _textInput.tf.visible = false;
-            FlxG.addChildBelowMouse(_textInput.tf, 0xffffff);
+            _textInput.visible = false;
+            _textInput.addToComponent(cast this);
             /*
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
                 if (_textInput != null) {
@@ -1079,10 +1084,10 @@ class ComponentImpl extends ComponentBase {
             var offsetY = 2 / Toolkit.scaleY;
             #end
             
-            _textInput.tf.x = (_surface.x + _textInput.left - offsetX) * FlxG.scaleMode.scale.x;
-            _textInput.tf.y = (_surface.y + _textInput.top - offsetY) * FlxG.scaleMode.scale.y;
-            _textInput.tf.scaleX = FlxG.scaleMode.scale.x;
-            _textInput.tf.scaleY = FlxG.scaleMode.scale.y;
+            _textInput.x = (_surface.x + _textInput.left - offsetX) * FlxG.scaleMode.scale.x;
+            _textInput.y = (_surface.y + _textInput.top - offsetY) * FlxG.scaleMode.scale.y;
+            _textInput.scaleX = FlxG.scaleMode.scale.x;
+            _textInput.scaleY = FlxG.scaleMode.scale.y;
             _textInput.update();
         }
         
@@ -1225,8 +1230,12 @@ class ComponentImpl extends ComponentBase {
     // application, this means that when things are removed from the screen (and not destroyed) it can leave them
     // behind
     private function applyAddInternal() {
+        if (!TextInputImpl.USE_ON_ADDED) {
+            return;
+        }
+
         if (hasTextInput() && asComponent.hidden == false) {
-            getTextInput().tf.visible = true;
+            getTextInput().visible = true;
         }
         for (c in childComponents) {
             c.applyAddInternal();
@@ -1234,8 +1243,12 @@ class ComponentImpl extends ComponentBase {
     }
 
     private function applyRemoveInternal() {
+        if (!TextInputImpl.USE_ON_REMOVED) {
+            return;
+        }
+
         if (hasTextInput()) {
-            getTextInput().tf.visible = false;
+            getTextInput().visible = false;
         }
         for (c in childComponents) {
             c.applyRemoveInternal();
@@ -1258,7 +1271,7 @@ class ComponentImpl extends ComponentBase {
         }
         
         if (_textInput != null) {
-            _textInput.destroy();
+            _textInput.destroy(cast this);
             _textInput = null;
         }
         

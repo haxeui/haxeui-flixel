@@ -1,5 +1,6 @@
 package haxe.ui.backend.flixel.textinputs;
 
+import flixel.FlxSprite;
 import flixel.FlxG;
 import haxe.ui.Toolkit;
 import haxe.ui.core.Component;
@@ -11,8 +12,12 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
+import haxe.ui.backend.TextInputImpl.TextInputEvent;
 
 class OpenFLTextInput extends TextBase {
+    public static var USE_ON_ADDED:Bool = true;
+    public static var USE_ON_REMOVED:Bool = true;
+
     private var PADDING_X:Int = 4;
     private var PADDING_Y:Int = 0;
     
@@ -29,24 +34,179 @@ class OpenFLTextInput extends TextBase {
         tf.wordWrap = true;
         tf.tabEnabled = false;
         //tf.stage.focus = null;
-        tf.addEventListener(Event.CHANGE, onChange);
+        tf.addEventListener(Event.CHANGE, onInternalChange);
     }
     
     public override function focus() {
         if (tf.stage != null) {
-            tf.stage.focus = tf;
+            //tf.stage.focus = tf;
         }
     }
     
     public override function blur() {
         if (tf.stage != null) {
-            tf.stage.focus = null;
+            //tf.stage.focus = null;
         }
     }
     
     public function attach() {
     }
     
+    public var visible(get, set):Bool;
+    private function get_visible():Bool {
+        return tf.visible;
+    }
+    private function set_visible(value:Bool):Bool {
+        tf.visible = value;
+        return value;
+    }
+
+    public var x(get, set):Float;
+    private function get_x():Float {
+        return tf.x;
+    }
+    private function set_x(value:Float):Float {
+        tf.x = value;
+        return value;
+    }
+
+    public var y(get, set):Float;
+    private function get_y():Float {
+        return tf.y;
+    }
+    private function set_y(value:Float):Float {
+        tf.y = value;
+        return value;
+    }
+
+    public var scaleX(get, set):Float;
+    private function get_scaleX():Float {
+        return tf.scaleX;
+    }
+    private function set_scaleX(value:Float):Float {
+        tf.scaleX = value;
+        return value;
+    }
+
+    public var scaleY(get, set):Float;
+    private function get_scaleY():Float {
+        return tf.scaleY;
+    }
+    private function set_scaleY(value:Float):Float {
+        tf.scaleY = value;
+        return value;
+    }
+
+    public var alpha(get, set):Float;
+    private function get_alpha():Float {
+        return tf.alpha;
+    }
+    private function set_alpha(value:Float):Float {
+        tf.alpha = value;
+        return value;
+    }
+
+
+    private var _onMouseDown:TextInputEvent->Void = null;
+    public var onMouseDown(null, set):TextInputEvent->Void;
+    private function set_onMouseDown(value:TextInputEvent->Void):TextInputEvent->Void {
+        if (_onMouseDown != null) {
+            tf.removeEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseDownEvent);
+        }
+        _onMouseDown = value;
+        if (_onMouseDown != null) {
+            tf.addEventListener(openfl.events.MouseEvent.MOUSE_DOWN, __onTextInputMouseDownEvent);
+        }
+        return value;
+    }
+
+    private function __onTextInputMouseDownEvent(event:openfl.events.MouseEvent) {
+        if (_onMouseDown != null) {
+            _onMouseDown({
+                type: event.type,
+                stageX: event.stageX,
+                stageY: event.stageY
+            });
+        }
+    }
+
+    private var _onMouseUp:TextInputEvent->Void = null;
+    public var onMouseUp(null, set):TextInputEvent->Void;
+    private function set_onMouseUp(value:TextInputEvent->Void):TextInputEvent->Void {
+        if (_onMouseUp != null) {
+            tf.removeEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseUpEvent);
+        }
+        _onMouseUp = value;
+        if (_onMouseUp != null) {
+            tf.addEventListener(openfl.events.MouseEvent.MOUSE_UP, __onTextInputMouseUpEvent);
+        }
+        return value;
+    }
+
+    private function __onTextInputMouseUpEvent(event:openfl.events.MouseEvent) {
+        if (_onMouseUp != null) {
+            _onMouseUp({
+                type: event.type,
+                stageX: event.stageX,
+                stageY: event.stageY
+            });
+        }
+    }
+
+    private var _onClick:TextInputEvent->Void = null;
+    public var onClick(null, set):TextInputEvent->Void;
+    private function set_onClick(value:TextInputEvent->Void):TextInputEvent->Void {
+        if (_onClick != null) {
+            tf.removeEventListener(openfl.events.MouseEvent.CLICK, __onTextInputClickEvent);
+        }
+        _onClick = value;
+        if (_onClick != null) {
+            tf.addEventListener(openfl.events.MouseEvent.CLICK, __onTextInputClickEvent);
+        }
+        return value;
+    }
+
+    private function __onTextInputClickEvent(event:openfl.events.MouseEvent) {
+        if (_onClick != null) {
+            _onClick({
+                type: event.type,
+                stageX: event.stageX,
+                stageY: event.stageY
+            });
+        }
+    }
+
+    private var _onChange:TextInputEvent->Void = null;
+    public var onChange(null, set):TextInputEvent->Void;
+    private function set_onChange(value:TextInputEvent->Void):TextInputEvent->Void {
+        if (_onChange != null) {
+            tf.removeEventListener(Event.CHANGE, __onTextInputChangeEvent);
+        }
+        _onChange = value;
+        if (_onChange != null) {
+            tf.addEventListener(Event.CHANGE, __onTextInputChangeEvent);
+        }
+        return value;
+    }
+
+    private function __onTextInputChangeEvent(event:Event) {
+        if (_onChange != null) {
+            _onChange({
+                type: event.type,
+                stageX: 0,
+                stageY: 0
+            });
+        }
+    }
+
+    public function addToComponent(component:Component) {
+        FlxG.addChildBelowMouse(tf, 0xffffff);
+    }
+
+    public function equals(sprite:FlxSprite):Bool {
+        return false;
+    }
+
     private var _parentHidden:Bool = false;
     public function update() {
         var ref = parentComponent;
@@ -98,7 +258,7 @@ class OpenFLTextInput extends TextBase {
         */
     }
     
-    public function destroy() {
+    public function destroy(component:Component) {
         _parentHidden = true;
         tf.visible = false;
         FlxG.removeChild(tf);
@@ -219,7 +379,7 @@ class OpenFLTextInput extends TextBase {
         return measureTextRequired;
     }
     
-    private function onChange(e) {
+    private function onInternalChange(e:Event) {
         _text = tf.text;
         
         measureText();
