@@ -5,6 +5,8 @@ import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import haxe.ui.core.Component;
 import openfl.events.Event;
 
+#if flixel_text_input
+
 class FlxTextInput extends TextBase {
     public static var USE_ON_ADDED:Bool = false;
     public static var USE_ON_REMOVED:Bool = false;
@@ -341,3 +343,5 @@ class FlxTextInput extends TextBase {
         tf = null;
     }
 }
+
+#end
