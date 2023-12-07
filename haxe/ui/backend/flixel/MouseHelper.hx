@@ -19,8 +19,6 @@ class MouseHelper {
     
     private static var _callbacks:Map<String, Array<Callback>> = new Map<String, Array<Callback>>();
     
-    private static var _inputManager:InputManager = null;
-    
     public static function notify(event:String, callback:MouseEvent->Void, priority:Int = 5) {
         switch (event) {
             case MouseEvent.MOUSE_DOWN:
@@ -70,12 +68,6 @@ class MouseHelper {
             list.sort(function(a, b) {
                 return a.priority - b.priority;
             });
-        }
-        
-        if (_inputManager == null) {
-            _inputManager = new InputManager();
-            _inputManager.onResetCb = onPreStateSwitched;
-            FlxG.inputs.add(_inputManager);
         }
     }
     
