@@ -404,7 +404,7 @@ class ComponentImpl extends ComponentBase {
     public override function set_alpha(alpha:Float):Float {
         _surface.alpha = alpha;
         if (hasTextDisplay()) {
-            getTextDisplay().tf.alpha = value;
+            getTextDisplay().tf.alpha = alpha;
         }
         if (hasTextInput()) {
             getTextInput().alpha = alpha;
