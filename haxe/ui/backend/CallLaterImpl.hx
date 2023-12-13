@@ -1,5 +1,12 @@
 package haxe.ui.backend;
 
+class CallLaterImpl {
+    public function new(fn:Void->Void) {
+        haxe.ui.util.Timer.delay(fn, 0);
+    }
+}
+
+/* this version seems to hold the main loop up - unsure why, but animations simply dont work - even though the props seem to be get set correctly
 import flixel.FlxG;
 
 class CallLaterImpl {
@@ -19,3 +26,4 @@ class CallLaterImpl {
         }
     }
 }
+*/
