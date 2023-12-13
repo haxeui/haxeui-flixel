@@ -442,7 +442,9 @@ class ComponentImpl extends ComponentBase {
             _imageDisplay.visible = false;
             add(_imageDisplay);
             Toolkit.callLater(function() { // lets show it a frame later so its had a chance to reposition
-                _imageDisplay.visible = true;
+                if (_imaageDisplay != null) {
+                    _imageDisplay.visible = true;
+                }
             });
         }
         
