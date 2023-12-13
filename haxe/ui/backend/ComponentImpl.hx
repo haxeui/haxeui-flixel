@@ -412,6 +412,9 @@ class ComponentImpl extends ComponentBase {
         if (hasTextInput()) {
             getTextInput().alpha = alpha;
         }
+        if (hasImageDisplay()) {
+            getImageDisplay().alpha = alpha;
+        }
         return super.set_alpha(alpha);
     }
     
