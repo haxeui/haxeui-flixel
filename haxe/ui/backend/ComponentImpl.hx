@@ -396,6 +396,9 @@ class ComponentImpl extends ComponentBase {
         if (hasTextInput()) {
             getTextInput().alpha = value;
         }
+        if (hasImageDisplay()) {
+            getImageDisplay().alpha = value;
+        }
         for (c in childComponents) {
             c.applyAlpha(value);
         }
