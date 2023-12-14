@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 
+import flixel.FlxState;
 import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -72,6 +73,17 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
+    private var _state:FlxState;
+    public var state(get, set):FlxState;
+    private function get_state():FlxState {
+        return findRootComponent()._state;
+    }
+    private function set_state(value:FlxState):FlxState {
+        findRootComponent()._state = value;
+        return value;
+    }
+
+
     // lets cache certain items so we dont have to loop multiple times per frame
     private var _cachedScreenX:Null<Float> = null;
     private var _cachedScreenY:Null<Float> = null;
@@ -745,7 +757,7 @@ class ComponentImpl extends ComponentBase {
         lastMouseX = x;
         lastMouseY = y;
         
-        var hasMember = StateHelper.hasMember(_surface);
+        var hasMember = (this.state == StateHelper.currentState);
 
         if (Platform.instance.isMobile == false) {
             if (_mouseOverFlag == true) {
@@ -841,11 +853,10 @@ class ComponentImpl extends ComponentBase {
             }
         }
         
-        
-        if (StateHelper.hasMember(_surface) == false) {
+        if (this.state != StateHelper.currentState) {
             return;
         }
-        
+
         var button:Int = event.data;
         var x = event.screenX;
         var y = event.screenY;
@@ -884,7 +895,7 @@ class ComponentImpl extends ComponentBase {
             }
         }
         
-        if (StateHelper.hasMember(_surface) == false) {
+        if (this.state != StateHelper.currentState) {
             return;
         }
         
@@ -949,7 +960,7 @@ class ComponentImpl extends ComponentBase {
     #end
     
     private function __onDoubleClick(event:MouseEvent) {
-        if (StateHelper.hasMember(_surface) == false) {
+        if (this.state != StateHelper.currentState) {
             return;
         }
         
@@ -988,7 +999,7 @@ class ComponentImpl extends ComponentBase {
     }
 
     private function __onMouseWheel(event:MouseEvent) {
-        if (StateHelper.hasMember(_surface) == false) {
+        if (this.state != StateHelper.currentState) {
             return;
         }
         

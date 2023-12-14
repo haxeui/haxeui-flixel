@@ -74,6 +74,7 @@ class ScreenImpl extends ScreenBase {
             if (c.percentHeight > 0) {
                 c.height = (this.height * c.percentHeight) / 100;
             }
+            c.state = StateHelper.currentState;
             rootComponents.push(c);
             c.recursiveReady();
             c.syncComponentValidation();
@@ -101,6 +102,7 @@ class ScreenImpl extends ScreenBase {
                 if (c.percentHeight > 0) {
                     c.height = (this.height * c.percentHeight) / 100;
                 }
+                c.state = StateHelper.currentState;
                 rootComponents.push(c);
                 c.recursiveReady();
                 c.syncComponentValidation();
