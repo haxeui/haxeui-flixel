@@ -33,9 +33,13 @@ class ScreenImpl extends ScreenBase {
     }
 
     private function onPreStateCreate(state:flixel.FlxState) {
-        state.memberAdded.add(onMemberAdded);
+        if (!state.memberAdded.has(onMemberAdded)) {
+            state.memberAdded.add(onMemberAdded);
+        }
         checkMembers(state);
-        state.memberRemoved.add(onMemberRemoved);
+        if (!state.memberRemoved.has(onMemberRemoved)) {
+            state.memberRemoved.add(onMemberRemoved);
+        }
     }
 
     private function onPostGameStart() {
@@ -48,11 +52,17 @@ class ScreenImpl extends ScreenBase {
         }
         rootComponents = [];
 
-        FlxG.state.subStateOpened.add(onMemberAdded);
-        FlxG.state.memberAdded.add(onMemberAdded);
+        if (!FlxG.state.subStateOpened.has(onMemberAdded)) {
+            FlxG.state.subStateOpened.add(onMemberAdded);
+        }
+        if (!FlxG.state.memberAdded.has(onMemberAdded)) {
+            FlxG.state.memberAdded.add(onMemberAdded);
+        }
         checkMembers(FlxG.state);
 
-        FlxG.state.memberRemoved.add(onMemberRemoved);
+        if (!FlxG.state.memberRemoved.has(onMemberRemoved)) {
+            FlxG.state.memberRemoved.add(onMemberRemoved);
+        }
     }
 
     private function onMemberAdded(m:FlxBasic) {
