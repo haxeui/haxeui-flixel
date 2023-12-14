@@ -63,6 +63,9 @@ class ScreenImpl extends ScreenBase {
         if (!FlxG.state.memberRemoved.has(onMemberRemoved)) {
             FlxG.state.memberRemoved.add(onMemberRemoved);
         }
+        if (!FlxG.state.subStateClosed.has(onMemberRemoved)) {
+            FlxG.state.subStateClosed.add(onMemberRemoved);
+        }
     }
 
     private function onMemberAdded(m:FlxBasic) {
@@ -219,6 +222,7 @@ class ScreenImpl extends ScreenBase {
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.remove(component, true);
         }
+        component.state = null;
         checkResetCursor();
         onContainerResize();
         return component;
