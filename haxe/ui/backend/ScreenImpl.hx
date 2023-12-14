@@ -21,22 +21,8 @@ import openfl.Lib;
 class ScreenImpl extends ScreenBase {
     private var _mapping:Map<String, UIEvent->Void>;
 
-    #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
-    private static var _inputManager:haxe.ui.backend.flixel.InputManager = null;
-    #end
-
     public function new() {
         _mapping = new Map<String, UIEvent->Void>();
-
-        #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
-
-        if (_inputManager == null) {
-            _inputManager = new haxe.ui.backend.flixel.InputManager();
-            _inputManager.onResetCb = onReset;
-            FlxG.inputs.add(_inputManager);
-        }
-
-        #end
 
         FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
@@ -52,22 +38,6 @@ class ScreenImpl extends ScreenBase {
         state.memberRemoved.add(onMemberRemoved);
     }
 
-    #if (flixel < "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
-
-    private function onReset() {
-        if (FlxG.state != null && FlxG.state.subState != null) {
-            var cachedSubStateOpenedCallback = FlxG.state.subState.openCallback;
-            FlxG.state.subState.openCallback = function() {
-                onMemberAdded(FlxG.state.subState);
-                if (cachedSubStateOpenedCallback != null) {
-                    cachedSubStateOpenedCallback();
-                }
-            }
-        }
-    }
-
-    #end
-
     private function onPostGameStart() {
         onPostStateSwitch();
     }
@@ -78,10 +48,7 @@ class ScreenImpl extends ScreenBase {
         }
         rootComponents = [];
 
-        #if (flixel >= "4.9.0") // subStateOpened / subStateClosed added in 4.9.0
         FlxG.state.subStateOpened.add(onMemberAdded);
-        #end
-
         FlxG.state.memberAdded.add(onMemberAdded);
         checkMembers(FlxG.state);
 
