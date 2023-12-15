@@ -1,12 +1,12 @@
 package haxe.ui.backend;
 
-import flixel.FlxState;
-import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.math.FlxRect;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import haxe.ui.Toolkit;
+import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import haxe.ui.backend.flixel.FlxStyleHelper;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
@@ -1083,26 +1083,15 @@ class ComponentImpl extends ComponentBase {
         }
         
         if (_textDisplay != null) {
-            #if html5
-            var offsetX = 1 / Toolkit.scaleX;
-            var offsetY = 1 / Toolkit.scaleY;
-            #else
             var offsetX = 2 / Toolkit.scaleX;
             var offsetY = 2 / Toolkit.scaleY;
-            #end
             _textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
             _textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
         }
         
         if (_textInput != null) {
-            #if html5
-            var offsetX = 1 / Toolkit.scaleX;
-            var offsetY = 1 / Toolkit.scaleY;
-            #else
             var offsetX = 2 / Toolkit.scaleX;
             var offsetY = 2 / Toolkit.scaleY;
-            #end
-            
             _textInput.x = (_surface.x + _textInput.left - offsetX) * FlxG.scaleMode.scale.x;
             _textInput.y = (_surface.y + _textInput.top - offsetY) * FlxG.scaleMode.scale.y;
             _textInput.scaleX = FlxG.scaleMode.scale.x;
