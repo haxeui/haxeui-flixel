@@ -1190,8 +1190,8 @@ class ComponentImpl extends ComponentBase {
         }
         
         clearCaches();
-        repositionChildren();
         applyClipRect();
+        repositionChildren();
 
         _updates++;
         if (_updates == 1) {
