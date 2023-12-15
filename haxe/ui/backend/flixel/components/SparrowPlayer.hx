@@ -1,15 +1,15 @@
 package haxe.ui.backend.flixel.components;
 
-import haxe.ui.data.DataSource;
-import haxe.ui.core.IDataComponent;
-import haxe.ui.events.AnimationEvent;
-import haxe.ui.core.Component;
-import haxe.ui.geom.Size;
-import haxe.ui.layouts.DefaultLayout;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
 import haxe.ui.containers.Box;
+import haxe.ui.core.Component;
+import haxe.ui.core.IDataComponent;
+import haxe.ui.data.DataSource;
+import haxe.ui.events.AnimationEvent;
+import haxe.ui.geom.Size;
+import haxe.ui.layouts.DefaultLayout;
 import openfl.Assets;
 
 private typedef AnimationInfo = {
@@ -38,7 +38,6 @@ class SparrowPlayer extends Box implements IDataComponent {
 
     public function new() {
         super();
-        _overrideSkipTransformChildren = false;
         sprite = new FlxSprite(1, 1);
         add(sprite);
     }
@@ -138,8 +137,6 @@ class SparrowPlayer extends Box implements IDataComponent {
             _redispatchStart = false;
             dispatch(new AnimationEvent(AnimationEvent.START));
         }
-
-        parentComponent._overrideSkipTransformChildren = false;
     }
 
     private var _cachedAnimationPrefixes:Array<AnimationInfo> = []; // component might not have an animation yet, so we'll cache it if thats the case

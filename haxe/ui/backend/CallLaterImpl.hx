@@ -14,7 +14,7 @@ class CallLaterImpl {
         if (!added) {
             added = true;
             current = list1;
-            FlxG.signals.postUpdate.add(onUpdate);
+            FlxG.signals.preUpdate.add(onUpdate);
         }
         current.insert(0, fn);
     }

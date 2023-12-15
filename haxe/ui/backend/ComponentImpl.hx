@@ -261,18 +261,10 @@ class ComponentImpl extends ComponentBase {
         return child;
     }
 
-    // TODO: really need revision on if this is still needed, or what purpose it was originally supposed
-    // to serve, maybe its no longer needed in flixel 5.0? 
-    private var _overrideSkipTransformChildren:Bool = true;
     private function superVisible(value:Bool) {
-        if (_overrideSkipTransformChildren) {
-            _skipTransformChildren = true;
-        }
+        _skipTransformChildren = true;
         super.set_visible(value);
         _skipTransformChildren = false;
-        if (_overrideSkipTransformChildren) {
-            _skipTransformChildren = false;
-        }
     }
 
     private override function handleAddComponentAt(child:Component, index:Int):Component {
@@ -1185,7 +1177,7 @@ class ComponentImpl extends ComponentBase {
     // Flixel overrides
     //***********************************************************************************************************
 
-    private var _updates:Int = 0;
+    private var _updates:Float = 0;
     public override function update(elapsed:Float) {
         if (_destroyed) {
             super.update(elapsed);
@@ -1198,11 +1190,11 @@ class ComponentImpl extends ComponentBase {
         }
         
         clearCaches();
-        applyClipRect();
         repositionChildren();
+        applyClipRect();
 
         _updates++;
-        if (_updates == 2) {
+        if (_updates == 1) {
             if (asComponent.hidden == false) {
                 applyVisibility(true);
             } else {
