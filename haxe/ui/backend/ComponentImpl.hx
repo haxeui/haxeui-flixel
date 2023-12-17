@@ -744,82 +744,19 @@ class ComponentImpl extends ComponentBase {
     private var _mouseOverFlag:Bool = false;
     private var _cursorSet:Bool = false;
     private function __onMouseMove(event:MouseEvent) {
+        if (Platform.instance.isMobile) {
+            return;
+        }
+
         var x = event.screenX;
         var y = event.screenY;
         lastMouseX = x;
         lastMouseY = y;
         
-        var hasMember = (this.state == StateHelper.currentState);
+        var inCurrentState = (this.state == StateHelper.currentState);
 
-        if (Platform.instance.isMobile == false) {
+        if (inCurrentState == false) {
             if (_mouseOverFlag == true) {
-                if (hasMember == false) {
-                    _mouseOverFlag = false;
-                    var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
-                    if (fn != null) {
-                        var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
-                        mouseEvent.screenX = x / Toolkit.scaleX;
-                        mouseEvent.screenY = y / Toolkit.scaleY;
-                        #if mobile
-                        mouseEvent.touchEvent = true;
-                        #end
-                        fn(mouseEvent);
-                        event.canceled = mouseEvent.canceled;
-                    }
-                    return;
-                }
-            }
-            
-            if (hasMember == false) {
-                return;
-            }
-
-            var i = inBounds(x, y);
-            if (i == true) {
-                if (this.style != null && this.style.cursor != null) {
-                    Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
-                    _cursorSet = true;
-                }
-
-                var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
-                if (fn != null) {
-                    var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
-                    mouseEvent.screenX = x / Toolkit.scaleX;
-                    mouseEvent.screenY = y / Toolkit.scaleY;
-                    #if mobile
-                    mouseEvent.touchEvent = true;
-                    #end
-                    fn(mouseEvent);
-                    event.canceled = mouseEvent.canceled;
-                }
-            }
-            
-            if (i == true && _mouseOverFlag == false) {
-                if (isEventRelevant(getComponentsAtPoint(x, y, true), MouseEvent.MOUSE_OVER)) {
-                    if (this.style != null && this.style.cursor != null) {
-                        Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
-                        _cursorSet = true;
-                    }
-    
-                    _mouseOverFlag = true;
-                    var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
-                    if (fn != null) {
-                        var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
-                        mouseEvent.screenX = x / Toolkit.scaleX;
-                        mouseEvent.screenY = y / Toolkit.scaleY;
-                        #if mobile
-                        mouseEvent.touchEvent = true;
-                        #end
-                        fn(mouseEvent);
-                        event.canceled = mouseEvent.canceled;
-                    }
-                }
-            } else if (i == false && _mouseOverFlag == true) {
-                if (_cursorSet) {
-                    Screen.instance.setCursor("default");
-                    _cursorSet = false;
-                }
-
                 _mouseOverFlag = false;
                 var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
                 if (fn != null) {
@@ -833,18 +770,60 @@ class ComponentImpl extends ComponentBase {
                     event.canceled = mouseEvent.canceled;
                 }
             }
+            return;
+        }
+
+        var i = inBounds(x, y);
+        if (i == true) {
+            if (hasComponentOver(cast this, x, y) == true) {
+                var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    fn(mouseEvent);
+                }
+                return;
+            }
+            if (this.style != null && this.style.cursor != null) {
+                Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
+            }
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
+        if (i == true && _mouseOverFlag == false) {
+            if (hasComponentOver(cast this, x, y) == true) {
+                return;
+            }
+            _mouseOverFlag = true;
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        } else if (i == false && _mouseOverFlag == true) {
+            _mouseOverFlag = false;
+            Screen.instance.setCursor("default");
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
         }
     }
 
     private var _mouseDownFlag:Bool = false;
     private var _mouseDownButton:Int = -1;
     private function __onMouseDown(event:MouseEvent) {
-        if (Platform.instance.isMobile == false) {
-            if (_mouseOverFlag == false) {
-                return;
-            }
-        }
-        
         if (this.state != StateHelper.currentState) {
             return;
         }
@@ -852,59 +831,45 @@ class ComponentImpl extends ComponentBase {
         var button:Int = event.data;
         var x = event.screenX;
         var y = event.screenY;
+
         lastMouseX = x;
         lastMouseY = y;
         var i = inBounds(x, y);
         if (i == true && _mouseDownFlag == false) {
-            /*
             if (hasComponentOver(cast this, x, y) == true) {
                 return;
             }
-            */
-            if (isEventRelevant(getComponentsAtPoint(x, y, true), MouseEvent.MOUSE_DOWN)) {
-                _mouseDownFlag = true;
-                _mouseDownButton = button;
-                var type = button == 0 ? haxe.ui.events.MouseEvent.MOUSE_DOWN: haxe.ui.events.MouseEvent.RIGHT_MOUSE_DOWN;
-                var fn:UIEvent->Void = _eventMap.get(type);
-                if (fn != null) {
-                    var mouseEvent = new haxe.ui.events.MouseEvent(type);
-                    mouseEvent.screenX = x / Toolkit.scaleX;
-                    mouseEvent.screenY = y / Toolkit.scaleY;
-                    if (Platform.instance.isMobile) {
-                        mouseEvent.touchEvent = true;
-                    }
-                    fn(mouseEvent);
-                    event.canceled = mouseEvent.canceled;
-                }
+            _mouseDownFlag = true;
+
+            var type = button == 0 ? haxe.ui.events.MouseEvent.MOUSE_DOWN: haxe.ui.events.MouseEvent.RIGHT_MOUSE_DOWN;
+            var fn:UIEvent->Void = _eventMap.get(type);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
             }
         }
     }
 
     private function __onMouseUp(event:MouseEvent) {
-        if (Platform.instance.isMobile == false) {
-            if (_mouseOverFlag == false) {
-                //return;
-            }
-        }
-        
         if (this.state != StateHelper.currentState) {
             return;
         }
-        
-        var button:Int = _mouseDownButton;
+
+        var button:Int = event.data;
         var x = event.screenX;
         var y = event.screenY;
-        
+
         lastMouseX = x;
         lastMouseY = y;
+
         var i = inBounds(x, y);
         if (i == true) {
-            /*
             if (hasComponentOver(cast this, x, y) == true) {
                 return;
             }
-            */
-            
+
             if (_mouseDownFlag == true) {
                 var type = button == 0 ? haxe.ui.events.MouseEvent.CLICK: haxe.ui.events.MouseEvent.RIGHT_CLICK;
                 var fn:UIEvent->Void = _eventMap.get(type);
@@ -912,13 +877,9 @@ class ComponentImpl extends ComponentBase {
                     var mouseEvent = new haxe.ui.events.MouseEvent(type);
                     mouseEvent.screenX = x / Toolkit.scaleX;
                     mouseEvent.screenY = y / Toolkit.scaleY;
-                    if (Platform.instance.isMobile) {
-                        mouseEvent.touchEvent = true;
-                    }
                     fn(mouseEvent);
-                    event.canceled = mouseEvent.canceled;
                 }
-                
+
                 if (type == haxe.ui.events.MouseEvent.CLICK) {
                     _lastClickTimeDiff = Timer.stamp() - _lastClickTime;
                     _lastClickTime = Timer.stamp();
@@ -936,14 +897,10 @@ class ComponentImpl extends ComponentBase {
                 var mouseEvent = new haxe.ui.events.MouseEvent(type);
                 mouseEvent.screenX = x / Toolkit.scaleX;
                 mouseEvent.screenY = y / Toolkit.scaleY;
-                if (Platform.instance.isMobile) {
-                    mouseEvent.touchEvent = true;
-                }
                 fn(mouseEvent);
-                event.canceled = mouseEvent.canceled;
             }
         }
-        _mouseDownFlag = false;
+        _mouseDownFlag = false;        
     }
 
     #if haxeui_dont_impose_base_class
@@ -952,24 +909,18 @@ class ComponentImpl extends ComponentBase {
     #end
     
     private function __onDoubleClick(event:MouseEvent) {
-        if (this.state != StateHelper.currentState) {
-            return;
-        }
-        
-        var button:Int = _mouseDownButton;
+        var button:Int = event.data;
         var x = event.screenX;
         var y = event.screenY;
-        
+
         lastMouseX = x;
         lastMouseY = y;
         var i = inBounds(x, y);
         if (i == true && button == 0) {
-            /*
             if (hasComponentOver(cast this, x, y) == true) {
                 return;
             }
-            */
-            
+
             _mouseDownFlag = false;
             var mouseDelta:Float = MathUtil.distance(x, y, _lastClickX, _lastClickY);
             if (_lastClickTimeDiff < 0.5 && mouseDelta < 5) { // 0.5 seconds
@@ -979,11 +930,7 @@ class ComponentImpl extends ComponentBase {
                     var mouseEvent = new haxe.ui.events.MouseEvent(type);
                     mouseEvent.screenX = x / Toolkit.scaleX;
                     mouseEvent.screenY = y / Toolkit.scaleY;
-                    if (Platform.instance.isMobile) {
-                        mouseEvent.touchEvent = true;
-                    }
                     fn(mouseEvent);
-                    event.canceled = mouseEvent.canceled;
                 }
             }
         }
@@ -1015,20 +962,6 @@ class ComponentImpl extends ComponentBase {
         }
         fn(mouseEvent);
         event.canceled = mouseEvent.canceled;
-    }
-    
-    private function isEventRelevant(children:Array<Component>, eventType:String):Bool {
-        var relevant = false;
-        for (c in children) {
-            if (c == this) {
-                relevant = true;
-            }
-            if (c.parentComponent == null) {
-                break;
-            }
-        }
-        
-        return relevant;
     }
     
     //***********************************************************************************************************
@@ -1194,7 +1127,7 @@ class ComponentImpl extends ComponentBase {
         repositionChildren();
 
         _updates++;
-        if (_updates == 1) {
+        if (_updates == 2) {
             if (asComponent.hidden == false) {
                 applyVisibility(true);
             } else {
