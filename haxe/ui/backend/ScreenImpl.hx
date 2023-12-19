@@ -213,6 +213,7 @@ class ScreenImpl extends ScreenBase {
             throw "component wasnt actually removed from array, or there is a duplicate in the array";
         }
         if (dispose) {
+            component.state = null;
             component.destroyInternal();
             component.destroy();
             component.destroyComponent();
@@ -222,7 +223,6 @@ class ScreenImpl extends ScreenBase {
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.remove(component, true);
         }
-        component.state = null;
         checkResetCursor();
         onContainerResize();
         return component;
