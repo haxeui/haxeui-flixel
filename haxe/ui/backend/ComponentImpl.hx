@@ -1014,14 +1014,20 @@ class ComponentImpl extends ComponentBase {
             _textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
             _textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
         }
-        
+
         if (_textInput != null) {
             var offsetX = 2 / Toolkit.scaleX;
             var offsetY = 2 / Toolkit.scaleY;
-            _textInput.x = (_surface.x + _textInput.left - offsetX) * FlxG.scaleMode.scale.x;
-            _textInput.y = (_surface.y + _textInput.top - offsetY) * FlxG.scaleMode.scale.y;
+            _textInput.x = (_surface.x + _textInput.left - offsetX);
+            _textInput.y = (_surface.y + _textInput.top - offsetY);
+
+            #if !flixel_text_input
+            _textInput.x *= FlxG.scaleMode.scale.x;
+            _textInput.y *= FlxG.scaleMode.scale.y;
             _textInput.scaleX = FlxG.scaleMode.scale.x;
             _textInput.scaleY = FlxG.scaleMode.scale.y;
+            #end
+            
             _textInput.update();
         }
         
