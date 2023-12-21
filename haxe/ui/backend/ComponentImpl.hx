@@ -590,7 +590,6 @@ class ComponentImpl extends ComponentBase {
                 if (hasTextInput()) {
                     getTextInput().onMouseDown = null;
                 }
-                
 
             case MouseEvent.MOUSE_UP:
                 _eventMap.remove(type);
