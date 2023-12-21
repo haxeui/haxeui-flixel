@@ -1,8 +1,9 @@
 package haxe.ui.backend.flixel.textinputs;
 
-import flixel.FlxSprite;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import haxe.ui.Toolkit;
+import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
@@ -12,7 +13,6 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
-import haxe.ui.backend.TextInputImpl.TextInputEvent;
 
 class OpenFLTextInput extends TextBase {
     public static var USE_ON_ADDED:Bool = true;
@@ -66,7 +66,7 @@ class OpenFLTextInput extends TextBase {
         return tf.x;
     }
     private function set_x(value:Float):Float {
-        tf.x = value;
+        tf.x = value * FlxG.scaleMode.scale.x;
         return value;
     }
 
@@ -75,7 +75,7 @@ class OpenFLTextInput extends TextBase {
         return tf.y;
     }
     private function set_y(value:Float):Float {
-        tf.y = value;
+        tf.y = value * FlxG.scaleMode.scale.y;
         return value;
     }
 

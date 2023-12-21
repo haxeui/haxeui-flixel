@@ -67,7 +67,7 @@ class FlxTextInput extends TextBase {
         return tf.scale.x;
     }
     private function set_scaleX(value:Float):Float {
-        tf.scale.x = value;
+        // do nothing
         return value;
     }
 
@@ -76,7 +76,7 @@ class FlxTextInput extends TextBase {
         return tf.scale.y;
     }
     private function set_scaleY(value:Float):Float {
-        tf.scale.y = value;
+        // do nothing
         return value;
     }
 
