@@ -175,9 +175,9 @@ class ScreenImpl extends ScreenBase {
         _cursor = cursor;
         if (CursorHelper.hasCursor(_cursor)) {
             var cursorInfo = CursorHelper.registeredCursors.get(_cursor);
-            FlxG.mouse.load(new FlxSprite().loadGraphic(cursorInfo.graphic).pixels, cursorInfo.scale, cursorInfo.offsetX, cursorInfo.offsetY);
+            FlxG.mouse.load(CursorHelper.mouseLoadFunction(cursorInfo.graphic), cursorInfo.scale, cursorInfo.offsetX, cursorInfo.offsetY);
         } else if (openfl.Assets.exists(_cursor)) {
-            FlxG.mouse.load(new FlxSprite().loadGraphic(_cursor).pixels, 1, offsetX, offsetY);
+            FlxG.mouse.load(CursorHelper.mouseLoadFunction(_cursor), 1, offsetX, offsetY);
         } else {
             FlxG.mouse.load(null);
         }
