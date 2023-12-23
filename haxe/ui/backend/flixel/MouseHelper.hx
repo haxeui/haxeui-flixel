@@ -137,11 +137,12 @@ class MouseHelper {
             event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
 
-        #if FLX_NO_MOUSE
-            event.data = -1;
-        #else
-            event.data = (e.buttonDown ? 0 : 1);
-        #end
+        event.data = -1;
+        if (e.type == openfl.events.MouseEvent.MOUSE_DOWN) {
+            event.data = 0;
+        } else if (e.type == openfl.events.MouseEvent.RIGHT_MOUSE_DOWN) {
+            event.data = 1;
+        }
 
         for (l in list) {
             l.fn(event);
@@ -173,11 +174,12 @@ class MouseHelper {
             event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
 
-        #if FLX_NO_MOUSE
-            event.data = -1;
-        #else
-            event.data = (e.buttonDown ? 0 : 1);
-        #end
+        event.data = -1;
+        if (e.type == openfl.events.MouseEvent.MOUSE_UP) {
+            event.data = 0;
+        } else if (e.type == openfl.events.MouseEvent.RIGHT_MOUSE_UP) {
+            event.data = 1;
+        }
 
         for (l in list) {
             l.fn(event);
