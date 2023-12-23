@@ -1,5 +1,7 @@
 package haxe.ui.backend.flixel;
 
+import openfl.display.BitmapData;
+
 class CursorHelper {
     public static var useCustomCursors:Bool = true;
     public static var registeredCursors:Map<String, CursorInfo> = new Map<String, CursorInfo>();
