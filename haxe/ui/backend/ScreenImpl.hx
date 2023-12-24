@@ -7,6 +7,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import haxe.ui.Toolkit;
 import haxe.ui.backend.flixel.CursorHelper;
+import haxe.ui.backend.flixel.KeyboardHelper;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -301,13 +302,13 @@ class ScreenImpl extends ScreenBase {
             case KeyboardEvent.KEY_DOWN:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    FlxG.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, __onKeyEvent);
+                    KeyboardHelper.notify(KeyboardEvent.KEY_DOWN, __onKeyEvent, 10);
                 }
 
             case KeyboardEvent.KEY_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    FlxG.stage.addEventListener(openfl.events.KeyboardEvent.KEY_UP, __onKeyEvent);
+                    KeyboardHelper.notify(KeyboardEvent.KEY_UP, __onKeyEvent, 10);
                 }
         }
     }
@@ -372,23 +373,16 @@ class ScreenImpl extends ScreenBase {
         }
     }
 
-    private function __onKeyEvent(event:openfl.events.KeyboardEvent) {
-        var type:String = null;
-        if (event.type == openfl.events.KeyboardEvent.KEY_DOWN) {
-            type = KeyboardEvent.KEY_DOWN;
-        } else if (event.type == openfl.events.KeyboardEvent.KEY_UP) {
-            type = KeyboardEvent.KEY_UP;
-        }
-
-        if (type != null) {
-            var fn = _mapping.get(type);
-            if (fn != null) {
-                var keyboardEvent = new KeyboardEvent(type);
-                keyboardEvent.keyCode = event.keyCode;
-                keyboardEvent.ctrlKey = event.ctrlKey;
-                keyboardEvent.shiftKey = event.shiftKey;
-                fn(keyboardEvent);
-            }
+    private function __onKeyEvent(event:KeyboardEvent) {
+        var fn = _mapping.get(event.type);
+        if (fn != null) {
+            var keyboardEvent = new KeyboardEvent(event.type);
+            keyboardEvent.keyCode = event.keyCode;
+            keyboardEvent.altKey = event.altKey;
+            keyboardEvent.ctrlKey = event.ctrlKey;
+            keyboardEvent.shiftKey = event.shiftKey;
+            fn(keyboardEvent);
+            event.canceled = keyboardEvent.canceled;
         }
     }
 
