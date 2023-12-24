@@ -36,6 +36,8 @@ class OpenFLTextInput extends TextBase {
         tf.tabEnabled = false;
         //tf.stage.focus = null;
         tf.addEventListener(Event.CHANGE, onInternalChange);
+        _inputData.vscrollPageStep = 1;
+        _inputData.vscrollNativeWheel = true;
     }
     
     public override function focus() {

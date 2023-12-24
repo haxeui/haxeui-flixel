@@ -23,6 +23,8 @@ class FlxTextInput extends TextBase {
         tf.onChange.add(onInternalChange);
         tf.onScroll.add(onScroll);
         tf.moves = false;
+        _inputData.vscrollPageStep = 1;
+        _inputData.vscrollNativeWheel = true;
     }
 
     public override function focus() {
