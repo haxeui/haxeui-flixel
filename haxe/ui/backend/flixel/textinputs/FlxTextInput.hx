@@ -185,6 +185,8 @@ class FlxTextInput extends TextBase {
             tf.displayAsPassword = _inputData.password;
         }
 
+        tf.type = (parentComponent.disabled ? DYNAMIC : INPUT);
+
         return measureTextRequired;
     }
 
