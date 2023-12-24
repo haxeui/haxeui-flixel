@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import haxe.ui.core.Component;
 import openfl.events.Event;
+import openfl.events.KeyboardEvent;
 
 #if flixel_text_input
 
@@ -308,6 +309,42 @@ class FlxTextInput extends TextBase {
                 stageY: 0
             });
         }
+    }
+
+    private var _onKeyDown:KeyboardEvent->Void = null;
+    public var onKeyDown(null, set):KeyboardEvent->Void;
+    private function set_onKeyDown(value:KeyboardEvent->Void):KeyboardEvent->Void {
+        if (_onKeyDown != null) {
+            tf.textField.removeEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
+        }
+        _onKeyDown = value;
+        if (_onKeyDown != null) {
+            tf.textField.addEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
+        }
+        return value;
+    }
+
+    private function __onTextInputKeyDown(e:KeyboardEvent) {
+        if (_onKeyDown != null)
+            _onKeyDown(e);
+    }
+
+    private var _onKeyUp:KeyboardEvent->Void = null;
+    public var onKeyUp(null, set):KeyboardEvent->Void;
+    private function set_onKeyUp(value:KeyboardEvent->Void):KeyboardEvent->Void {
+        if (_onKeyUp != null) {
+            tf.textField.removeEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
+        }
+        _onKeyUp = value;
+        if (_onKeyUp != null) {
+            tf.textField.addEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
+        }
+        return value;
+    }
+
+    private function __onTextInputKeyUp(e:KeyboardEvent) {
+        if (_onKeyUp != null)
+            _onKeyUp(e);
     }
 
     private function onInternalChange() {

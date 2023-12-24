@@ -3,7 +3,7 @@ package haxe.ui.backend.flixel;
 import flixel.FlxG;
 import haxe.ui.events.MouseEvent;
 
-typedef Callback = {
+typedef MouseCallback = {
     var fn:MouseEvent->Void;
     var priority:Int;
 }
@@ -17,7 +17,7 @@ class MouseHelper {
     private static var _hasOnMouseMove:Bool = false;
     private static var _hasOnMouseWheel:Bool = false;
     
-    private static var _callbacks:Map<String, Array<Callback>> = new Map<String, Array<Callback>>();
+    private static var _callbacks:Map<String, Array<MouseCallback>> = new Map<String, Array<MouseCallback>>();
     
     public static function notify(event:String, callback:MouseEvent->Void, priority:Int = 5) {
         switch (event) {
@@ -48,7 +48,7 @@ class MouseHelper {
         
         var list = _callbacks.get(event);
         if (list == null) {
-            list = new Array<Callback>();
+            list = new Array<MouseCallback>();
             _callbacks.set(event, list);
         }
         
@@ -248,7 +248,7 @@ class MouseHelper {
         #end
     }
     
-    private static function hasCallback(list:Array<Callback>, fn:MouseEvent->Void):Bool {
+    private static function hasCallback(list:Array<MouseCallback>, fn:MouseEvent->Void):Bool {
         var has = false;
         for (item in list) {
             if (item.fn == fn) {
@@ -259,8 +259,8 @@ class MouseHelper {
         return has;
     }
     
-    private static function removeCallback(list:Array<Callback>, fn:MouseEvent->Void) {
-        var itemToRemove:Callback = null;
+    private static function removeCallback(list:Array<MouseCallback>, fn:MouseEvent->Void) {
+        var itemToRemove:MouseCallback = null;
         for (item in list) {
             if (item.fn == fn) {
                 itemToRemove = item;

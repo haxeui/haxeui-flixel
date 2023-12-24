@@ -8,6 +8,7 @@ import flixel.text.FlxText.FlxTextBorderStyle;
 import haxe.ui.Toolkit;
 import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import haxe.ui.backend.flixel.FlxStyleHelper;
+import haxe.ui.backend.flixel.KeyboardHelper;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
@@ -16,6 +17,7 @@ import haxe.ui.core.Platform;
 import haxe.ui.core.Screen;
 import haxe.ui.core.TextDisplay;
 import haxe.ui.core.TextInput;
+import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.filters.DropShadow;
@@ -557,6 +559,24 @@ class ComponentImpl extends ComponentBase {
                     notifyMouseMove(true);
                     _eventMap.set(MouseEvent.RIGHT_CLICK, listener);
                 }
+
+            case KeyboardEvent.KEY_DOWN:
+                if (_eventMap.exists(KeyboardEvent.KEY_DOWN) == false) {
+                    KeyboardHelper.notify(KeyboardEvent.KEY_DOWN, __onKeyboardEvent);
+                    _eventMap.set(KeyboardEvent.KEY_DOWN, listener);
+                    if (hasTextInput()) {
+                        getTextInput().onKeyDown = __onTextInputKeyboardEvent;
+                    }
+                }
+
+            case KeyboardEvent.KEY_UP:
+                if (_eventMap.exists(KeyboardEvent.KEY_UP) == false) {
+                    KeyboardHelper.notify(KeyboardEvent.KEY_UP, __onKeyboardEvent);
+                    _eventMap.set(KeyboardEvent.KEY_UP, listener);
+                    if (hasTextInput()) {
+                        getTextInput().onKeyUp = __onTextInputKeyboardEvent;
+                    }
+                }
                 
             case UIEvent.CHANGE:
                 if (_eventMap.exists(UIEvent.CHANGE) == false) {
@@ -637,6 +657,20 @@ class ComponentImpl extends ComponentBase {
                 notifyMouseDown(false);
                 notifyMouseUp(false);
                 notifyMouseMove(false);
+
+            case KeyboardEvent.KEY_DOWN:
+                _eventMap.remove(type);
+                KeyboardHelper.remove(KeyboardEvent.KEY_DOWN, __onKeyboardEvent);
+                if (hasTextInput()) {
+                    getTextInput().onKeyDown = null;
+                }
+
+            case KeyboardEvent.KEY_UP:
+                _eventMap.remove(type);
+                KeyboardHelper.remove(KeyboardEvent.KEY_UP, __onKeyboardEvent);
+                if (hasTextInput()) {
+                    getTextInput().onKeyUp = null;
+                }
                 
             case UIEvent.CHANGE:
                 _eventMap.remove(type);
@@ -962,6 +996,48 @@ class ComponentImpl extends ComponentBase {
         }
         fn(mouseEvent);
         event.canceled = mouseEvent.canceled;
+    }
+
+    private function __onKeyboardEvent(event:KeyboardEvent) {
+        if (this.state != StateHelper.currentState) {
+            return;
+        }
+
+        var fn = _eventMap.get(event.type);
+        if (fn == null) {
+            return;
+        }
+
+        var keyboardEvent = new KeyboardEvent(event.type);
+        keyboardEvent.keyCode = event.keyCode;
+        keyboardEvent.altKey = event.altKey;
+        keyboardEvent.ctrlKey = event.ctrlKey;
+        keyboardEvent.shiftKey = event.shiftKey;
+        fn(keyboardEvent);
+        event.canceled = keyboardEvent.canceled;
+    }
+
+    private function __onTextInputKeyboardEvent(event:openfl.events.KeyboardEvent) {
+        var type = switch (event.type) {
+            case openfl.events.KeyboardEvent.KEY_DOWN:
+                KeyboardEvent.KEY_DOWN;
+            case openfl.events.KeyboardEvent.KEY_UP:
+                KeyboardEvent.KEY_UP;
+            default:
+                null;
+        }
+
+        var fn = _eventMap.get(type);
+        if (fn == null) {
+            return;
+        }
+
+        var keyboardEvent = new KeyboardEvent(type);
+        keyboardEvent.keyCode = event.keyCode;
+        keyboardEvent.altKey = event.altKey;
+        keyboardEvent.ctrlKey = event.ctrlKey;
+        keyboardEvent.shiftKey = event.shiftKey;
+        fn(keyboardEvent);
     }
     
     //***********************************************************************************************************
