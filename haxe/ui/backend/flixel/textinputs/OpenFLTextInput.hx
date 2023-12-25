@@ -348,7 +348,7 @@ class OpenFLTextInput extends TextBase {
         // see below
         _inputData.hscrollPageSize = (_width * _inputData.hscrollMax) / _textWidth;
 
-        _inputData.vscrollMax = tf.maxScrollV;
+        _inputData.vscrollMax = tf.maxScrollV - 1;
         // cant have page size yet as there seems to be an openfl issue with bottomScrollV
         // https://github.com/openfl/openfl/issues/2220
         _inputData.vscrollPageSize = (_height * _inputData.vscrollMax) / _textHeight;
