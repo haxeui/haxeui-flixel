@@ -104,7 +104,7 @@ class FlxTextInput extends TextBase {
             tf.scrollH = hscrollValue;
         }
 
-        var vscrollValue = Std.int(_inputData.vscrollPos);
+        var vscrollValue = Std.int(_inputData.vscrollPos) + 1;
         if (tf.scrollV != vscrollValue) {
             tf.scrollV = vscrollValue;
         }
@@ -134,7 +134,7 @@ class FlxTextInput extends TextBase {
         // see below
         _inputData.hscrollPageSize = (_width * _inputData.hscrollMax) / _textWidth;
 
-        _inputData.vscrollMax = tf.maxScrollV;
+        _inputData.vscrollMax = tf.maxScrollV - 1;
         _inputData.vscrollPageSize = (_height * _inputData.vscrollMax) / _textHeight;
     }
 
@@ -370,7 +370,7 @@ class FlxTextInput extends TextBase {
     
     private function onScroll() {
         _inputData.hscrollPos = tf.scrollH;
-        _inputData.vscrollPos = tf.scrollV;
+        _inputData.vscrollPos = tf.scrollV - 1;
         
         if (_inputData.onScrollCallback != null) {
             _inputData.onScrollCallback();
