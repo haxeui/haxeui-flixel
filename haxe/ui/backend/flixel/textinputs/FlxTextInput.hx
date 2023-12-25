@@ -322,37 +322,41 @@ class FlxTextInput extends TextBase {
     public var onKeyDown(null, set):KeyboardEvent->Void;
     private function set_onKeyDown(value:KeyboardEvent->Void):KeyboardEvent->Void {
         if (_onKeyDown != null) {
-            tf.textField.removeEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
+            //tf.textField.removeEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
         }
         _onKeyDown = value;
         if (_onKeyDown != null) {
-            tf.textField.addEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
+            //tf.textField.addEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
         }
         return value;
     }
 
+    /*
     private function __onTextInputKeyDown(e:KeyboardEvent) {
         if (_onKeyDown != null)
             _onKeyDown(e);
     }
+    */
 
     private var _onKeyUp:KeyboardEvent->Void = null;
     public var onKeyUp(null, set):KeyboardEvent->Void;
     private function set_onKeyUp(value:KeyboardEvent->Void):KeyboardEvent->Void {
         if (_onKeyUp != null) {
-            tf.textField.removeEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
+            //tf.textField.removeEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
         }
         _onKeyUp = value;
         if (_onKeyUp != null) {
-            tf.textField.addEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
+            //tf.textField.addEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
         }
         return value;
     }
 
+    /*
     private function __onTextInputKeyUp(e:KeyboardEvent) {
         if (_onKeyUp != null)
             _onKeyUp(e);
     }
+    */
 
     private function onInternalChange() {
         _text = tf.text;
