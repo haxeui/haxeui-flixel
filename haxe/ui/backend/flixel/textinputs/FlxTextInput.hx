@@ -142,8 +142,9 @@ class FlxTextInput extends TextBase {
         var measureTextRequired:Bool = false;
 
         if (_textStyle != null) {
-            if (tf.alignment != _textStyle.textAlign) {
-                tf.alignment = _textStyle.textAlign;
+            var textAlign = (_textStyle.textAlign != null ? _textStyle.textAlign : "left");
+            if (tf.alignment != textAlign) {
+                tf.alignment = textAlign;
             }
 
             var fontSizeValue = Std.int(_textStyle.fontSize);
@@ -162,13 +163,15 @@ class FlxTextInput extends TextBase {
                 tf.color = _textStyle.color;
             }
 
-            if (tf.bold != _textStyle.fontBold) {
-                tf.bold = _textStyle.fontBold;
+            var fontBold = (_textStyle.fontBold != null ? _textStyle.fontBold : false);
+            if (tf.bold != fontBold) {
+                tf.bold = fontBold;
                 measureTextRequired = true;
             }
             
-            if (tf.italic != _textStyle.fontItalic) {
-                tf.italic = _textStyle.fontItalic;
+            var fontItalic = (_textStyle.fontItalic != null ? _textStyle.fontItalic : false);
+            if (tf.italic != fontItalic) {
+                tf.italic = fontItalic;
                 measureTextRequired = true;
             }
         }
