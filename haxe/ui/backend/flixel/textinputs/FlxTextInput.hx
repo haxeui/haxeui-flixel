@@ -22,6 +22,7 @@ class FlxTextInput extends TextBase {
         tf = new flixel.addons.text.FlxTextInput();
         tf.onChange.add(onInternalChange);
         tf.onScroll.add(onScroll);
+        tf.pixelPerfectRender = true;
         tf.moves = false;
         _inputData.vscrollPageStep = 1;
         _inputData.vscrollNativeWheel = true;

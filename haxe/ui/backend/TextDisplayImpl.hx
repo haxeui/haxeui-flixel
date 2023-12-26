@@ -12,7 +12,7 @@ class TextDisplayImpl extends TextBase {
     public function new() {
         super();
         tf = new FlxText();
-        tf.pixelPerfectPosition = true;
+        tf.pixelPerfectRender = true;
         tf.autoSize = true;
     }
     
