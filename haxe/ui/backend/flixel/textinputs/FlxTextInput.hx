@@ -22,7 +22,10 @@ class FlxTextInput extends TextBase {
         tf = new flixel.addons.text.FlxTextInput();
         tf.onChange.add(onInternalChange);
         tf.onScroll.add(onScroll);
+        tf.pixelPerfectRender = true;
         tf.moves = false;
+        _inputData.vscrollPageStep = 1;
+        _inputData.vscrollNativeWheel = true;
     }
 
     public override function focus() {
@@ -102,7 +105,7 @@ class FlxTextInput extends TextBase {
             tf.scrollH = hscrollValue;
         }
 
-        var vscrollValue = Std.int(_inputData.vscrollPos);
+        var vscrollValue = Std.int(_inputData.vscrollPos) + 1;
         if (tf.scrollV != vscrollValue) {
             tf.scrollV = vscrollValue;
         }
@@ -132,7 +135,7 @@ class FlxTextInput extends TextBase {
         // see below
         _inputData.hscrollPageSize = (_width * _inputData.hscrollMax) / _textWidth;
 
-        _inputData.vscrollMax = tf.maxScrollV;
+        _inputData.vscrollMax = tf.maxScrollV - 1;
         _inputData.vscrollPageSize = (_height * _inputData.vscrollMax) / _textHeight;
     }
 
@@ -140,8 +143,9 @@ class FlxTextInput extends TextBase {
         var measureTextRequired:Bool = false;
 
         if (_textStyle != null) {
-            if (tf.alignment != _textStyle.textAlign) {
-                tf.alignment = _textStyle.textAlign;
+            var textAlign = (_textStyle.textAlign != null ? _textStyle.textAlign : "left");
+            if (tf.alignment != textAlign) {
+                tf.alignment = textAlign;
             }
 
             var fontSizeValue = Std.int(_textStyle.fontSize);
@@ -160,13 +164,15 @@ class FlxTextInput extends TextBase {
                 tf.color = _textStyle.color;
             }
 
-            if (tf.bold != _textStyle.fontBold) {
-                tf.bold = _textStyle.fontBold;
+            var fontBold = (_textStyle.fontBold != null ? _textStyle.fontBold : false);
+            if (tf.bold != fontBold) {
+                tf.bold = fontBold;
                 measureTextRequired = true;
             }
             
-            if (tf.italic != _textStyle.fontItalic) {
-                tf.italic = _textStyle.fontItalic;
+            var fontItalic = (_textStyle.fontItalic != null ? _textStyle.fontItalic : false);
+            if (tf.italic != fontItalic) {
+                tf.italic = fontItalic;
                 measureTextRequired = true;
             }
         }
@@ -184,6 +190,8 @@ class FlxTextInput extends TextBase {
         if (tf.displayAsPassword != _inputData.password) {
             tf.displayAsPassword = _inputData.password;
         }
+
+        tf.type = (parentComponent.disabled ? DYNAMIC : INPUT);
 
         return measureTextRequired;
     }
@@ -315,37 +323,41 @@ class FlxTextInput extends TextBase {
     public var onKeyDown(null, set):KeyboardEvent->Void;
     private function set_onKeyDown(value:KeyboardEvent->Void):KeyboardEvent->Void {
         if (_onKeyDown != null) {
-            tf.textField.removeEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
+            //tf.textField.removeEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
         }
         _onKeyDown = value;
         if (_onKeyDown != null) {
-            tf.textField.addEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
+            //tf.textField.addEventListener(KeyboardEvent.KEY_DOWN, __onTextInputKeyDown);
         }
         return value;
     }
 
+    /*
     private function __onTextInputKeyDown(e:KeyboardEvent) {
         if (_onKeyDown != null)
             _onKeyDown(e);
     }
+    */
 
     private var _onKeyUp:KeyboardEvent->Void = null;
     public var onKeyUp(null, set):KeyboardEvent->Void;
     private function set_onKeyUp(value:KeyboardEvent->Void):KeyboardEvent->Void {
         if (_onKeyUp != null) {
-            tf.textField.removeEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
+            //tf.textField.removeEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
         }
         _onKeyUp = value;
         if (_onKeyUp != null) {
-            tf.textField.addEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
+            //tf.textField.addEventListener(KeyboardEvent.KEY_UP, __onTextInputKeyUp);
         }
         return value;
     }
 
+    /*
     private function __onTextInputKeyUp(e:KeyboardEvent) {
         if (_onKeyUp != null)
             _onKeyUp(e);
     }
+    */
 
     private function onInternalChange() {
         _text = tf.text;
@@ -359,7 +371,7 @@ class FlxTextInput extends TextBase {
     
     private function onScroll() {
         _inputData.hscrollPos = tf.scrollH;
-        _inputData.vscrollPos = tf.scrollV;
+        _inputData.vscrollPos = tf.scrollV - 1;
         
         if (_inputData.onScrollCallback != null) {
             _inputData.onScrollCallback();
