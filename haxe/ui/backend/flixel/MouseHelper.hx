@@ -1,6 +1,7 @@
 package haxe.ui.backend.flixel;
 
 import flixel.FlxG;
+import haxe.ui.core.Platform;
 import haxe.ui.events.MouseEvent;
 
 typedef MouseCallback = {
@@ -136,6 +137,9 @@ class MouseHelper {
             event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
             event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
+        if (Platform.instance.isMobile) {
+            event.touchEvent = true;
+        }
 
         event.data = -1;
         if (e.type == openfl.events.MouseEvent.MOUSE_DOWN) {
@@ -173,6 +177,9 @@ class MouseHelper {
             event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
             event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
+        if (Platform.instance.isMobile) {
+            event.touchEvent = true;
+        }
 
         event.data = -1;
         if (e.type == openfl.events.MouseEvent.MOUSE_UP) {
@@ -209,6 +216,9 @@ class MouseHelper {
             event.screenX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
             event.screenY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
         }
+        if (Platform.instance.isMobile) {
+            event.touchEvent = true;
+        }
 
         for (l in list) {
             l.fn(event);
@@ -227,7 +237,12 @@ class MouseHelper {
         list = list.copy();
         
         var event = new MouseEvent(MouseEvent.MOUSE_WHEEL);
-        event.delta = -e.delta;
+        event.screenX = (e.stageX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+        event.screenY = (e.stageY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
+        event.delta = Math.max(-1, Math.min(1, e.delta));
+        if (Platform.instance.isMobile) {
+            event.touchEvent = true;
+        }
         for (l in list) {
             l.fn(event);
             if (event.canceled == true) {
