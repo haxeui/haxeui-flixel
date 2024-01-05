@@ -103,7 +103,7 @@ class MouseHelper {
     
     private static function onPreStateSwitched() {
         // simulate mouse events when states switch to mop up any visual styles
-        var e = new openfl.events.MouseEvent(openfl.events.MouseEvent.MOUSE_DOWN);
+        var e = new openfl.events.MouseEvent(openfl.events.MouseEvent.MOUSE_UP);
         e.stageX = currentMouseX;
         e.stageY = currentMouseY;
         e.buttonDown = false;
