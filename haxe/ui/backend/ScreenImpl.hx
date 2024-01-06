@@ -25,6 +25,8 @@ class ScreenImpl extends ScreenBase {
     public function new() {
         _mapping = new Map<String, UIEvent->Void>();
 
+        MouseHelper.init();
+
         FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
         FlxG.signals.preStateCreate.add(onPreStateCreate);
@@ -265,10 +267,19 @@ class ScreenImpl extends ScreenBase {
 
     private override function supportsEvent(type:String):Bool {
         if (type == MouseEvent.MOUSE_MOVE
+            || type == MouseEvent.MOUSE_OVER
+            || type == MouseEvent.MOUSE_OUT
             || type == MouseEvent.MOUSE_DOWN
             || type == MouseEvent.MOUSE_UP
+            || type == MouseEvent.MOUSE_WHEEL
+            || type == MouseEvent.CLICK
+            || type == MouseEvent.DBL_CLICK
+            || type == MouseEvent.RIGHT_CLICK
             || type == MouseEvent.RIGHT_MOUSE_DOWN
             || type == MouseEvent.RIGHT_MOUSE_UP
+            || type == MouseEvent.MIDDLE_CLICK
+            || type == MouseEvent.MIDDLE_MOUSE_DOWN
+            || type == MouseEvent.MIDDLE_MOUSE_UP
             || type == UIEvent.RESIZE
             || type == KeyboardEvent.KEY_DOWN
             || type == KeyboardEvent.KEY_UP
@@ -278,111 +289,33 @@ class ScreenImpl extends ScreenBase {
         return false;
     }
 
-    private var _mouseDownButton:Int = 0;
     private override function mapEvent(type:String, listener:UIEvent->Void) {
         switch (type) {
-            case MouseEvent.MOUSE_MOVE:
+            case MouseEvent.MOUSE_MOVE | MouseEvent.MOUSE_OVER | MouseEvent.MOUSE_OUT | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.MOUSE_WHEEL | MouseEvent.CLICK | MouseEvent.DBL_CLICK | MouseEvent.RIGHT_CLICK | MouseEvent.RIGHT_MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_UP | MouseEvent.MIDDLE_CLICK | MouseEvent.MIDDLE_MOUSE_DOWN | MouseEvent.MIDDLE_MOUSE_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove, 10);
+                    MouseHelper.notify(type, __onMouseEvent, 10);
                 }
 
-            case MouseEvent.MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_DOWN:
+            case KeyboardEvent.KEY_DOWN | KeyboardEvent.KEY_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown, 10);
-                }
-
-            case MouseEvent.MOUSE_UP | MouseEvent.RIGHT_MOUSE_UP:
-                if (_mapping.exists(type) == false) {
-                    _mapping.set(type, listener);
-                    MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp, 10);
-                }
-
-            case KeyboardEvent.KEY_DOWN:
-                if (_mapping.exists(type) == false) {
-                    _mapping.set(type, listener);
-                    KeyboardHelper.notify(KeyboardEvent.KEY_DOWN, __onKeyEvent, 10);
-                }
-
-            case KeyboardEvent.KEY_UP:
-                if (_mapping.exists(type) == false) {
-                    _mapping.set(type, listener);
-                    KeyboardHelper.notify(KeyboardEvent.KEY_UP, __onKeyEvent, 10);
+                    KeyboardHelper.notify(type, __onKeyEvent, 10);
                 }
         }
     }
 
-    private function __onMouseMove(event:MouseEvent) {
-        var fn = _mapping.get(MouseEvent.MOUSE_MOVE);
+    private function __onMouseEvent(event:MouseEvent) {
+        var fn = _mapping.get(event.type);
         if (fn != null) {
-            var mouseEvent = new MouseEvent(MouseEvent.MOUSE_MOVE);
-            mouseEvent.screenX = event.screenX / Toolkit.scaleX;
-            mouseEvent.screenY = event.screenY / Toolkit.scaleY;
-            mouseEvent.buttonDown = event.data;
-            #if mobile
-            mouseEvent.touchEvent = true;
-            #end
-            fn(mouseEvent);
-            event.canceled = mouseEvent.canceled;
-        }
-    }
-
-    private function __onMouseDown(event:MouseEvent) {
-        var state = FlxG.state;
-        if (state.subState != null) {
-            state = state.subState;
-        }
-        /*
-        var contains = containsUnsolicitedMemberAt(event.screenX, event.screenY, state);
-        if (contains) { // lets attempt not in intercept unsolicated member events
-            return;
-        }
-        */
-
-        var fn = _mapping.get(MouseEvent.MOUSE_DOWN);
-        if (fn != null) {
-            var button:Int = event.data;
-            var type = button == 0 ? MouseEvent.MOUSE_DOWN: MouseEvent.RIGHT_MOUSE_DOWN;
-            var mouseEvent = new MouseEvent(type);
-            mouseEvent.screenX = event.screenX / Toolkit.scaleX;
-            mouseEvent.screenY = event.screenY / Toolkit.scaleY;
-            mouseEvent.buttonDown = event.data;
-            #if mobile
-            mouseEvent.touchEvent = true;
-            #end
-            fn(mouseEvent);
-            event.canceled = mouseEvent.canceled;
-        }
-    }
-
-    private function __onMouseUp(event:MouseEvent) {
-        var fn = _mapping.get(MouseEvent.MOUSE_UP);
-        if (fn != null) {
-            var button:Int = event.data;
-            var type = button == 0 ? MouseEvent.MOUSE_UP: MouseEvent.RIGHT_MOUSE_UP;
-            var mouseEvent = new MouseEvent(type);
-            mouseEvent.screenX = event.screenX / Toolkit.scaleX;
-            mouseEvent.screenY = event.screenY / Toolkit.scaleY;
-            mouseEvent.buttonDown = event.data;
-            #if mobile
-            mouseEvent.touchEvent = true;
-            #end
-            fn(mouseEvent);
-            event.canceled = mouseEvent.canceled;
+            fn(event);
         }
     }
 
     private function __onKeyEvent(event:KeyboardEvent) {
         var fn = _mapping.get(event.type);
         if (fn != null) {
-            var keyboardEvent = new KeyboardEvent(event.type);
-            keyboardEvent.keyCode = event.keyCode;
-            keyboardEvent.altKey = event.altKey;
-            keyboardEvent.ctrlKey = event.ctrlKey;
-            keyboardEvent.shiftKey = event.shiftKey;
-            fn(keyboardEvent);
-            event.canceled = keyboardEvent.canceled;
+            fn(event);
         }
     }
 
