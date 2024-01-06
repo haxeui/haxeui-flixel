@@ -26,6 +26,7 @@ class ScreenImpl extends ScreenBase {
         _mapping = new Map<String, UIEvent->Void>();
 
         MouseHelper.init();
+        KeyboardHelper.init();
 
         FlxG.signals.postGameStart.add(onPostGameStart);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
@@ -282,8 +283,7 @@ class ScreenImpl extends ScreenBase {
             || type == MouseEvent.MIDDLE_MOUSE_UP
             || type == UIEvent.RESIZE
             || type == KeyboardEvent.KEY_DOWN
-            || type == KeyboardEvent.KEY_UP
-            || type == KeyboardEvent.KEY_PRESS) {
+            || type == KeyboardEvent.KEY_UP) {
                 return true;
             }
         return false;

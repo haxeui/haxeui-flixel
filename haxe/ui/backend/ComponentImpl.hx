@@ -8,9 +8,6 @@ import flixel.text.FlxText.FlxTextBorderStyle;
 import haxe.ui.Toolkit;
 import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import haxe.ui.backend.flixel.FlxStyleHelper;
-import haxe.ui.backend.flixel.KeyboardHelper;
-import haxe.ui.backend.flixel.MouseHelper;
-import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
 import haxe.ui.core.ImageDisplay;
 import haxe.ui.core.Platform;
@@ -24,8 +21,6 @@ import haxe.ui.filters.DropShadow;
 import haxe.ui.filters.Outline;
 import haxe.ui.geom.Rectangle;
 import haxe.ui.styles.Style;
-import haxe.ui.util.MathUtil;
-import openfl.events.Event;
 
 class ComponentImpl extends ComponentBase {
     private var _eventMap:Map<String, UIEvent->Void>;
@@ -487,18 +482,16 @@ class ComponentImpl extends ComponentBase {
 
             case KeyboardEvent.KEY_DOWN:
                 if (_eventMap.exists(KeyboardEvent.KEY_DOWN) == false) {
-                    KeyboardHelper.notify(KeyboardEvent.KEY_DOWN, __onKeyboardEvent);
-                    _eventMap.set(KeyboardEvent.KEY_DOWN, listener);
                     if (hasTextInput()) {
+                        _eventMap.set(KeyboardEvent.KEY_DOWN, listener);
                         getTextInput().onKeyDown = __onTextInputKeyboardEvent;
                     }
                 }
 
             case KeyboardEvent.KEY_UP:
                 if (_eventMap.exists(KeyboardEvent.KEY_UP) == false) {
-                    KeyboardHelper.notify(KeyboardEvent.KEY_UP, __onKeyboardEvent);
-                    _eventMap.set(KeyboardEvent.KEY_UP, listener);
                     if (hasTextInput()) {
+                        _eventMap.set(KeyboardEvent.KEY_UP, listener);
                         getTextInput().onKeyUp = __onTextInputKeyboardEvent;
                     }
                 }
@@ -534,21 +527,19 @@ class ComponentImpl extends ComponentBase {
                 }
 
             case KeyboardEvent.KEY_DOWN:
-                _eventMap.remove(type);
-                KeyboardHelper.remove(KeyboardEvent.KEY_DOWN, __onKeyboardEvent);
                 if (hasTextInput()) {
+                    _eventMap.remove(type);
                     getTextInput().onKeyDown = null;
                 }
 
             case KeyboardEvent.KEY_UP:
-                _eventMap.remove(type);
-                KeyboardHelper.remove(KeyboardEvent.KEY_UP, __onKeyboardEvent);
                 if (hasTextInput()) {
+                    _eventMap.remove(type);
                     getTextInput().onKeyUp = null;
                 }
                 
             case UIEvent.CHANGE:
-                if (hasTextInput() == true) {
+                if (hasTextInput()) {
                     _eventMap.remove(type);
                     getTextInput().onChange = null;
                 }
@@ -600,19 +591,6 @@ class ComponentImpl extends ComponentBase {
     private function applyRootLayout(l:String) {
     }
     #end
-
-    private function __onKeyboardEvent(event:KeyboardEvent) {
-        if (this.state != StateHelper.currentState) {
-            return;
-        }
-
-        var fn = _eventMap.get(event.type);
-        if (fn == null) {
-            return;
-        }
-
-        fn(event);
-    }
 
     private function __onTextInputKeyboardEvent(event:openfl.events.KeyboardEvent) {
         var type = switch (event.type) {
