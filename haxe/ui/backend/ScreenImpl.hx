@@ -15,6 +15,7 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
+import haxe.ui.tooltips.ToolTipManager;
 import lime.system.System;
 import openfl.Lib;
 
@@ -29,6 +30,7 @@ class ScreenImpl extends ScreenBase {
         KeyboardHelper.init();
 
         FlxG.signals.postGameStart.add(onPostGameStart);
+        FlxG.signals.preStateSwitch.add(onPreStateSwitch);
         FlxG.signals.postStateSwitch.add(onPostStateSwitch);
         FlxG.signals.preStateCreate.add(onPreStateCreate);
         onPostStateSwitch();
@@ -50,11 +52,24 @@ class ScreenImpl extends ScreenBase {
         onPostStateSwitch();
     }
 
+    private function onPreStateSwitch() {
+        if (FlxG.game == null) {
+            return;
+        }
+        ToolTipManager.instance.reset();
+        if (rootComponents != null) {
+            while (rootComponents.length > 0) {
+                var root = rootComponents[rootComponents.length - 1];
+                removeComponent(root);
+            }
+        }
+        rootComponents = [];
+    }
+
     private function onPostStateSwitch() {
         if (FlxG.game == null) {
             return;
         }
-        rootComponents = [];
 
         if (!FlxG.state.subStateOpened.has(onMemberAdded)) {
             FlxG.state.subStateOpened.add(onMemberAdded);
@@ -94,7 +109,7 @@ class ScreenImpl extends ScreenBase {
     private function onMemberRemoved(m:FlxBasic) {
         if ((m is Component) && rootComponents.indexOf(cast(m, Component)) != -1) {
             @:privateAccess var isDisposed = cast(m, Component)._isDisposed;
-            removeComponent(cast m, isDisposed);
+            removeComponent(cast m, !isDisposed);
         }
     }
 
@@ -220,7 +235,7 @@ class ScreenImpl extends ScreenBase {
             component.state = null;
             component.destroyInternal();
             component.destroy();
-            component.destroyComponent();
+            component.disposeComponent();
         } else {
             component.applyRemoveInternal();
         }
