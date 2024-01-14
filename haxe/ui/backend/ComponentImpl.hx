@@ -240,6 +240,10 @@ class ComponentImpl extends ComponentBase {
     // Display tree
     //***********************************************************************************************************
     
+    private override function handleDestroy() {
+        destroyInternal();
+    }
+
     private override function handleSetComponentIndex(child:Component, index:Int) {
         handleAddComponentAt(child, index);
     }
@@ -841,9 +845,6 @@ class ComponentImpl extends ComponentBase {
 
     private var _destroyed:Bool = false;
     private function destroyInternal() {
-        if (!_allowDestroy) {
-            return;
-        }
         if (_surface != null) {
             _surface.destroy();
             _surface = null;
@@ -868,17 +869,13 @@ class ComponentImpl extends ComponentBase {
             _unsolicitedMembers = null;
         }
         
+        this.state = null;
         _destroy = false;
         _destroyed = true;
         super.destroy();
     }
     
-    private var _allowDestroy:Bool = true;
     public override function destroy():Void {
-        if (!_allowDestroy) {
-            return;
-        }
-
         if (parentComponent != null) {
             if (parentComponent.getComponentIndex(cast this) != -1) {
                 parentComponent.removeComponent(cast this);

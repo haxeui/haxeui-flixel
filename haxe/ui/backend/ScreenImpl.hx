@@ -225,6 +225,9 @@ class ScreenImpl extends ScreenBase {
 
     public override function removeComponent(component:Component, dispose:Bool = true):Component {
         if (rootComponents.indexOf(component) == -1) {
+            if (dispose) {
+                component.disposeComponent();
+            }
             return component;
         }
         rootComponents.remove(component);
@@ -232,9 +235,6 @@ class ScreenImpl extends ScreenBase {
             throw "component wasnt actually removed from array, or there is a duplicate in the array";
         }
         if (dispose) {
-            component.state = null;
-            component.destroyInternal();
-            component.destroy();
             component.disposeComponent();
         } else {
             component.applyRemoveInternal();
