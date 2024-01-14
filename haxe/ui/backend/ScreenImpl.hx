@@ -109,7 +109,7 @@ class ScreenImpl extends ScreenBase {
     private function onMemberRemoved(m:FlxBasic) {
         if ((m is Component) && rootComponents.indexOf(cast(m, Component)) != -1) {
             @:privateAccess var isDisposed = cast(m, Component)._isDisposed;
-            removeComponent(cast m, !isDisposed);
+            removeComponent(cast m, isDisposed);
         }
     }
 
