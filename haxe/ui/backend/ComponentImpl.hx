@@ -8,6 +8,9 @@ import flixel.text.FlxText.FlxTextBorderStyle;
 import haxe.ui.Toolkit;
 import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import haxe.ui.backend.flixel.FlxStyleHelper;
+import haxe.ui.backend.flixel.KeyboardHelper;
+import haxe.ui.backend.flixel.MouseHelper;
+import haxe.ui.backend.flixel.StateHelper;
 import haxe.ui.core.Component;
 import haxe.ui.core.ImageDisplay;
 import haxe.ui.core.Platform;
@@ -21,11 +24,22 @@ import haxe.ui.filters.DropShadow;
 import haxe.ui.filters.Outline;
 import haxe.ui.geom.Rectangle;
 import haxe.ui.styles.Style;
+import haxe.ui.util.MathUtil;
+import openfl.events.Event;
 
 class ComponentImpl extends ComponentBase {
     private var _eventMap:Map<String, UIEvent->Void>;
     
     private var _surface:FlxSprite;
+    
+    private var lastMouseX:Float = -1;
+    private var lastMouseY:Float = -1;
+    
+    // For doubleclick detection
+    private var _lastClickTime:Float = 0;
+    private var _lastClickTimeDiff:Float = MathUtil.MAX_INT;
+    private var _lastClickX:Float = -1;
+    private var _lastClickY:Float = -1;
     
     private var asComponent:Component;
 
@@ -460,42 +474,110 @@ class ComponentImpl extends ComponentBase {
     //***********************************************************************************************************
     private override function mapEvent(type:String, listener:UIEvent->Void) {
         switch (type) {
+            case MouseEvent.MOUSE_MOVE:
+                if (_eventMap.exists(MouseEvent.MOUSE_MOVE) == false) {
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.MOUSE_MOVE, listener);
+                }
+                
+            case MouseEvent.MOUSE_OVER:
+                if (_eventMap.exists(MouseEvent.MOUSE_OVER) == false) {
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.MOUSE_OVER, listener);
+                }
+                
+            case MouseEvent.MOUSE_OUT:
+                if (_eventMap.exists(MouseEvent.MOUSE_OUT) == false) {
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.MOUSE_OUT, listener);
+                }
+
             case MouseEvent.MOUSE_DOWN:
                 if (_eventMap.exists(MouseEvent.MOUSE_DOWN) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.MOUSE_DOWN, listener);
                     if (hasTextInput()) {
-                        _eventMap.set(MouseEvent.MOUSE_DOWN, listener);
                         getTextInput().onMouseDown = __onTextInputMouseEvent;
                     }
                 }
 
             case MouseEvent.MOUSE_UP:
                 if (_eventMap.exists(MouseEvent.MOUSE_UP) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.MOUSE_UP, listener);
                     if (hasTextInput()) {
-                        _eventMap.set(MouseEvent.MOUSE_UP, listener);
                         getTextInput().onMouseUp = __onTextInputMouseEvent;
                     }
                 }
                 
+            case MouseEvent.MOUSE_WHEEL:
+                if (_eventMap.exists(MouseEvent.MOUSE_WHEEL) == false) {
+                    notifyMouseMove(true);
+                    notifyMouseWheel(true);
+                    _eventMap.set(MouseEvent.MOUSE_WHEEL, listener);
+                }
+                
             case MouseEvent.CLICK:
                 if (_eventMap.exists(MouseEvent.CLICK) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.CLICK, listener);
                     if (hasTextInput()) {
-                        _eventMap.set(MouseEvent.CLICK, listener);
                         getTextInput().onClick = __onTextInputMouseEvent;
                     }
+                }
+                
+            case MouseEvent.DBL_CLICK:
+                if (_eventMap.exists(MouseEvent.DBL_CLICK) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.DBL_CLICK, listener);
+                }
+                
+            case MouseEvent.RIGHT_MOUSE_DOWN:
+                if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_DOWN) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.RIGHT_MOUSE_DOWN, listener);
+                }
+
+            case MouseEvent.RIGHT_MOUSE_UP:
+                if (_eventMap.exists(MouseEvent.RIGHT_MOUSE_UP) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.RIGHT_MOUSE_UP, listener);
+                }
+                
+            case MouseEvent.RIGHT_CLICK:
+                if (_eventMap.exists(MouseEvent.RIGHT_CLICK) == false) {
+                    notifyMouseDown(true);
+                    notifyMouseUp(true);
+                    notifyMouseMove(true);
+                    _eventMap.set(MouseEvent.RIGHT_CLICK, listener);
                 }
 
             case KeyboardEvent.KEY_DOWN:
                 if (_eventMap.exists(KeyboardEvent.KEY_DOWN) == false) {
+                    KeyboardHelper.notify(KeyboardEvent.KEY_DOWN, __onKeyboardEvent);
+                    _eventMap.set(KeyboardEvent.KEY_DOWN, listener);
                     if (hasTextInput()) {
-                        _eventMap.set(KeyboardEvent.KEY_DOWN, listener);
                         getTextInput().onKeyDown = __onTextInputKeyboardEvent;
                     }
                 }
 
             case KeyboardEvent.KEY_UP:
                 if (_eventMap.exists(KeyboardEvent.KEY_UP) == false) {
+                    KeyboardHelper.notify(KeyboardEvent.KEY_UP, __onKeyboardEvent);
+                    _eventMap.set(KeyboardEvent.KEY_UP, listener);
                     if (hasTextInput()) {
-                        _eventMap.set(KeyboardEvent.KEY_UP, listener);
                         getTextInput().onKeyUp = __onTextInputKeyboardEvent;
                     }
                 }
@@ -512,41 +594,158 @@ class ComponentImpl extends ComponentBase {
 
     private override function unmapEvent(type:String, listener:UIEvent->Void) {
         switch (type) {
+            case MouseEvent.MOUSE_MOVE:
+                _eventMap.remove(type);
+                notifyMouseMove(false);
+                
+            case MouseEvent.MOUSE_OVER:
+                _eventMap.remove(type);
+                notifyMouseMove(false);
+                
+            case MouseEvent.MOUSE_OUT:
+                _eventMap.remove(type);
+                notifyMouseMove(false);
+
             case MouseEvent.MOUSE_DOWN:
+                _eventMap.remove(type);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 if (hasTextInput()) {
-                    _eventMap.remove(type);
                     getTextInput().onMouseDown = null;
                 }
 
             case MouseEvent.MOUSE_UP:
+                _eventMap.remove(type);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 if (hasTextInput()) {
-                    _eventMap.remove(type);
                     getTextInput().onMouseUp = null;
                 }
                 
+            case MouseEvent.MOUSE_WHEEL:
+                _eventMap.remove(type);
+                notifyMouseMove(false);
+                notifyMouseWheel(false);
+                
             case MouseEvent.CLICK:
+                _eventMap.remove(type);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
                 if (hasTextInput()) {
-                    _eventMap.remove(type);
                     getTextInput().onClick = null;
                 }
+                
+            case MouseEvent.DBL_CLICK:
+                _eventMap.remove(type);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
+                
+            case MouseEvent.RIGHT_MOUSE_DOWN:
+                _eventMap.remove(type);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
+
+            case MouseEvent.RIGHT_MOUSE_UP:
+                _eventMap.remove(type);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
+                
+            case MouseEvent.RIGHT_CLICK:
+                _eventMap.remove(type);
+                notifyMouseDown(false);
+                notifyMouseUp(false);
+                notifyMouseMove(false);
 
             case KeyboardEvent.KEY_DOWN:
+                _eventMap.remove(type);
+                KeyboardHelper.remove(KeyboardEvent.KEY_DOWN, __onKeyboardEvent);
                 if (hasTextInput()) {
-                    _eventMap.remove(type);
                     getTextInput().onKeyDown = null;
                 }
 
             case KeyboardEvent.KEY_UP:
+                _eventMap.remove(type);
+                KeyboardHelper.remove(KeyboardEvent.KEY_UP, __onKeyboardEvent);
                 if (hasTextInput()) {
-                    _eventMap.remove(type);
                     getTextInput().onKeyUp = null;
                 }
                 
             case UIEvent.CHANGE:
-                if (hasTextInput()) {
-                    _eventMap.remove(type);
+                _eventMap.remove(type);
+                if (hasTextInput() == true) {
                     getTextInput().onChange = null;
                 }
+        }
+    }
+
+    private var _counterNotifyMouseDown:Int = 0;
+    private function notifyMouseDown(notify:Bool) {
+        if (notify == true) {
+            _counterNotifyMouseDown++;
+        } else {
+            _counterNotifyMouseDown--;
+            if (_counterNotifyMouseDown < 0) {
+                _counterNotifyMouseDown = 0;
+            }
+        }
+        if (notify == true && _counterNotifyMouseDown == 1) {
+            MouseHelper.notify(MouseEvent.MOUSE_DOWN, __onMouseDown);
+        } else if (notify == false && _counterNotifyMouseDown == 0) {
+            MouseHelper.remove(MouseEvent.MOUSE_DOWN, __onMouseDown);
+        }
+    }
+    
+    private var _counterNotifyMouseUp:Int = 0;
+    private function notifyMouseUp(notify:Bool) {
+        if (notify == true) {
+            _counterNotifyMouseUp++;
+        } else {
+            _counterNotifyMouseUp--;
+            if (_counterNotifyMouseUp < 0) {
+                _counterNotifyMouseUp = 0;
+            }
+        }
+        if (notify == true && _counterNotifyMouseUp == 1) {
+            MouseHelper.notify(MouseEvent.MOUSE_UP, __onMouseUp);
+        } else if (notify == false && _counterNotifyMouseUp == 0) {
+            MouseHelper.remove(MouseEvent.MOUSE_UP, __onMouseUp);
+        }
+    }
+    
+    private var _counterNotifyMouseMove:Int = 0;
+    private function notifyMouseMove(notify:Bool) {
+        if (notify == true) {
+            _counterNotifyMouseMove++;
+        } else {
+            _counterNotifyMouseMove--;
+            if (_counterNotifyMouseMove < 0) {
+                _counterNotifyMouseMove = 0;
+            }
+        }
+        if (notify == true && _counterNotifyMouseMove == 1) {
+            MouseHelper.notify(MouseEvent.MOUSE_MOVE, __onMouseMove);
+        } else if (notify == false && _counterNotifyMouseMove == 0) {
+            MouseHelper.remove(MouseEvent.MOUSE_MOVE, __onMouseMove);
+        }
+    }
+    
+    private var _counterNotifyMouseWheel:Int = 0;
+    private function notifyMouseWheel(notify:Bool) {
+        if (notify == true) {
+            _counterNotifyMouseWheel++;
+        } else {
+            _counterNotifyMouseWheel--;
+        }
+        if (notify == true && _counterNotifyMouseWheel == 1) {
+            MouseHelper.notify(MouseEvent.MOUSE_WHEEL, __onMouseWheel);
+        } else if (notify == false && _counterNotifyMouseWheel == 0) {
+            MouseHelper.remove(MouseEvent.MOUSE_WHEEL, __onMouseWheel);
         }
     }
     
@@ -579,22 +778,248 @@ class ComponentImpl extends ComponentBase {
         }
     }
     
-    /*
     private var _mouseOverFlag:Bool = false;
     private var _cursorSet:Bool = false;
-    private function __onMouseOver(event:MouseEvent) {
-        _mouseOverFlag = true;
+    private function __onMouseMove(event:MouseEvent) {
+        if (Platform.instance.isMobile) {
+            return;
+        }
+
+        var x = event.screenX;
+        var y = event.screenY;
+        lastMouseX = x;
+        lastMouseY = y;
+        
+        var inCurrentState = (this.state == StateHelper.currentState);
+
+        if (inCurrentState == false) {
+            if (_mouseOverFlag == true) {
+                _mouseOverFlag = false;
+                var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    #if mobile
+                    mouseEvent.touchEvent = true;
+                    #end
+                    fn(mouseEvent);
+                    event.canceled = mouseEvent.canceled;
+                }
+            }
+            return;
+        }
+
+        var i = inBounds(x, y);
+        if (i == true) {
+            if (hasComponentOver(cast this, x, y) == true) {
+                var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    fn(mouseEvent);
+                }
+                return;
+            }
+            if (this.style != null && this.style.cursor != null) {
+                Screen.instance.setCursor(this.style.cursor, this.style.cursorOffsetX, this.style.cursorOffsetY);
+            }
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_MOVE);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
+        if (i == true && _mouseOverFlag == false) {
+            if (hasComponentOver(cast this, x, y) == true) {
+                return;
+            }
+            _mouseOverFlag = true;
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OVER);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OVER);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        } else if (i == false && _mouseOverFlag == true) {
+            _mouseOverFlag = false;
+            Screen.instance.setCursor("default");
+            var fn:UIEvent->Void = _eventMap.get(haxe.ui.events.MouseEvent.MOUSE_OUT);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(haxe.ui.events.MouseEvent.MOUSE_OUT);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
     }
 
-    private function __onMouseOut(event:MouseEvent) {
-        _mouseOverFlag = false;
+    private var _mouseDownFlag:Bool = false;
+    private var _mouseDownButton:Int = -1;
+    private function __onMouseDown(event:MouseEvent) {
+        if (this.state != StateHelper.currentState) {
+            return;
+        }
+
+        var button:Int = event.data;
+        var x = event.screenX;
+        var y = event.screenY;
+
+        lastMouseX = x;
+        lastMouseY = y;
+        var i = inBounds(x, y);
+        if (i == true && _mouseDownFlag == false) {
+            if (hasComponentOver(cast this, x, y) == true) {
+                return;
+            }
+            _mouseDownFlag = true;
+
+            var type = button == 0 ? haxe.ui.events.MouseEvent.MOUSE_DOWN: haxe.ui.events.MouseEvent.RIGHT_MOUSE_DOWN;
+            var fn:UIEvent->Void = _eventMap.get(type);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
     }
-    */
+
+    private function __onMouseUp(event:MouseEvent) {
+        if (this.state != StateHelper.currentState) {
+            return;
+        }
+
+        var button:Int = event.data;
+        var x = event.screenX;
+        var y = event.screenY;
+
+        lastMouseX = x;
+        lastMouseY = y;
+
+        var i = inBounds(x, y);
+        if (i == true) {
+            /*
+            if (hasComponentOver(cast this, x, y) == true) {
+                return;
+            }
+            */
+            if (_mouseDownFlag == true) {
+                var type = button == 0 ? haxe.ui.events.MouseEvent.CLICK: haxe.ui.events.MouseEvent.RIGHT_CLICK;
+                var fn:UIEvent->Void = _eventMap.get(type);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    fn(mouseEvent);
+                }
+
+                if (type == haxe.ui.events.MouseEvent.CLICK) {
+                    _lastClickTimeDiff = Timer.stamp() - _lastClickTime;
+                    _lastClickTime = Timer.stamp();
+                    if (_lastClickTimeDiff >= 0.5) { // 0.5 seconds
+                        _lastClickX = x;
+                        _lastClickY = y;
+                    }
+                }
+            }
+
+            _mouseDownFlag = false;
+            var type = button == 0 ? haxe.ui.events.MouseEvent.MOUSE_UP: haxe.ui.events.MouseEvent.RIGHT_MOUSE_UP;
+            var fn:UIEvent->Void = _eventMap.get(type);
+            if (fn != null) {
+                var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                mouseEvent.screenX = x / Toolkit.scaleX;
+                mouseEvent.screenY = y / Toolkit.scaleY;
+                fn(mouseEvent);
+            }
+        }
+        _mouseDownFlag = false;        
+    }
 
     #if haxeui_dont_impose_base_class
     private function applyRootLayout(l:String) {
     }
     #end
+    
+    private function __onDoubleClick(event:MouseEvent) {
+        var button:Int = event.data;
+        var x = event.screenX;
+        var y = event.screenY;
+
+        lastMouseX = x;
+        lastMouseY = y;
+        var i = inBounds(x, y);
+        if (i == true && button == 0) {
+            if (hasComponentOver(cast this, x, y) == true) {
+                return;
+            }
+
+            _mouseDownFlag = false;
+            var mouseDelta:Float = MathUtil.distance(x, y, _lastClickX, _lastClickY);
+            if (_lastClickTimeDiff < 0.5 && mouseDelta < 5) { // 0.5 seconds
+                var type = haxe.ui.events.MouseEvent.DBL_CLICK;
+                var fn:UIEvent->Void = _eventMap.get(type);
+                if (fn != null) {
+                    var mouseEvent = new haxe.ui.events.MouseEvent(type);
+                    mouseEvent.screenX = x / Toolkit.scaleX;
+                    mouseEvent.screenY = y / Toolkit.scaleY;
+                    fn(mouseEvent);
+                }
+            }
+        }
+        _mouseDownFlag = false;
+    }
+
+    private function __onMouseWheel(event:MouseEvent) {
+        if (this.state != StateHelper.currentState) {
+            return;
+        }
+        
+        var delta = event.delta;
+        var fn = _eventMap.get(MouseEvent.MOUSE_WHEEL);
+
+        if (fn == null) {
+            return;
+        }
+
+        if (!inBounds(lastMouseX, lastMouseY)) {
+            return;
+        }
+
+        var mouseEvent = new MouseEvent(MouseEvent.MOUSE_WHEEL);
+        mouseEvent.screenX = lastMouseX / Toolkit.scaleX;
+        mouseEvent.screenY = lastMouseY / Toolkit.scaleY;
+        mouseEvent.delta = Math.max(-1, Math.min(1, -delta));
+        if (Platform.instance.isMobile) {
+            mouseEvent.touchEvent = true;
+        }
+        fn(mouseEvent);
+        event.canceled = mouseEvent.canceled;
+    }
+
+    private function __onKeyboardEvent(event:KeyboardEvent) {
+        if (this.state != StateHelper.currentState) {
+            return;
+        }
+
+        var fn = _eventMap.get(event.type);
+        if (fn == null) {
+            return;
+        }
+
+        var keyboardEvent = new KeyboardEvent(event.type);
+        keyboardEvent.keyCode = event.keyCode;
+        keyboardEvent.altKey = event.altKey;
+        keyboardEvent.ctrlKey = event.ctrlKey;
+        keyboardEvent.shiftKey = event.shiftKey;
+        fn(keyboardEvent);
+        event.canceled = keyboardEvent.canceled;
+    }
 
     private function __onTextInputKeyboardEvent(event:openfl.events.KeyboardEvent) {
         var type = switch (event.type) {
