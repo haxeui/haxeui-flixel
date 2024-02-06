@@ -86,9 +86,16 @@ class OpenFileDialogImpl extends OpenFileDialogBase {
         destroyFileRef();
         var infos:Array<SelectedFileInfo> = [];
         for (fileRef in fileList) {
+
+            var fullPath:String = null;
+            #if sys
+            fullPath = @:privateAccess fileRef.__path;
+            #end
+
             var info:SelectedFileInfo = {
                 isBinary: false,
-                name: fileRef.name
+                name: fileRef.name,
+                fullPath: fullPath
             }
             if (options.readContents == true) {
                 _refToInfo.set(fileRef, info);
