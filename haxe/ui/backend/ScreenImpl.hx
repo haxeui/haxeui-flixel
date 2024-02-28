@@ -223,7 +223,7 @@ class ScreenImpl extends ScreenBase {
         return component;
     }
 
-    public override function removeComponent(component:Component, dispose:Bool = true):Component {
+    public override function removeComponent(component:Component, dispose:Bool = true, invalidate:Bool = true):Component {
         if (rootComponents.indexOf(component) == -1) {
             if (dispose) {
                 component.disposeComponent();
