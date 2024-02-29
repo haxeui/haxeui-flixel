@@ -389,6 +389,7 @@ class FlxTextInput extends TextBase {
     public function destroy(component:Component) {
         tf.visible = false;
         component.remove(tf);
+        tf.destroy();
         tf = null;
     }
 }
