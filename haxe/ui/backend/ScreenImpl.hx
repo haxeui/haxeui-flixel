@@ -114,6 +114,10 @@ class ScreenImpl extends ScreenBase {
     }
 
     private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
+        if (state == null || !state.exists) {
+            return false;
+        }
+        
         var found = false; // we only want top level components
         for (m in state.members) {
             if ((m is Component) && rootComponents.indexOf(cast(m, Component)) == -1) {
@@ -335,7 +339,7 @@ class ScreenImpl extends ScreenBase {
     }
 
     private function containsUnsolicitedMemberAt(x:Float, y:Float, state:FlxTypedGroup<FlxBasic>):Bool {
-        if (state == null) {
+        if (state == null || !state.exists) {
             return false;
         }
 

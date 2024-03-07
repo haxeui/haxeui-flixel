@@ -32,7 +32,7 @@ class StateHelper {
             group = currentState;
         }
         
-        if (group == null || group.members == null) {
+        if (group == null || !group.exists) {
             return false;
         }
         
@@ -60,7 +60,7 @@ class StateHelper {
     }
     
     private static function groupHasMember(member:FlxBasic, group:FlxSpriteGroup) {
-        if (group == null || group.group == null || group.members == null) {
+        if (group == null || !group.exists) {
             return false;
         }
         
@@ -92,7 +92,7 @@ class StateHelper {
             group = currentState;
         }
         
-        if (group == null || group.members == null) {
+        if (group == null || !group.exists) {
             return null;
         }
         
