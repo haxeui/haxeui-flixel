@@ -65,11 +65,10 @@ class SparrowPlayer extends Box implements IDataComponent {
     }
 
     private var _dataSource:DataSource<Dynamic> = null;
-    public var dataSource(get, set):DataSource<Dynamic>;
-    private function get_dataSource():DataSource<Dynamic> {
+    private override function get_dataSource():DataSource<Dynamic> {
         return _dataSource;
     }
-    private function set_dataSource(value:DataSource<Dynamic>):DataSource<Dynamic> {
+    private override function set_dataSource(value:DataSource<Dynamic>):DataSource<Dynamic> {
         _dataSource = value;
         for (i in 0..._dataSource.size) {
             var item:Dynamic = _dataSource.get(i);
