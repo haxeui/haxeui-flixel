@@ -206,9 +206,9 @@ class ScreenImpl extends ScreenBase {
             if (rootComponents.indexOf(component) == -1) {
                 rootComponents.push(component);
             }
+            onContainerResize();
             component.recursiveReady();
             component.syncComponentValidation();
-            onContainerResize();
             component.applyAddInternal();
             checkResetCursor();
         }
