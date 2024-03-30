@@ -89,18 +89,9 @@ class ScreenImpl extends ScreenBase {
 
     private function onMemberAdded(m:FlxBasic) {
         if ((m is Component)) {
-            if (rootComponents.indexOf(cast(m, Component)) == -1) {
-                var c = cast(m, Component);
-                if (c.percentWidth > 0) {
-                    c.width = (this.width * c.percentWidth) / 100;
-                }
-                if (c.percentHeight > 0) {
-                    c.height = (this.height * c.percentHeight) / 100;
-                }
-                c.state = StateHelper.currentState;
-                rootComponents.push(c);
-                c.recursiveReady();
-                c.syncComponentValidation();
+            var c = cast(m, Component);
+            if (rootComponents.indexOf(c) == -1) {
+                addComponent(c);
             }
         } else if ((m is FlxTypedGroup)) {
             var group:FlxTypedGroup<FlxBasic> = cast m;
@@ -123,18 +114,9 @@ class ScreenImpl extends ScreenBase {
         var found = false; // we only want top level components
         for (m in state.members) {
             if ((m is Component)) {
-                if (rootComponents.indexOf(cast(m, Component)) == -1) {
-                    var c = cast(m, Component);
-                    if (c.percentWidth > 0) {
-                        c.width = (this.width * c.percentWidth) / 100;
-                    }
-                    if (c.percentHeight > 0) {
-                        c.height = (this.height * c.percentHeight) / 100;
-                    }
-                    c.state = StateHelper.currentState;
-                    rootComponents.push(c);
-                    c.recursiveReady();
-                    c.syncComponentValidation();
+                var c = cast(m, Component);
+                if (rootComponents.indexOf(c) == -1) {
+                    addComponent(c);
                     found = true;
                 }
             } else if ((m is FlxTypedGroup)) {
@@ -220,10 +202,12 @@ class ScreenImpl extends ScreenBase {
 
         if (StateHelper.currentState.exists == true) {
             StateHelper.currentState.add(component);
+            component.state = StateHelper.currentState;
             if (rootComponents.indexOf(component) == -1) {
                 rootComponents.push(component);
             }
             component.recursiveReady();
+            component.syncComponentValidation();
             onContainerResize();
             component.applyAddInternal();
             checkResetCursor();
