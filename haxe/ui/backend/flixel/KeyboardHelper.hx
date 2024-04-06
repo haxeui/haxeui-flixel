@@ -5,9 +5,10 @@ import haxe.ui.core.Component;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.focus.FocusManager;
 
-typedef KeyboardCallback = {
-    var fn:KeyboardEvent->Void;
-    var priority:Int;
+@:structInit
+class KeyboardCallback {
+    public var fn:KeyboardEvent->Void;
+    public var priority:Int;
 }
 
 class KeyboardHelper {

@@ -6,9 +6,10 @@ import haxe.ui.core.Platform;
 import haxe.ui.core.Screen;
 import haxe.ui.events.MouseEvent;
 
-typedef MouseCallback = {
-    var fn:MouseEvent->Void;
-    var priority:Int;
+@:structInit
+class MouseCallback {
+    public var fn:MouseEvent->Void;
+    public var priority:Int;
 }
 
 class MouseHelper {
