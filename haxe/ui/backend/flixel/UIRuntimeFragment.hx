@@ -15,6 +15,8 @@ class UIRuntimeFragment extends UIFragmentBase implements IComponentDelegate { /
 	public function new() {
 		super();
 
+		scrollFactor.set(0, 0); // ui doesn't scroll by default
+
         var rtti = haxe.rtti.Rtti.getRtti(Type.getClass(this));
         root = buildViaRTTI(rtti);
         linkViaRTTI(rtti, this, root);
