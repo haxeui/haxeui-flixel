@@ -124,9 +124,7 @@ class UIRuntimeFragment extends UIFragmentBase implements IComponentDelegate { /
 	}
 
 	public override function destroy() {
-		if (root != null) {
-			remove(root);
-		}
+		super.destroy();
 		root = null;
 	}
 }
