@@ -128,6 +128,23 @@ class MouseHelper {
 
         var target:Dynamic = getTarget(currentWorldX, currentWorldY);
 
+        if (target != _mouseOverTarget) {
+            if (_mouseOverTarget != null) {
+                if ((_mouseOverTarget is Component)) {
+                    Screen.instance.setCursor("default");
+                }
+                dispatchEventType(MouseEvent.MOUSE_OUT, buttonDown, ctrlKey, shiftKey, _mouseOverTarget);
+            }
+            if ((target is Component)) {
+                var c:Component = target;
+                if (c.style != null && c.style.cursor != null) {
+                    Screen.instance.setCursor(c.style.cursor, c.style.cursorOffsetX, c.style.cursorOffsetY);
+                }
+            }
+            dispatchEventType(MouseEvent.MOUSE_OVER, buttonDown, ctrlKey, shiftKey, target);
+            _mouseOverTarget = target;
+        }
+
         var clickType:String = null;
         switch (type) {
             case MouseEvent.MOUSE_DOWN:
@@ -174,23 +191,6 @@ class MouseHelper {
                     _lastClickTime = currentTime;
                 }
             }
-        }
-
-        if (target != _mouseOverTarget) {
-            if (_mouseOverTarget != null) {
-                if ((_mouseOverTarget is Component)) {
-                    Screen.instance.setCursor("default");
-                }
-                dispatchEventType(MouseEvent.MOUSE_OUT, buttonDown, ctrlKey, shiftKey, _mouseOverTarget);
-            }
-            if ((target is Component)) {
-                var c:Component = target;
-                if (c.style != null && c.style.cursor != null) {
-                    Screen.instance.setCursor(c.style.cursor, c.style.cursorOffsetX, c.style.cursorOffsetY);
-                }
-            }
-            dispatchEventType(MouseEvent.MOUSE_OVER, buttonDown, ctrlKey, shiftKey, target);
-            _mouseOverTarget = target;
         }
     }
 
