@@ -378,6 +378,7 @@ class ScreenImpl extends ScreenBase {
         return false;
     }
 
+    @:allow(haxe.ui.backend.flixel.MouseHelper)
     private function checkResetCursor(x:Null<Float> = null, y:Null<Float> = null) {
         if (x == null) {
             x = MouseHelper.currentMouseX;
@@ -386,6 +387,7 @@ class ScreenImpl extends ScreenBase {
             y = MouseHelper.currentMouseY;
         }
         var components = Screen.instance.findComponentsUnderPoint(x, y);
+        components.reverse();
         var desiredCursor = "default";
         var desiredCursorOffsetX:Null<Int> = null;
         var desiredCursorOffsetY:Null<Int> = null;
