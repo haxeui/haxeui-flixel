@@ -119,11 +119,11 @@ class MouseHelper {
     private static function onMouse(type:String, x:Float, y:Float, buttonDown:Bool = false, ctrlKey:Bool = false, shiftKey:Bool = false) {
         if (currentMouseX != x) {
             currentMouseX = x;
-            currentWorldX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+            currentWorldX = ((currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom())) / Toolkit.scaleX;
         }
         if (currentMouseY != y) {
             currentMouseY = y;
-            currentWorldY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
+            currentWorldY = ((currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom())) / Toolkit.scaleY;
         }
 
         var target:Dynamic = getTarget(currentWorldX, currentWorldY);
@@ -232,8 +232,8 @@ class MouseHelper {
 
     private static function createEvent(type:String, buttonDown:Bool, ctrlKey:Bool, shiftKey:Bool):MouseEvent {
         var event = new MouseEvent(type);
-        event.screenX = currentWorldX / Toolkit.scaleX;
-        event.screenY = currentWorldY / Toolkit.scaleY;
+        event.screenX = currentWorldX;
+        event.screenY = currentWorldY;
         event.buttonDown = buttonDown;
         event.touchEvent = Platform.instance.isMobile;
         event.ctrlKey = ctrlKey;
