@@ -242,13 +242,41 @@ class MouseHelper {
     }
 
     private static function getTarget(x:Float, y:Float):Dynamic {
-        var target:Dynamic = null;
-        var components = Screen.instance.findComponentsUnderPoint(x, y);
-        if (components.length > 0 && components[components.length - 1].state == StateHelper.currentState) {
-            target = components[components.length - 1];
+        if (Screen.instance.rootComponents.length == 0) {
+            return Screen.instance;
         }
-        if (target == null) target = Screen.instance;
-        return target;
+
+        var i = Screen.instance.rootComponents.length - 1;
+        while (i >= 0) {
+            var c = findDeepestComponentUnderPoint(Screen.instance.rootComponents[i], x, y);
+            if (c != null) {
+                return c;
+            }
+            --i;
+        }
+
+        return Screen.instance;
+    }
+
+    private static function findDeepestComponentUnderPoint(c:Component, x:Float, y:Float):Null<Component>
+    {
+        if (c.state != StateHelper.currentState) {
+            return null;
+        }
+
+        var hit = c.hitTest(x, y);
+        if (c.childComponents.length > 0 && hit) {
+            var i = c.childComponents.length - 1;
+            while (i >= 0) {
+                var ret = findDeepestComponentUnderPoint(c.childComponents[i], x, y);
+                if (ret != null) {
+                    return ret;
+                }
+                --i;
+            }
+        }
+        
+        return hit ? c : null;
     }
     
     private static inline function initialZoom():Float {
