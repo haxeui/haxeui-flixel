@@ -119,14 +119,23 @@ class MouseHelper {
     private static function onMouse(type:String, x:Float, y:Float, buttonDown:Bool = false, ctrlKey:Bool = false, shiftKey:Bool = false) {
         if (currentMouseX != x) {
             currentMouseX = x;
-            currentWorldX = (currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom());
+            currentWorldX = ((currentMouseX - FlxG.scaleMode.offset.x) / (FlxG.scaleMode.scale.x * initialZoom())) / Toolkit.scaleX;
         }
         if (currentMouseY != y) {
             currentMouseY = y;
-            currentWorldY = (currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom());
+            currentWorldY = ((currentMouseY - FlxG.scaleMode.offset.y) / (FlxG.scaleMode.scale.y * initialZoom())) / Toolkit.scaleY;
         }
 
         var target:Dynamic = getTarget(currentWorldX, currentWorldY);
+
+        if (target != _mouseOverTarget) {
+            Screen.instance.checkResetCursor();
+            if (_mouseOverTarget != null) {
+                dispatchEventType(MouseEvent.MOUSE_OUT, buttonDown, ctrlKey, shiftKey, _mouseOverTarget);
+            }
+            dispatchEventType(MouseEvent.MOUSE_OVER, buttonDown, ctrlKey, shiftKey, target);
+            _mouseOverTarget = target;
+        }
 
         var clickType:String = null;
         switch (type) {
@@ -175,23 +184,6 @@ class MouseHelper {
                 }
             }
         }
-
-        if (target != _mouseOverTarget) {
-            if (_mouseOverTarget != null) {
-                if ((_mouseOverTarget is Component)) {
-                    Screen.instance.setCursor("default");
-                }
-                dispatchEventType(MouseEvent.MOUSE_OUT, buttonDown, ctrlKey, shiftKey, _mouseOverTarget);
-            }
-            if ((target is Component)) {
-                var c:Component = target;
-                if (c.style != null && c.style.cursor != null) {
-                    Screen.instance.setCursor(c.style.cursor, c.style.cursorOffsetX, c.style.cursorOffsetY);
-                }
-            }
-            dispatchEventType(MouseEvent.MOUSE_OVER, buttonDown, ctrlKey, shiftKey, target);
-            _mouseOverTarget = target;
-        }
     }
 
     private static function dispatchEventType(type:String, buttonDown:Bool, ctrlKey:Bool, shiftKey:Bool, target:Dynamic) {
@@ -232,8 +224,8 @@ class MouseHelper {
 
     private static function createEvent(type:String, buttonDown:Bool, ctrlKey:Bool, shiftKey:Bool):MouseEvent {
         var event = new MouseEvent(type);
-        event.screenX = currentWorldX / Toolkit.scaleX;
-        event.screenY = currentWorldY / Toolkit.scaleY;
+        event.screenX = currentWorldX;
+        event.screenY = currentWorldY;
         event.buttonDown = buttonDown;
         event.touchEvent = Platform.instance.isMobile;
         event.ctrlKey = ctrlKey;
@@ -242,13 +234,14 @@ class MouseHelper {
     }
 
     private static function getTarget(x:Float, y:Float):Dynamic {
-        var target:Dynamic = null;
         var components = Screen.instance.findComponentsUnderPoint(x, y);
-        if (components.length > 0 && components[components.length - 1].state == StateHelper.currentState) {
-            target = components[components.length - 1];
+        components.reverse();
+        for (c in components) {
+            if (c.state == StateHelper.currentState) {
+                return c;
+            }
         }
-        if (target == null) target = Screen.instance;
-        return target;
+        return Screen.instance;
     }
     
     private static inline function initialZoom():Float {
