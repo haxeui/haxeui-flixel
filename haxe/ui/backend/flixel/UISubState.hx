@@ -3,6 +3,7 @@ package haxe.ui.backend.flixel;
 import haxe.ui.layouts.LayoutFactory;
 import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
+import haxe.ui.events.UIEvent;
 
 @:autoBuild(haxe.ui.macros.Macros.buildBehaviours())
 @:autoBuild(haxe.ui.macros.Macros.build())
@@ -25,7 +26,9 @@ class UISubState extends UISubStateBase { // must use -D haxeui_dont_impose_base
 
     public override function create() {
         super.create();
-
+	root.registerEvent(UIEvent.READY, (_) -> {
+            onReady();
+	});
         add(root);
     }
 
