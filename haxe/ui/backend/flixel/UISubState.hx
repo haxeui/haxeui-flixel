@@ -26,7 +26,9 @@ class UISubState extends UISubStateBase { // must use -D haxeui_dont_impose_base
 
     public override function create() {
         super.create();
-	root.registerEvent(UIEvent.READY, (_) -> onReady());
+	root.registerEvent(UIEvent.READY, (_) -> {
+            onReady();
+	});
         add(root);
     }
 
