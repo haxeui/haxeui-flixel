@@ -26,7 +26,9 @@ class UIState extends UIStateBase { // must use -D haxeui_dont_impose_base_class
 
     public override function create() {
         super.create();
-	root.registerEvent(UIEvent.READY, (_) -> onReady());
+	root.registerEvent(UIEvent.READY, (_) -> {
+            onReady();
+	});
         add(root);
     }
 
