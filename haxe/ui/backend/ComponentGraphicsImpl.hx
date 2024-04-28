@@ -20,6 +20,11 @@ class ComponentGraphicsImpl extends ComponentGraphicsBase {
         var w = Std.int(_component.width);
         var h = Std.int(_component.height);
 
+        if (bitmapData != null && (bitmapData.width != w || bitmapData.height != h)) {
+            bitmapData.dispose();
+            bitmapData = null;
+        }
+
         if (bitmapData == null) {
             bitmapData = new BitmapData(w, h, true, 0x00000000);
         }

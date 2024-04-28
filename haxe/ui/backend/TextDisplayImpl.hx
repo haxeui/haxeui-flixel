@@ -82,10 +82,12 @@ class TextDisplayImpl extends TextBase {
     
     private override function validateDisplay() {
         if (tf.textField.width != _width) {
-            tf.textField.width = _width * Toolkit.scaleX;
+            var width = _width * Toolkit.scaleX;
+            tf.textField.width = (width >= 1 ? width : 1);
         }
         if (tf.textField.height != _height) {
-            tf.textField.height = _height * Toolkit.scaleY;
+            var height = _height * Toolkit.scaleY;
+            tf.textField.height = (height >= 1 ? height : 1);
         }
     }
     
