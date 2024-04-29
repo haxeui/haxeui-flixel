@@ -193,6 +193,10 @@ class ScreenImpl extends ScreenBase {
     }
 
     public override function addComponent(component:Component):Component {
+        if (rootComponents.contains(component) && StateHelper.currentState.members.contains(component)) {
+            return component;
+        }
+
         if (rootComponents.length > 0) {
             var cameras = StateHelper.findCameras(rootComponents[0]);
             if (cameras != null) {
@@ -201,11 +205,11 @@ class ScreenImpl extends ScreenBase {
         }
 
         if (StateHelper.currentState.exists == true) {
-            StateHelper.currentState.add(component);
-            component.state = StateHelper.currentState;
             if (rootComponents.indexOf(component) == -1) {
                 rootComponents.push(component);
             }
+            StateHelper.currentState.add(component);
+            component.state = StateHelper.currentState;
             onContainerResize();
             component.recursiveReady();
             component.syncComponentValidation();
@@ -265,11 +269,14 @@ class ScreenImpl extends ScreenBase {
 
     private override function handleSetComponentIndex(child:Component, index:Int) {
         var offset = 0;
-        StateHelper.currentState.forEach((item) -> {
-            offset++;
-        });
+        for (i in 0...StateHelper.currentState.length) {
+            if ((StateHelper.currentState.members[i] is Component)) {
+                offset = i;
+                break;
+            }
+        }
 
-        StateHelper.currentState.remove(child);
+        StateHelper.currentState.remove(child, true);
         StateHelper.currentState.insert(index + offset, child);
     }
 

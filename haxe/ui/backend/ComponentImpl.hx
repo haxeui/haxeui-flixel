@@ -396,7 +396,11 @@ class ComponentImpl extends ComponentBase {
             getImageDisplay().alpha = value;
         }
         for (c in childComponents) {
-            c.applyAlpha(value);
+            if (c.style != null && c.style.opacity != null) {
+                c.applyAlpha(c.style.opacity * value);
+            } else {
+                c.applyAlpha(value);
+            }
         }
     }
 
@@ -869,7 +873,7 @@ class ComponentImpl extends ComponentBase {
             _unsolicitedMembers = null;
         }
         
-        this.state = null;
+        _state = null;
         _destroy = false;
         _destroyed = true;
         super.destroy();
@@ -890,7 +894,7 @@ class ComponentImpl extends ComponentBase {
     
     private override function set_x(value:Float):Float {
         var r = super.set_x(value);
-        if (this.parentComponent == null) {
+        if (this.parentComponent == null && this.isReady) {
             this.left = value;
         }
         return r;
@@ -898,7 +902,7 @@ class ComponentImpl extends ComponentBase {
     
     private override function set_y(value:Float):Float {
         var r = super.set_y(value);
-        if (this.parentComponent == null) {
+        if (this.parentComponent == null && this.isReady) {
             this.top = value;
         }
         return r;
