@@ -20,9 +20,9 @@ jobs:
             target: linux
           - os: windows-latest
             target: mac
-          - os: macos-latest
+          - os: macos-13
             target: linux
-          - os: macos-latest
+          - os: macos-13
             target: windows
 
 
