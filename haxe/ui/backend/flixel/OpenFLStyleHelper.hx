@@ -12,13 +12,13 @@ class OpenFLStyleHelper {
     public function new() {
     }
 
-    public static function paintStyleSection(graphics:Graphics, style:Style, width:Float, height:Float, left:Float = 0, top:Float = 0, clear:Bool = true) {
+    public static function paintStyleSection(graphics:Graphics, style:Style, width:Float, height:Float, left:Float = 0, top:Float = 0, clear:Bool = true):Bool {
         if (clear == true) {
             graphics.clear();
         }
 
         if (width <= 0 || height <= 0) {
-            return;
+            return false;
         }
 
         /*
@@ -45,6 +45,8 @@ class OpenFLStyleHelper {
             borderRadius = style.borderRadius * Toolkit.scale;
         }
 
+        var painted = false;
+
         if (style.borderLeftSize != null && style.borderLeftSize != 0
             && style.borderLeftSize == style.borderRightSize
             && style.borderLeftSize == style.borderBottomSize
@@ -61,6 +63,8 @@ class OpenFLStyleHelper {
             rc.bottom -= (style.borderLeftSize * Toolkit.scale) / 2;
             rc.right -= (style.borderLeftSize * Toolkit.scale) / 2;
             //rc.inflate( -(style.borderLeftSize / 2), -(style.borderLeftSize / 2));
+
+            painted = true;
         } else { // compound border
             if ((style.borderTopSize != null && style.borderTopSize > 0)
                 || (style.borderBottomSize != null && style.borderBottomSize > 0)
@@ -100,6 +104,8 @@ class OpenFLStyleHelper {
 
                         rc.right -= (style.borderRightSize * Toolkit.scale);
                     }
+
+                    painted = true;
             }
         }
 
@@ -147,6 +153,10 @@ class OpenFLStyleHelper {
             } else {
                 graphics.beginFill(backgroundColor, backgroundOpacity);
             }
+
+            if (backgroundOpacity > 0) {
+                painted = true;
+            }
         }
 
         if (borderRadius == 0) {
@@ -165,5 +175,7 @@ class OpenFLStyleHelper {
         }
 
         graphics.endFill();
+
+        return painted;
     }
 }

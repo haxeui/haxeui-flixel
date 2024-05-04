@@ -44,7 +44,7 @@ class FlxTextInput extends TextBase {
         return tf.visible;
     }
     private function set_visible(value:Bool):Bool {
-        tf.visible = value;
+        tf.active = tf.visible = value; // text input shouldn't be active if it's hidden
         return value;
     }
 
