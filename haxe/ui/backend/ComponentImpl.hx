@@ -48,7 +48,8 @@ class ComponentImpl extends ComponentBase {
         _surface = new FlxSprite();
         _surface.makeGraphic(1, 1, 0x0, true);
         _surface.pixelPerfectRender = true;
-        _surface.moves = false;
+        _surface.active = false;
+        _surface.visible = false;
         add(_surface);
         
         //recursiveReady();
@@ -228,6 +229,7 @@ class ComponentImpl extends ComponentBase {
             if (w <= 0 || h <= 0) {
                 _surface.graphic.destroy();
                 _surface.makeGraphic(1, 1, 0x0, true);
+                _surface.visible = false;
             } else {
                 _surface.graphic.destroy();
                 _surface.makeGraphic(w, h, 0x0, true);
@@ -357,9 +359,7 @@ class ComponentImpl extends ComponentBase {
         }
 
         for (c in this.childComponents) {
-            if (!c.hidden) {
-                c.applyVisibility(show);
-            }
+            c.applyVisibility(show && !c.hidden);
         }
     }
 
@@ -380,7 +380,7 @@ class ComponentImpl extends ComponentBase {
         }
         */
 
-        FlxStyleHelper.applyStyle(_surface, style);
+        _surface.visible = FlxStyleHelper.applyStyle(_surface, style);
         applyFilters(style);
     }
     

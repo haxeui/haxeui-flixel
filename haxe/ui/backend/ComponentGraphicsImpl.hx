@@ -48,15 +48,17 @@ class ComponentGraphicsImpl extends ComponentGraphicsBase {
         var byteArray = ByteArray.fromBytes(newPixels);
         bitmapData.setPixels(new Rectangle(0, 0, bitmapData.width, bitmapData.height), byteArray);
 
-        if (this.sprite == null) {
+        if (sprite == null) {
             sprite = new FlxSprite(0, 0);
+            sprite.active = false;
             _component.add(sprite);            
         }
 
         sprite.width = w;
         sprite.height = h;
 
-        this.sprite.pixels = bitmapData;
+        sprite.pixels = bitmapData;
+        sprite.visible = (w > 0 && h > 0);
     }
 
     public override function resize(width:Null<Float>, height:Null<Float>) {

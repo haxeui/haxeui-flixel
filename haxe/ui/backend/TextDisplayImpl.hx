@@ -14,6 +14,7 @@ class TextDisplayImpl extends TextBase {
         tf = new FlxText();
         tf.pixelPerfectRender = true;
         tf.autoSize = true;
+        tf.active = false;
     }
     
     private override function validateData() {

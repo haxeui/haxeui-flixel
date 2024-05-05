@@ -15,9 +15,9 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 class FlxStyleHelper {
-    public static function applyStyle(sprite:FlxSprite, style:Style) {
+    public static function applyStyle(sprite:FlxSprite, style:Style):Bool {
         if (sprite == null || sprite.pixels == null) {
-            return;
+            return false;
         }
 
         var pixels:BitmapData = sprite.pixels;
@@ -28,7 +28,7 @@ class FlxStyleHelper {
         var height:Float = sprite.frameHeight;
         
         if (width <= 0 || height <= 0) {
-            return;
+            return false;
         }
         
         var rc:Rectangle = new Rectangle(top, left, width, height);
@@ -49,11 +49,13 @@ class FlxStyleHelper {
 
         if (useOpenFLDrawing) {
             var g = FlxSpriteUtil.flashGfx;
-            OpenFLStyleHelper.paintStyleSection(g, style, width, height, left, top);
+            var painted = OpenFLStyleHelper.paintStyleSection(g, style, width, height, left, top);
             FlxSpriteUtil.updateSpriteGraphic(sprite);
-            return;
+            return painted;
         }
         #end
+
+        var painted = false;
 
         if (style.borderLeftSize != null && style.borderLeftSize != 0
             && style.borderLeftSize == style.borderRightSize
@@ -73,6 +75,8 @@ class FlxStyleHelper {
                 pixels.fillRect(new Rectangle(rc.left, rc.height - borderSize, rc.width, borderSize), color); // bottom
                 pixels.fillRect(new Rectangle(rc.left, rc.top + borderSize, borderSize, rc.height - (borderSize * 2)), color); // left 
                 rc.inflate(-borderSize, -borderSize);
+
+                painted = true;
         } else { // compound border
             var org = rc.clone();
             
@@ -95,6 +99,10 @@ class FlxStyleHelper {
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderTopColor;
                 pixels.fillRect(new Rectangle(rc.left + borderLeftSize, rc.top, org.width - (borderLeftSize + borderRightSize), borderSize), color); // top
                 rc.top += borderSize;
+
+                if (opacity > 0) {
+                    painted = true;
+                }
             }
             
             if (style.borderBottomSize != null && style.borderBottomSize > 0) {
@@ -103,6 +111,10 @@ class FlxStyleHelper {
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderBottomColor;
                 pixels.fillRect(new Rectangle(rc.left, org.height - borderSize, rc.width, borderSize), color); // bottom
                 rc.bottom -= borderSize;
+
+                if (opacity > 0) {
+                    painted = true;
+                }
             }
             
             if (style.borderLeftSize != null && style.borderLeftSize > 0) {
@@ -111,6 +123,10 @@ class FlxStyleHelper {
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderLeftColor;
                 pixels.fillRect(new Rectangle(rc.left, rc.top - borderTopSize, borderSize, org.height - rc.top + borderTopSize), color); // left 
                 rc.left += borderSize;
+
+                if (opacity > 0) {
+                    painted = true;
+                }
             }
             
             if (style.borderRightSize != null && style.borderRightSize > 0) {
@@ -119,6 +135,10 @@ class FlxStyleHelper {
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.borderRightColor;
                 pixels.fillRect(new Rectangle(org.width - borderSize, rc.top - borderTopSize, borderSize, org.height + borderTopSize), color); // right 
                 rc.right -= borderSize;
+
+                if (opacity > 0) {
+                    painted = true;
+                }
             }
         }
         
@@ -141,6 +161,10 @@ class FlxStyleHelper {
                         pixels.fillRect(rcLine, Std.int(opacity * 0xFF) << 24 | c);
                         n++;
                     }
+
+                    if (opacity > 0 && n > 0) {
+                        painted = true;
+                    }
                 } else if (gradientType == "horizontal") {
                     arr = ColorUtil.buildColorArray(style.backgroundColor, style.backgroundColorEnd, Std.int(rc.width));
                     for (c in arr) {
@@ -148,10 +172,18 @@ class FlxStyleHelper {
                         pixels.fillRect(rcLine, Std.int(opacity * 0xFF) << 24 | c);
                         n++;
                     }
+
+                    if (opacity > 0 && n > 0) {
+                        painted = true;
+                    }
                 }
             } else {
                 var color:FlxColor = Std.int(opacity * 0xFF) << 24 | style.backgroundColor;
                 pixels.fillRect(rc, color);
+
+                if (opacity > 0) {
+                    painted = true;
+                }
             }
         }
         
@@ -159,9 +191,13 @@ class FlxStyleHelper {
             Toolkit.assets.getImage(style.backgroundImage, function(info:ImageInfo) {
                 if (info != null && info.data != null) {
                     paintBackroundImage(sprite, info.data, style);
+
+                    painted = true;
                 }
             });
         }
+
+        return painted;
     }
     
     private static function paintBackroundImage(sprite:FlxSprite, data:ImageData, style:Style) {

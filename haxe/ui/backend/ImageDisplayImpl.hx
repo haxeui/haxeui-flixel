@@ -7,6 +7,7 @@ class ImageDisplayImpl extends ImageBase {
     public function new() {
         super();
         this.pixelPerfectRender = true;
+        this.active = false;
     }
     
     private override function validateData():Void {
