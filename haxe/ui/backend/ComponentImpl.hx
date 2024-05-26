@@ -782,7 +782,6 @@ class ComponentImpl extends ComponentBase {
         }
         
         clearCaches();
-        applyClipRect();
         repositionChildren();
 
         _updates++;
@@ -795,25 +794,57 @@ class ComponentImpl extends ComponentBase {
         }
         
         super.update(elapsed);
+
+        // only the root component will start the applyClipRect() chain
+        if (parentComponent == null) {
+            // this needs to be called after super.update() so the children's positions
+            // get updated before clipping them
+            applyClipRect();
+        }
     }
 
     private function applyClipRect() {
-        if (this.componentClipRect != null) {
-            var value = this.componentClipRect;
-            value.top = Std.int(value.top);
-            value.left = Std.int(value.left);
-            if (parentComponent != null) {
-                var rect = FlxRect.get((value.left * Toolkit.scaleX) + _surface.x - parentComponent.x,
-                                    (value.top * Toolkit.scaleY) + _surface.y - parentComponent.y,
-                                    (value.width * Toolkit.scaleX), (value.height * Toolkit.scaleY));
-                clipRect = rect;
-                rect.put();
-            } else { // top-level (root) components can also clip (Absolute auto clips via a css style), but this means they wont have a parentComponent set, lets handle them differently
-                var rect = FlxRect.get(_surface.x, _surface.y, value.width, value.height);
-                clipRect = rect;
-                rect.put();
-            }
+        if (componentClipRect != null) {
+            clipRect = getFlixelClipRect(clipRect);
         }
+
+        for (c in childComponents) {
+            c.applyClipRect();
+        }
+    }
+
+    private function getFlixelClipRect(?rect:FlxRect):FlxRect {
+        var value = componentClipRect;
+        if (value == null) {
+            return null;
+        }
+
+        value.top = Std.int(value.top);
+        value.left = Std.int(value.left);
+
+        if (rect == null) {
+            rect = FlxRect.get();
+        }
+        rect.set((value.left * Toolkit.scaleX) + _surface.x - x,
+            (value.top * Toolkit.scaleY) + _surface.y - y,
+            (value.width * Toolkit.scaleX), (value.height * Toolkit.scaleY));
+
+        // find the nearest parent with a clip rect so we can intersect it with
+        // the one from this component
+        var p = parentComponent;
+        while (p != null) {
+            if (p.componentClipRect != null) {
+                var pRect = p.getFlixelClipRect();
+                var oldRect = rect;
+                rect = rect.intersection(pRect);
+                pRect.put();
+                oldRect.put();
+                break;
+            }
+            p = p.parentComponent;
+        }
+
+        return rect;
     }
     
     // these functions (applyAddInternal / applyRemoveInternal) are called when a component is added / removed
