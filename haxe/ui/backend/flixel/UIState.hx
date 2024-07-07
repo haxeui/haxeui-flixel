@@ -7,6 +7,7 @@ import haxe.ui.events.UIEvent;
 
 @:autoBuild(haxe.ui.macros.Macros.buildBehaviours())
 @:autoBuild(haxe.ui.macros.Macros.build())
+@:autoBuild(haxe.ui.backend.flixel.macros.UIStateMacro.checkDefine())
 class UIState extends UIStateBase { // must use -D haxeui_dont_impose_base_class
     public var bindingRoot:Bool = false;
 
