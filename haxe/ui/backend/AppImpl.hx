@@ -2,6 +2,7 @@ package haxe.ui.backend;
 
 import flixel.FlxGame;
 import haxe.ui.backend.flixel.FlxHaxeUIAppState;
+import lime.graphics.Image;
 import openfl.Lib;
 
 class AppImpl extends AppBase {
@@ -22,5 +23,21 @@ class AppImpl extends AppBase {
             var c = Toolkit.backendProperties.getPropCol("haxe.ui.flixel.fps.color");
             Lib.current.stage.addChild(new openfl.display.FPS(x, y, c));
         }
+    }
+
+    private override function set_icon(value:String):String {
+        if (_icon == value) {
+            return value;
+        }
+        _icon = value;
+
+        ToolkitAssets.instance.getImage(_icon, function(imageInfo) {
+            if (imageInfo != null) {
+                var iconImage = Image.fromBitmapData(imageInfo.data.parent.bitmap);
+                Lib.current.stage.window.setIcon(iconImage);
+            }
+        });
+
+        return value;
     }
 }
