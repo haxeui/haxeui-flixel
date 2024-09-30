@@ -227,11 +227,11 @@ class ComponentImpl extends ComponentBase {
         var h:Int = Std.int(height * Toolkit.scaleY);
         if (_surface.width != w || _surface.height != h) {
             if (w <= 0 || h <= 0) {
-                _surface.graphic.destroy();
+                _surface.graphic.decrementUseCount();
                 _surface.makeGraphic(1, 1, 0x0, true);
                 _surface.visible = false;
             } else {
-                _surface.graphic.destroy();
+                _surface.graphic.decrementUseCount();
                 _surface.makeGraphic(w, h, 0x0, true);
                 applyStyle(style);
             }
@@ -881,6 +881,7 @@ class ComponentImpl extends ComponentBase {
     private var _destroyed:Bool = false;
     private function destroyInternal() {
         if (_surface != null) {
+            _surface.graphic.decrementUseCount();
             _surface.destroy();
             _surface = null;
         }
