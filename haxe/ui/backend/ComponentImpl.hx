@@ -776,6 +776,7 @@ class ComponentImpl extends ComponentBase {
             return;
         }
         if (_destroy == true) {
+            clearCaches();
             destroyInternal();
             super.update(elapsed);
             return;
