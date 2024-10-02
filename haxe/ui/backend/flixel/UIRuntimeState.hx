@@ -117,6 +117,7 @@ class UIRuntimeState extends UIStateBase { // uses rtti to "build" a class with 
 		if (root != null) {
 			Screen.instance.removeComponent(root);
 		}
+		super.destroy();
 		root = null;
 	}
 }

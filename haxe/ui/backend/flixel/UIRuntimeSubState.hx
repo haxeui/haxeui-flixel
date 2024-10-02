@@ -117,6 +117,7 @@ class UIRuntimeSubState extends UISubStateBase { // uses rtti to "build" a class
 		if (root != null) {
 			Screen.instance.removeComponent(root);
 		}
+		super.destroy();
 		root = null;
 	}
 }
