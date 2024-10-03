@@ -46,7 +46,6 @@ class ComponentImpl extends ComponentBase {
         scrollFactor.set(0, 0); // ui doesn't scroll by default
 
         _surface = new FlxSprite();
-        _surface.makeGraphic(1, 1, 0x0, true);
         _surface.pixelPerfectRender = true;
         _surface.active = false;
         _surface.visible = false;
@@ -227,11 +226,9 @@ class ComponentImpl extends ComponentBase {
         var h:Int = Std.int(height * Toolkit.scaleY);
         if (_surface.width != w || _surface.height != h) {
             if (w <= 0 || h <= 0) {
-                _surface.graphic.decrementUseCount();
                 _surface.makeGraphic(1, 1, 0x0, true);
                 _surface.visible = false;
             } else {
-                _surface.graphic.decrementUseCount();
                 _surface.makeGraphic(w, h, 0x0, true);
                 applyStyle(style);
             }
@@ -776,6 +773,7 @@ class ComponentImpl extends ComponentBase {
             return;
         }
         if (_destroy == true) {
+            clearCaches();
             destroyInternal();
             super.update(elapsed);
             return;
@@ -881,7 +879,6 @@ class ComponentImpl extends ComponentBase {
     private var _destroyed:Bool = false;
     private function destroyInternal() {
         if (_surface != null) {
-            _surface.graphic.decrementUseCount();
             _surface.destroy();
             _surface = null;
         }
