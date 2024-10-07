@@ -12,8 +12,8 @@ class FlxTextInput extends TextBase {
     public static var USE_ON_ADDED:Bool = false;
     public static var USE_ON_REMOVED:Bool = false;
 
-    private var PADDING_X:Int = 4;
-    private var PADDING_Y:Int = 0;
+    private static inline var PADDING_X:Int = 4;
+    private static inline var PADDING_Y:Int = 2;
 
     private var tf:flixel.addons.text.FlxTextInput;
 
@@ -198,7 +198,7 @@ class FlxTextInput extends TextBase {
 
     private override function validatePosition() {
         _left = Math.round(_left * Toolkit.scaleX);
-        _top = Math.round(_top * Toolkit.scaleY);
+        _top = Math.round(_top * Toolkit.scaleY) + (PADDING_Y / 2);
     }
 
     private override function validateDisplay() {
@@ -211,8 +211,8 @@ class FlxTextInput extends TextBase {
             tf.fieldWidth = tf.width;
         }
 
-        if (tf.height != _height * Toolkit.scaleY) {
-            tf.height = _height * Toolkit.scaleY;
+        if (tf.height != (_height + PADDING_Y) * Toolkit.scaleY) {
+            tf.height = (_height + PADDING_Y) * Toolkit.scaleY;
             tf.fieldHeight = tf.height;
         }
     }
