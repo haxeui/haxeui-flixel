@@ -30,8 +30,8 @@ class SpriteWrapper extends Box {
     private override function repositionChildren() {
         super.repositionChildren();
         if (sprite != null) {
-            sprite.x = spriteOffsetX + this.screenX;
-            sprite.y = spriteOffsetY + this.screenY;
+            sprite.x = spriteOffsetX + this.cachedScreenX;
+            sprite.y = spriteOffsetY + this.cachedScreenY;
         }
     }
 }

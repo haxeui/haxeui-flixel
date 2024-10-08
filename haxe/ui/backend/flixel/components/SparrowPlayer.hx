@@ -249,8 +249,8 @@ class SparrowPlayer extends Box implements IDataComponent {
 
     private override function repositionChildren() {
         super.repositionChildren();
-        sprite.x = this.screenX;
-        sprite.y = this.screenY;
+        sprite.x = this.cachedScreenX;
+        sprite.y = this.cachedScreenY;
     }
 }
 
