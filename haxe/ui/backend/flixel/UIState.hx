@@ -1,9 +1,9 @@
 package haxe.ui.backend.flixel;
 
-import haxe.ui.layouts.LayoutFactory;
 import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
+import haxe.ui.layouts.LayoutFactory;
 
 @:autoBuild(haxe.ui.macros.Macros.buildBehaviours())
 @:autoBuild(haxe.ui.macros.Macros.build())
@@ -27,9 +27,9 @@ class UIState extends UIStateBase { // must use -D haxeui_dont_impose_base_class
 
     public override function create() {
         super.create();
-	root.registerEvent(UIEvent.READY, (_) -> {
+        root.registerEvent(UIEvent.READY, (_) -> {
             onReady();
-	});
+        });
         add(root);
     }
 
@@ -92,11 +92,11 @@ class UIState extends UIStateBase { // must use -D haxeui_dont_impose_base_class
         return value;
     }
 
-	public function show() {
-		root.show();
-	}
+    public function show() {
+        root.show();
+    }
 
-	public function hide() {
-		root.hide();
-	}
+    public function hide() {
+        root.hide();
+    }
 }
