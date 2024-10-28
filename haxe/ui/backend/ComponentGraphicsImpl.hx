@@ -262,8 +262,10 @@ class ComponentGraphicsImpl extends ComponentGraphicsBase {
             }
             if (currentPath.commands[0] != GraphicsPathCommand.MOVE_TO) {
                 currentPath.commands.insertAt(0, GraphicsPathCommand.MOVE_TO);
+                #if !flash
                 @:privateAccess currentPath.data.insertAt(0, flashGfxSprite.graphics.__positionX);
                 @:privateAccess currentPath.data.insertAt(0, flashGfxSprite.graphics.__positionY);
+                #end
             }
             flashGfxSprite.graphics.drawPath(currentPath.commands, currentPath.data);
             if (_currentFillColor != null) {
