@@ -910,11 +910,10 @@ class ComponentImpl extends ComponentBase {
         _destroy = true;
     }
     
-    /*
     private override function set_x(value:Float):Float {
         var r = super.set_x(value);
         if (this.parentComponent == null && _surface != null) {
-            //this.left = value;
+            this.left = value;
         }
         return r;
     }
@@ -922,9 +921,8 @@ class ComponentImpl extends ComponentBase {
     private override function set_y(value:Float):Float {
         var r = super.set_y(value);
         if (this.parentComponent == null && _surface != null) {
-            //this.top = value;
+            this.top = value;
         }
         return r;
     }
-        */
 }
