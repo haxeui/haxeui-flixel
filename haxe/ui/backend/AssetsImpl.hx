@@ -93,8 +93,8 @@ class AssetsImpl extends AssetsBase {
     public override function imageInfoFromImageData(imageData:ImageData):ImageInfo {
         return {
             data: imageData,
-            width: imageData.parent.width,
-            height: imageData.parent.height
+            width: Std.int(imageData.frame.width),
+            height: Std.int(imageData.frame.height)
         }
     }
     

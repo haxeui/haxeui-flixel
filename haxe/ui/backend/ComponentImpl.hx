@@ -46,7 +46,6 @@ class ComponentImpl extends ComponentBase {
         scrollFactor.set(0, 0); // ui doesn't scroll by default
 
         _surface = new FlxSprite();
-        _surface.makeGraphic(1, 1, 0x0, true);
         _surface.pixelPerfectRender = true;
         _surface.active = false;
         _surface.visible = false;
@@ -92,32 +91,19 @@ class ComponentImpl extends ComponentBase {
         if (_cachedScreenX != null && _cachedScreenY != null) {
             return;
         }
-        
-        var c:Component = asComponent;
-        var xpos:Float = 0;
-        var ypos:Float = 0;
-        while (c != null) {
-            xpos += c.left;
-            ypos += c.top;
-            if (c.componentClipRect != null) {
-                xpos -= c.componentClipRect.left;
-                ypos -= c.componentClipRect.top;
-            }
-            c = c.parentComponent;
-        }
-        
-        _cachedScreenX = xpos * Toolkit.scaleX;
-        _cachedScreenY = ypos * Toolkit.scaleY;
+        var screenBounds = asComponent.screenBounds;
+        _cachedScreenX = screenBounds.left;
+        _cachedScreenY = screenBounds.top;
     }
     
-    private var screenX(get, null):Float;
-    private function get_screenX():Float {
+    private var cachedScreenX(get, null):Float;
+    private function get_cachedScreenX():Float {
         cacheScreenPos();
         return _cachedScreenX;
     }
 
-    private var screenY(get, null):Float;
-    private function get_screenY():Float {
+    private var cachedScreenY(get, null):Float;
+    private function get_cachedScreenY():Float {
         cacheScreenPos();
         return _cachedScreenY;
     }
@@ -173,8 +159,8 @@ class ComponentImpl extends ComponentBase {
         }
 
         var b:Bool = false;
-        var sx = screenX;
-        var sy = screenY;
+        var sx = cachedScreenX;
+        var sy = cachedScreenY;
         var cx = asComponent.componentWidth * Toolkit.scaleX;
         var cy = asComponent.componentHeight * Toolkit.scaleY;
 
@@ -187,8 +173,8 @@ class ComponentImpl extends ComponentBase {
             var clip:Component = findClipComponent();
             if (clip != null) {
                 b = false;
-                var sx = (clip.screenX + (clip.componentClipRect.left * Toolkit.scaleX));
-                var sy = (clip.screenY + (clip.componentClipRect.top * Toolkit.scaleY));
+                var sx = (clip.cachedScreenX + (clip.componentClipRect.left * Toolkit.scaleX));
+                var sy = (clip.cachedScreenY + (clip.componentClipRect.top * Toolkit.scaleY));
                 var cx = clip.componentClipRect.width * Toolkit.scaleX;
                 var cy = clip.componentClipRect.height * Toolkit.scaleY;
                 if (x >= sx && y >= sy && x <= sx + cx && y < sy + cy) {
@@ -206,10 +192,10 @@ class ComponentImpl extends ComponentBase {
         
         if (parentComponent == null) {
             if (left != null) {
-                this.x = left;
+                //this.x = left;
             }
             if (top != null) {
-                this.y = top;
+                //this.y = top;
             }
         }
     }
@@ -227,11 +213,9 @@ class ComponentImpl extends ComponentBase {
         var h:Int = Std.int(height * Toolkit.scaleY);
         if (_surface.width != w || _surface.height != h) {
             if (w <= 0 || h <= 0) {
-                _surface.graphic.destroy();
                 _surface.makeGraphic(1, 1, 0x0, true);
                 _surface.visible = false;
             } else {
-                _surface.graphic.destroy();
                 _surface.makeGraphic(w, h, 0x0, true);
                 applyStyle(style);
             }
@@ -661,23 +645,25 @@ class ComponentImpl extends ComponentBase {
     // Util
     //***********************************************************************************************************
     private function repositionChildren() {
+        var xpos = this.cachedScreenX;
+        var ypos = this.cachedScreenY;
         if (_surface != null) {
-            _surface.x = this.screenX;
-            _surface.y = this.screenY;
+            _surface.x = xpos;
+            _surface.y = ypos;
         }
         
         if (_textDisplay != null) {
             var offsetX = 2 / Toolkit.scaleX;
             var offsetY = 2 / Toolkit.scaleY;
-            _textDisplay.tf.x = _surface.x + _textDisplay.left - offsetX;
-            _textDisplay.tf.y = _surface.y + _textDisplay.top - offsetY;
+            _textDisplay.tf.x = xpos + _textDisplay.left - offsetX;
+            _textDisplay.tf.y = ypos + _textDisplay.top - offsetY;
         }
         
         if (_textInput != null) {
             var offsetX = 2 / Toolkit.scaleX;
             var offsetY = 2 / Toolkit.scaleY;
-            _textInput.x = (_surface.x + _textInput.left - offsetX);
-            _textInput.y = (_surface.y + _textInput.top - offsetY);
+            _textInput.x = (xpos + _textInput.left - offsetX);
+            _textInput.y = (ypos + _textInput.top - offsetY);
             _textInput.scaleX = FlxG.scaleMode.scale.x;
             _textInput.scaleY = FlxG.scaleMode.scale.y;
             _textInput.update();
@@ -686,14 +672,14 @@ class ComponentImpl extends ComponentBase {
         if (_imageDisplay != null) {
             var offsetX = 0;
             var offsetY = 0;
-            _imageDisplay.x = _surface.x + _imageDisplay.left - offsetX;
-            _imageDisplay.y = _surface.y + _imageDisplay.top - offsetY;
+            _imageDisplay.x = xpos + _imageDisplay.left - offsetX;
+            _imageDisplay.y = ypos + _imageDisplay.top - offsetY;
         }
         
         if (_unsolicitedMembers != null) {
             for (m in _unsolicitedMembers) {
-                m.sprite.x = m.originalX + this.screenX;
-                m.sprite.y = m.originalY + this.screenY;
+                m.sprite.x = m.originalX + this.cachedScreenX;
+                m.sprite.y = m.originalY + this.cachedScreenY;
             }
         }
     }
@@ -776,6 +762,7 @@ class ComponentImpl extends ComponentBase {
             return;
         }
         if (_destroy == true) {
+            clearCaches();
             destroyInternal();
             super.update(elapsed);
             return;
