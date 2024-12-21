@@ -200,7 +200,7 @@ class FlxTextInput extends TextBase {
 
     private override function validatePosition() {
         _left = Math.round(_left * Toolkit.scaleX);
-        _top = Math.round(_top * Toolkit.scaleY) + (PADDING_Y / 2);
+        _top = Math.round(_top * Toolkit.scaleY);
     }
 
     private override function validateDisplay() {
