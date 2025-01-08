@@ -43,6 +43,7 @@ class UIRTTITools {
 			    root = RuntimeComponentBuilder.fromString(xmlString);
             } catch (e:Dynamic) {
                 trace("ERROR", e);
+                trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack(true)));
             }
 		}
         return root;
