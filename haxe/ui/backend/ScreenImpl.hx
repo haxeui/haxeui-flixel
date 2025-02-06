@@ -3,8 +3,8 @@ package haxe.ui.backend;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.group.FlxContainer;
+import flixel.group.FlxSpriteContainer;
 import haxe.ui.Toolkit;
 import haxe.ui.backend.flixel.CursorHelper;
 import haxe.ui.backend.flixel.KeyboardHelper;
@@ -93,8 +93,8 @@ class ScreenImpl extends ScreenBase {
             if (rootComponents.indexOf(c) == -1) {
                 addComponent(c);
             }
-        } else if ((m is FlxTypedGroup)) {
-            var group:FlxTypedGroup<FlxBasic> = cast m;
+        } else if ((m is FlxTypedContainer)) {
+            var group:FlxTypedContainer<FlxBasic> = cast m;
             checkMembers(group);
         }
     }
@@ -106,7 +106,7 @@ class ScreenImpl extends ScreenBase {
         }
     }
 
-    private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
+    private function checkMembers(state:FlxTypedContainer<FlxBasic>) {
         if (state == null || !state.exists) {
             return false;
         }
@@ -119,15 +119,15 @@ class ScreenImpl extends ScreenBase {
                     addComponent(c);
                     found = true;
                 }
-            } else if ((m is FlxTypedGroup)) {
-                var group:FlxTypedGroup<FlxBasic> = cast m;
+            } else if ((m is FlxTypedContainer)) {
+                var group:FlxTypedContainer<FlxBasic> = cast m;
                 group.memberAdded.addOnce(onMemberAdded);
                 if (checkMembers(group) == true) {
                     found = true;
                     break;
                 }
-            } else if ((m is FlxTypedSpriteGroup)) {
-                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
+            } else if ((m is FlxTypedSpriteContainer)) {
+                var spriteGroup:FlxTypedSpriteContainer<FlxSprite> = cast m;
                 spriteGroup.group.memberAdded.addOnce(onMemberAdded);
                 if (checkMembers(cast spriteGroup.group) == true) {
                     found = true;
@@ -339,7 +339,7 @@ class ScreenImpl extends ScreenBase {
         }
     }
 
-    private function containsUnsolicitedMemberAt(x:Float, y:Float, state:FlxTypedGroup<FlxBasic>):Bool {
+    private function containsUnsolicitedMemberAt(x:Float, y:Float, state:FlxTypedContainer<FlxBasic>):Bool {
         if (state == null || !state.exists) {
             return false;
         }
@@ -364,12 +364,12 @@ class ScreenImpl extends ScreenBase {
                         }
                     }
                 }
-                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
+                var spriteGroup:FlxTypedSpriteContainer<FlxSprite> = cast m;
                 if (containsUnsolicitedMemberAt(x, y, cast spriteGroup.group) == true) {
                     return true;
                 }
-            } else if ((m is FlxTypedSpriteGroup)) {
-                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
+            } else if ((m is FlxTypedSpriteContainer)) {
+                var spriteGroup:FlxTypedSpriteContainer<FlxSprite> = cast m;
                 if (!spriteGroup.visible) {
                     continue;
                 }

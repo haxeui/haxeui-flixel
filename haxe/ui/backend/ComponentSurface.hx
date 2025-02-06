@@ -1,3 +1,3 @@
 package haxe.ui.backend;
 
-typedef ComponentSurface = flixel.group.FlxSpriteGroup;
+typedef ComponentSurface = flixel.group.FlxSpriteContainer;
