@@ -4,7 +4,7 @@ import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
-import flixel.group.FlxSpriteContainer;
+import flixel.group.FlxSpriteGroup;
 import haxe.ui.Toolkit;
 import haxe.ui.backend.flixel.CursorHelper;
 import haxe.ui.backend.flixel.KeyboardHelper;
@@ -126,8 +126,8 @@ class ScreenImpl extends ScreenBase {
                     found = true;
                     break;
                 }
-            } else if ((m is FlxTypedSpriteContainer)) {
-                var spriteGroup:FlxTypedSpriteContainer<FlxSprite> = cast m;
+            } else if ((m is FlxTypedSpriteGroup)) {
+                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
                 spriteGroup.group.memberAdded.addOnce(onMemberAdded);
                 if (checkMembers(cast spriteGroup.group) == true) {
                     found = true;
@@ -364,12 +364,12 @@ class ScreenImpl extends ScreenBase {
                         }
                     }
                 }
-                var spriteGroup:FlxTypedSpriteContainer<FlxSprite> = cast m;
+                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
                 if (containsUnsolicitedMemberAt(x, y, cast spriteGroup.group) == true) {
                     return true;
                 }
-            } else if ((m is FlxTypedSpriteContainer)) {
-                var spriteGroup:FlxTypedSpriteContainer<FlxSprite> = cast m;
+            } else if ((m is FlxTypedSpriteGroup)) {
+                var spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast m;
                 if (!spriteGroup.visible) {
                     continue;
                 }
