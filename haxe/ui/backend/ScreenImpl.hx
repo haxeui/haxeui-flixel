@@ -3,7 +3,7 @@ package haxe.ui.backend;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxContainer;
+import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteContainer;
 import haxe.ui.Toolkit;
 import haxe.ui.backend.flixel.CursorHelper;
@@ -93,8 +93,8 @@ class ScreenImpl extends ScreenBase {
             if (rootComponents.indexOf(c) == -1) {
                 addComponent(c);
             }
-        } else if ((m is FlxTypedContainer)) {
-            var group:FlxTypedContainer<FlxBasic> = cast m;
+        } else if ((m is FlxTypedGroup)) {
+            var group:FlxTypedGroup<FlxBasic> = cast m;
             checkMembers(group);
         }
     }
@@ -106,7 +106,7 @@ class ScreenImpl extends ScreenBase {
         }
     }
 
-    private function checkMembers(state:FlxTypedContainer<FlxBasic>) {
+    private function checkMembers(state:FlxTypedGroup<FlxBasic>) {
         if (state == null || !state.exists) {
             return false;
         }
@@ -119,8 +119,8 @@ class ScreenImpl extends ScreenBase {
                     addComponent(c);
                     found = true;
                 }
-            } else if ((m is FlxTypedContainer)) {
-                var group:FlxTypedContainer<FlxBasic> = cast m;
+            } else if ((m is FlxTypedGroup)) {
+                var group:FlxTypedGroup<FlxBasic> = cast m;
                 group.memberAdded.addOnce(onMemberAdded);
                 if (checkMembers(group) == true) {
                     found = true;
@@ -339,7 +339,7 @@ class ScreenImpl extends ScreenBase {
         }
     }
 
-    private function containsUnsolicitedMemberAt(x:Float, y:Float, state:FlxTypedContainer<FlxBasic>):Bool {
+    private function containsUnsolicitedMemberAt(x:Float, y:Float, state:FlxTypedGroup<FlxBasic>):Bool {
         if (state == null || !state.exists) {
             return false;
         }
