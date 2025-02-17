@@ -275,12 +275,17 @@ class ScreenImpl extends ScreenBase {
 
     private override function handleSetComponentIndex(child:Component, index:Int) {
         var offset = 0;
+        StateHelper.currentState.forEach((item) -> {
+            offset++;
+        });        
+        /* see: https://github.com/haxeui/haxeui-flixel/issues/61
         for (i in 0...StateHelper.currentState.length) {
             if ((StateHelper.currentState.members[i] is Component)) {
                 offset = i;
                 break;
             }
         }
+        */    
 
         StateHelper.currentState.remove(child, true);
         StateHelper.currentState.insert(index + offset, child);
