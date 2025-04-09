@@ -169,9 +169,9 @@ class ScreenImpl extends ScreenBase {
 
     private var _cursor:String = null;
     public function setCursor(cursor:String, offsetX:Null<Int> = null, offsetY:Null<Int> = null) {
-        #if haxeui_flixel_no_custom_cursors
+        #if (haxeui_flixel_no_custom_cursors || FLX_NO_MOUSE)
         return;
-        #end
+        #else
 
         if (!CursorHelper.useCustomCursors) {
             return;
@@ -190,6 +190,7 @@ class ScreenImpl extends ScreenBase {
         } else {
             FlxG.mouse.load(null);
         }
+        #end
     }
 
     public override function addComponent(component:Component):Component {
