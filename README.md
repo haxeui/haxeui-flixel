@@ -1,4 +1,4 @@
-![build status](https://github.com/haxeui/haxeui-flixel/actions/workflows/build.yml/badge.svg)
+![build status](https://github.com/haxeui/haxeui-flixel/actions/workflows/build.yml/badge.svg) | [türkçe](/README_TR.md)
 
 # haxeui-flixel
 `haxeui-flixel` is the `Flixel` backend for `HaxeUI`.
