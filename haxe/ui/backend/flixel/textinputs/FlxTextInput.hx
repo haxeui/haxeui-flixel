@@ -3,8 +3,12 @@ package haxe.ui.backend.flixel.textinputs;
 import flixel.FlxSprite;
 import flixel.text.FlxInputText;
 import flixel.util.FlxColor;
+import haxe.ui.Toolkit;
 import haxe.ui.backend.TextInputImpl.TextInputEvent;
 import haxe.ui.core.Component;
+import haxe.ui.themes.Theme;
+import haxe.ui.themes.ThemeManager;
+import haxe.ui.util.Color;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 
@@ -195,6 +199,26 @@ class FlxTextInput extends TextBase {
 
         tf.editable = !parentComponent.disabled;
 
+        var theme:Theme = ThemeManager.instance.findTheme(Toolkit.theme);
+        var selectionColor:Int = 0xFF000000;
+        var selectedTextColor:Int = 0xFFFFFFFF;
+        if (theme != null) {
+            
+            var themeSelectionColor:String = theme.vars.get("selection-background-color");
+            var themeSelectedTextColor:String = theme.vars.get("selection-text-color");
+
+            if (themeSelectionColor != null) {
+                selectionColor = cast(Color.fromString(themeSelectionColor), Int);
+            }
+
+            if (themeSelectedTextColor != null) {
+                selectedTextColor = cast(Color.fromString(themeSelectedTextColor), Int);
+            }
+        }
+
+        tf.selectionColor = selectionColor;
+        tf.selectedTextColor = selectedTextColor;
+            
         return measureTextRequired;
     }
 
